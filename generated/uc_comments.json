@@ -1,0 +1,755 @@
+{
+  "silver_dcsa.silver_portgate_equipment_events": {
+    "schema": "silver_dcsa",
+    "table": "silver_portgate_equipment_events",
+    "class_name": "EquipmentEvent",
+    "table_comment": "DCSA Track & Trace v3 container equipment handling event captured at terminal gates, quaysides, or depots.",
+    "pii_columns": [],
+    "columns": {
+      "equipment_event_type_code": {
+        "comment": "DCSA equipment milestone code (e.g., LOAD, DISC, GTIN, GTOT).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "equipment_reference": {
+        "comment": "ISO 6346 container identifier (e.g., TCLU1234567).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "iso_equipment_code": {
+        "comment": "4-character ISO 6346 container size and type code (e.g., 45R1, 42G1).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "empty_indicator_code": {
+        "comment": "Container load state indicator (EMPTY or LADEN).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "un_location_code": {
+        "comment": "UN/LOCODE port where the equipment event occurred.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "facility_code": {
+        "comment": "SMDG terminal facility code.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "transport_call_id": {
+        "comment": "Foreign reference linking vessel-side events to the port call.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_voyage_number": {
+        "comment": "Operational carrier voyage identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_id": {
+        "comment": "Globally unique deterministic identifier for the DCSA event record.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_created_date_time": {
+        "comment": "UTC timestamp when the source system created the event payload.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_date_time": {
+        "comment": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_classifier_code": {
+        "comment": "Classification of event_date_time (PLN, ACT, or EST).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "source_system": {
+        "comment": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_portgate_transport_events": {
+    "schema": "silver_dcsa",
+    "table": "silver_portgate_transport_events",
+    "class_name": "TransportEvent",
+    "table_comment": "DCSA Track & Trace v3 vessel arrival and departure milestone event for a transport call.",
+    "pii_columns": [],
+    "columns": {
+      "transport_event_type_code": {
+        "comment": "Vessel movement event type (ARRI or DEPA).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "transport_call_id": {
+        "comment": "Unique identifier of the transport call at the terminal.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_imo_number": {
+        "comment": "7-digit IMO ship identification number.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_voyage_number": {
+        "comment": "Operational carrier voyage identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "un_location_code": {
+        "comment": "UN/LOCODE port where the vessel event applies.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "delay_reason_code": {
+        "comment": "Standardized SMDG delay reason code when behind schedule.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "change_remark": {
+        "comment": "Operational commentary explaining schedule updates.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_id": {
+        "comment": "Globally unique deterministic identifier for the DCSA event record.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_created_date_time": {
+        "comment": "UTC timestamp when the source system created the event payload.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_date_time": {
+        "comment": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_classifier_code": {
+        "comment": "Classification of event_date_time (PLN, ACT, or EST).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "source_system": {
+        "comment": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_reeferpulse_iot_telemetry": {
+    "schema": "silver_dcsa",
+    "table": "silver_reeferpulse_iot_telemetry",
+    "class_name": "ReeferTelemetryReading",
+    "table_comment": "DCSA Track & Trace v3.0.0 refrigerated container IoT telemetry packet with physical safety bounds.",
+    "pii_columns": [],
+    "columns": {
+      "reading_id": {
+        "comment": "Unique telemetry packet identifier emitted by the reefer modem.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "equipment_reference": {
+        "comment": "ISO 6346 identifier of the monitored reefer container.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "recorded_at": {
+        "comment": "UTC timestamp recorded by the reefer sensor controller.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "setpoint_temp_c": {
+        "comment": "Target cargo setpoint temperature in degrees Celsius (-40C to +30C).",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "supply_air_temp_c": {
+        "comment": "Supply air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "return_air_temp_c": {
+        "comment": "Return air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "relative_humidity_pct": {
+        "comment": "Cargo chamber relative humidity percentage (0 to 100).",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "power_status": {
+        "comment": "Reefer compressor/power supply state (ON, OFF, ALARM, DEFROST, UNKNOWN).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "latitude": {
+        "comment": "GPS latitude reported with the telemetry reading (-90 to +90).",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "longitude": {
+        "comment": "GPS longitude reported with the telemetry reading (-180 to +180).",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "excursion_flag": {
+        "comment": "True when supply or return temperature breached cold-chain tolerance bands.",
+        "physical_type": "BOOLEAN",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_dcsa_ebl_current": {
+    "schema": "silver_dcsa",
+    "table": "silver_dcsa_ebl_current",
+    "class_name": "TransportDocument",
+    "table_comment": "DCSA Electronic Bill of Lading (eBL v3) transport document master record.",
+    "pii_columns": [
+      "shipper_contact_email",
+      "consignee_name"
+    ],
+    "columns": {
+      "transport_document_reference": {
+        "comment": "Unique transport document / Bill of Lading reference number.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_booking_reference": {
+        "comment": "Associated DCSA carrier booking reference.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "document_status": {
+        "comment": "Current DCSA eBL workflow state (e.g., DRFT, APPR, ISSU, SURR).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "issue_date": {
+        "comment": "Date the transport document was issued or drafted.",
+        "physical_type": "DATE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "shipper_name": {
+        "comment": "Legal commercial shipper organization name.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "shipper_contact_email": {
+        "comment": "Shipper primary contact email address (governed PII attribute).",
+        "physical_type": "STRING",
+        "pii": true,
+        "pii_category": "direct_identifier",
+        "classification": "confidential",
+        "tags": [
+          "pii",
+          "direct_identifier"
+        ]
+      },
+      "consignee_name": {
+        "comment": "Designated consignee party name (governed PII attribute).",
+        "physical_type": "STRING",
+        "pii": true,
+        "pii_category": "party_name",
+        "classification": "confidential",
+        "tags": [
+          "pii",
+          "party_name"
+        ]
+      },
+      "port_of_loading": {
+        "comment": "UN/LOCODE port of loading.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "port_of_discharge": {
+        "comment": "UN/LOCODE port of discharge.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_imo_number": {
+        "comment": "7-digit IMO number of the primary ocean vessel.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_voyagecore_bookings": {
+    "schema": "silver_dcsa",
+    "table": "silver_voyagecore_bookings",
+    "class_name": "BookingRecord",
+    "table_comment": "DCSA Booking v2 freight booking request and confirmation record.",
+    "pii_columns": [],
+    "columns": {
+      "carrier_booking_reference": {
+        "comment": "Unique carrier booking reference identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "booking_status": {
+        "comment": "Current DCSA booking lifecycle status.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "booking_created_at": {
+        "comment": "UTC timestamp when booking was created.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "place_of_receipt": {
+        "comment": "UN/LOCODE origin place of receipt.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "place_of_delivery": {
+        "comment": "UN/LOCODE destination place of delivery.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "teu_count": {
+        "comment": "Booked capacity in Twenty-foot Equivalent Units (1 to 25000).",
+        "physical_type": "BIGINT",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "reefer_required": {
+        "comment": "True when refrigerated containers are required for the booking.",
+        "physical_type": "BOOLEAN",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_voyagecore_carrier_schedules": {
+    "schema": "silver_dcsa",
+    "table": "silver_voyagecore_carrier_schedules",
+    "class_name": "CarrierSchedule",
+    "table_comment": "DCSA Operational Vessel Schedules (OVS) proforma and planned port call schedule.",
+    "pii_columns": [],
+    "columns": {
+      "schedule_id": {
+        "comment": "Unique vessel schedule port call slot identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_imo_number": {
+        "comment": "7-digit IMO vessel identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_name": {
+        "comment": "Registered commercial vessel name.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_service_code": {
+        "comment": "Tasman trade lane service loop code (e.g., TASMAN-EXPRESS).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_voyage_number": {
+        "comment": "Planned operational voyage code.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "un_location_code": {
+        "comment": "Scheduled UN/LOCODE port of call.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "planned_arrival_utc": {
+        "comment": "Scheduled baseline arrival timestamp in UTC.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "planned_departure_utc": {
+        "comment": "Scheduled baseline departure timestamp in UTC.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "silver_dcsa.silver_harboursync_jit_port_calls": {
+    "schema": "silver_dcsa",
+    "table": "silver_harboursync_jit_port_calls",
+    "class_name": "PortCallTimestamp",
+    "table_comment": "DCSA Just-In-Time port call milestone timestamp spanning ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, and ATD_BERTH.",
+    "pii_columns": [],
+    "columns": {
+      "port_call_id": {
+        "comment": "Canonical port call identifier joining carrier schedule, terminal berth, and vessel events.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_imo_number": {
+        "comment": "7-digit IMO vessel identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_voyage_number": {
+        "comment": "Carrier voyage code for the port call.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "un_location_code": {
+        "comment": "UN/LOCODE port identifier where the JIT milestone was recorded.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "jit_phase_code": {
+        "comment": "One of the 5 JIT phases (ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, ATD_BERTH).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "terminal_code": {
+        "comment": "SMDG container terminal facility code.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "berth_code": {
+        "comment": "Assigned terminal berth identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "delay_reason_code": {
+        "comment": "SMDG delay reason code when vessel misses target window.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_id": {
+        "comment": "Globally unique deterministic identifier for the DCSA event record.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_created_date_time": {
+        "comment": "UTC timestamp when the source system created the event payload.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_date_time": {
+        "comment": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+        "physical_type": "TIMESTAMP",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "event_classifier_code": {
+        "comment": "Classification of event_date_time (PLN, ACT, or EST).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "source_system": {
+        "comment": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  },
+  "gold_dcsa.gold_port_call_performance": {
+    "schema": "gold_dcsa",
+    "table": "gold_port_call_performance",
+    "class_name": "PortCallPerformanceKpi",
+    "table_comment": "Curated Gold analytical dataset summarizing port call turnaround, berth wait time, and schedule reliability per port call.",
+    "pii_columns": [],
+    "columns": {
+      "port_call_id": {
+        "comment": "Canonical port call primary key matching silver_port_call_turnaround.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_imo_number": {
+        "comment": "7-digit IMO ship identification number.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "vessel_name": {
+        "comment": "Vessel name for operational reporting.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "carrier_voyage_number": {
+        "comment": "Operational carrier voyage identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "un_location_code": {
+        "comment": "UN/LOCODE port identifier.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "port_name": {
+        "comment": "Normalized port name.",
+        "physical_type": "STRING",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "call_date": {
+        "comment": "Port call arrival calendar date.",
+        "physical_type": "DATE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "on_time_flag": {
+        "comment": "Binary schedule reliability indicator (1 = arrived within OVS SLA window, 0 = delayed).",
+        "physical_type": "BIGINT",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "port_turnaround_hours": {
+        "comment": "Total elapsed hours between Pilot Boarding Place arrival and berth departure.",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      },
+      "berth_wait_hours": {
+        "comment": "Elapsed anchorage/wait hours between Pilot Boarding Place arrival and berth all-fast.",
+        "physical_type": "DOUBLE",
+        "pii": false,
+        "pii_category": null,
+        "classification": "internal",
+        "tags": []
+      }
+    }
+  }
+}

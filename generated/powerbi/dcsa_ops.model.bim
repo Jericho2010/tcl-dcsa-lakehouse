@@ -1,0 +1,465 @@
+{
+  "name": "dcsa_ops",
+  "compatibilityLevel": 1702,
+  "model": {
+    "tables": [
+      {
+        "name": "mv_port_call_kpis",
+        "columns": [
+          {
+            "name": "port_call_id",
+            "sourceColumn": "port_call_id",
+            "dataType": "string",
+            "description": "Canonical port call primary key joining schedule and JIT phases.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"call id\", \"transport call key\"]}"
+              }
+            ],
+            "isKey": true
+          },
+          {
+            "name": "vessel_imo_number",
+            "sourceColumn": "vessel_imo_number",
+            "dataType": "string",
+            "description": "7-digit IMO ship identification number.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"imo number\", \"ship id\"]}"
+              }
+            ]
+          },
+          {
+            "name": "vessel_name",
+            "sourceColumn": "vessel_name",
+            "dataType": "string",
+            "description": "Registered ocean vessel name.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"ship name\", \"vessel\"]}"
+              }
+            ]
+          },
+          {
+            "name": "carrier_voyage_number",
+            "sourceColumn": "carrier_voyage_number",
+            "dataType": "string",
+            "description": "Operational carrier voyage identifier.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"voyage number\", \"voyage code\"]}"
+              }
+            ]
+          },
+          {
+            "name": "un_location_code",
+            "sourceColumn": "un_location_code",
+            "dataType": "string",
+            "description": "5-character UN/LOCODE port identifier (e.g. NZAKL, AUSYD).",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"port code\", \"locode\"]}"
+              }
+            ]
+          },
+          {
+            "name": "port_name",
+            "sourceColumn": "port_name",
+            "dataType": "string",
+            "description": "Human-readable port terminal name.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"port\", \"harbor name\"]}"
+              }
+            ]
+          },
+          {
+            "name": "call_date",
+            "sourceColumn": "call_date",
+            "dataType": "dateTime",
+            "description": "Calendar date of the vessel arrival at Pilot Boarding Place.",
+            "formatString": "yyyy-mm-dd",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"arrival date\", \"port call date\"]}"
+              }
+            ]
+          },
+          {
+            "name": "on_time_flag",
+            "sourceColumn": "on_time_flag",
+            "dataType": "int64",
+            "description": "Binary indicator (1 = arrived within OVS SLA window, 0 = delayed)."
+          },
+          {
+            "name": "port_turnaround_hours",
+            "sourceColumn": "port_turnaround_hours",
+            "dataType": "double",
+            "description": "Elapsed hours from Pilot Boarding Place arrival to berth departure."
+          },
+          {
+            "name": "berth_wait_hours",
+            "sourceColumn": "berth_wait_hours",
+            "dataType": "double",
+            "description": "Elapsed wait hours from Pilot Boarding Place arrival to berth all-fast."
+          }
+        ],
+        "description": "Curated Gold port call performance metrics per JIT and OVS port call.",
+        "partitions": [
+          {
+            "name": "mv_port_call_kpis",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "gold_port_call_performance",
+              "schemaName": "gold_dcsa",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "OssieAIContext",
+            "value": "{\"instructions\": \"Aggregate schedule reliability, berth waiting, and turnaround metrics by port or vessel.\", \"synonyms\": [\"port call kpis\", \"schedule reliability table\", \"vessel port performance\"]}"
+          }
+        ],
+        "measures": [
+          {
+            "name": "schedule_reliability_pct",
+            "expression": "DIVIDE(SUM('mv_port_call_kpis'[on_time_flag]), COUNTA('mv_port_call_kpis'[port_call_id]))",
+            "description": "Share of vessel port calls arriving on time against OVS schedule SLA.",
+            "formatString": "0.0%",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "SUM(mv_port_call_kpis.on_time_flag) / NULLIF(COUNT(mv_port_call_kpis.port_call_id), 0)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"on time performance\", \"otp\", \"schedule reliability\"]}"
+              }
+            ]
+          },
+          {
+            "name": "avg_port_turnaround_hours",
+            "expression": "AVERAGE('mv_port_call_kpis'[port_turnaround_hours])",
+            "description": "Average vessel turnaround duration in hours from PBP arrival to departure.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "AVG(mv_port_call_kpis.port_turnaround_hours)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"average turnaround time\", \"mean port stay\"]}"
+              }
+            ]
+          },
+          {
+            "name": "avg_berth_wait_hours",
+            "expression": "AVERAGE('mv_port_call_kpis'[berth_wait_hours])",
+            "description": "Average anchorage waiting hours before vessel berthing.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "AVG(mv_port_call_kpis.berth_wait_hours)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"berth congestion wait\", \"average anchorage wait\"]}"
+              }
+            ]
+          },
+          {
+            "name": "total_port_calls",
+            "expression": "COUNTA('mv_port_call_kpis'[port_call_id])",
+            "description": "Total number of completed vessel port calls.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "COUNT(mv_port_call_kpis.port_call_id)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"port call count\", \"vessel arrivals\"]}"
+              }
+            ]
+          },
+          {
+            "name": "on_time_calls",
+            "expression": "SUM('mv_port_call_kpis'[on_time_flag])",
+            "description": "Count of vessel port calls meeting OVS arrival reliability SLA.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "SUM(mv_port_call_kpis.on_time_flag)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"reliable calls\", \"punctual port calls\"]}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "mv_container_journey_kpis",
+        "columns": [
+          {
+            "name": "journey_id",
+            "sourceColumn": "journey_id",
+            "dataType": "string",
+            "description": "Unique container journey grain identifier.",
+            "isKey": true
+          },
+          {
+            "name": "port_call_id",
+            "sourceColumn": "port_call_id",
+            "dataType": "string",
+            "description": "Foreign key linking container moves to mv_port_call_kpis.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"port call fk\", \"transport call key\"]}"
+              }
+            ]
+          },
+          {
+            "name": "equipment_reference",
+            "sourceColumn": "equipment_reference",
+            "dataType": "string",
+            "description": "ISO 6346 container identifier (4 letters + 7 digits).",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"container number\", \"reefer unit id\"]}"
+              }
+            ]
+          },
+          {
+            "name": "un_location_code",
+            "sourceColumn": "un_location_code",
+            "dataType": "string",
+            "description": "UN/LOCODE port where the container movement occurred.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"movement port code\"]}"
+              }
+            ]
+          },
+          {
+            "name": "transport_document_reference",
+            "sourceColumn": "transport_document_reference",
+            "dataType": "string",
+            "description": "DCSA eBL transport document reference covering the shipment.",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"ebl number\", \"bill of lading\"]}"
+              }
+            ]
+          },
+          {
+            "name": "journey_date",
+            "sourceColumn": "journey_date",
+            "dataType": "dateTime",
+            "description": "Calendar date of the container journey milestone.",
+            "formatString": "yyyy-mm-dd",
+            "annotations": [
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"container move date\"]}"
+              }
+            ]
+          },
+          {
+            "name": "excursion_flag_int",
+            "sourceColumn": "excursion_flag_int",
+            "dataType": "int64",
+            "description": "Binary thermal excursion flag (1 = reefer excursion observed, 0 = within bounds)."
+          },
+          {
+            "name": "dwell_hours",
+            "sourceColumn": "dwell_hours",
+            "dataType": "double",
+            "description": "Terminal dwell duration in hours from discharge/gate-in to gate-out/load."
+          }
+        ],
+        "description": "Curated Gold container journey and reefer IoT thermal excursion dataset.",
+        "partitions": [
+          {
+            "name": "mv_container_journey_kpis",
+            "mode": "directLake",
+            "source": {
+              "type": "entity",
+              "entityName": "gold_container_journey_reefer",
+              "schemaName": "gold_dcsa",
+              "expressionSource": "DatabaseQuery"
+            }
+          }
+        ],
+        "annotations": [
+          {
+            "name": "OssieAIContext",
+            "value": "{\"instructions\": \"Measure cold-chain reefer excursions, dwell duration, moves, and active eBL volume.\", \"synonyms\": [\"container journey kpis\", \"reefer cold chain table\", \"shipment movement metrics\"]}"
+          }
+        ],
+        "measures": [
+          {
+            "name": "cold_chain_excursion_rate_pct",
+            "expression": "DIVIDE(SUM('mv_container_journey_kpis'[excursion_flag_int]), COUNTA('mv_container_journey_kpis'[journey_id]))",
+            "description": "Ratio of container moves experiencing a reefer cold-chain thermal excursion.",
+            "formatString": "0.0%",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "SUM(mv_container_journey_kpis.excursion_flag_int) / NULLIF(COUNT(mv_container_journey_kpis.journey_id), 0)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"excursion rate\", \"cold chain failure rate\", \"reefer breach pct\"]}"
+              }
+            ]
+          },
+          {
+            "name": "total_container_moves",
+            "expression": "COUNTA('mv_container_journey_kpis'[journey_id])",
+            "description": "Total number of tracked container journey records.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "COUNT(mv_container_journey_kpis.journey_id)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"container moves\", \"total boxes moved\"]}"
+              }
+            ]
+          },
+          {
+            "name": "reefer_excursion_count",
+            "expression": "SUM('mv_container_journey_kpis'[excursion_flag_int])",
+            "description": "Count of container journeys recording a reefer temperature excursion.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "SUM(mv_container_journey_kpis.excursion_flag_int)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"excursion count\", \"cold chain alarms\"]}"
+              }
+            ]
+          },
+          {
+            "name": "avg_dwell_hours",
+            "expression": "AVERAGE('mv_container_journey_kpis'[dwell_hours])",
+            "description": "Average container terminal dwell time in hours.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "AVG(mv_container_journey_kpis.dwell_hours)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"mean container dwell\", \"average yard stay\"]}"
+              }
+            ]
+          },
+          {
+            "name": "active_ebl_count",
+            "expression": "DISTINCTCOUNTNOBLANK('mv_container_journey_kpis'[transport_document_reference])",
+            "description": "Count of distinct active eBL transport documents in container journeys.",
+            "annotations": [
+              {
+                "name": "OssieExpressionDialect",
+                "value": "OSSIE_SQL_2026"
+              },
+              {
+                "name": "OssieExpression",
+                "value": "COUNT(DISTINCT mv_container_journey_kpis.transport_document_reference)"
+              },
+              {
+                "name": "OssieAIContext",
+                "value": "{\"synonyms\": [\"distinct ebl count\", \"active bills of lading\"]}"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "expressions": [
+      {
+        "name": "DatabaseQuery",
+        "kind": "m",
+        "expression": [
+          "let",
+          "    Source = AzureStorage.DataLake(\"https://onelake.dfs.fabric.microsoft.com/00000000-0000-0000-0000-000000000000/00000000-0000-0000-0000-000000000000\")",
+          "in",
+          "    Source"
+        ]
+      }
+    ],
+    "description": "Tasman Container Line (TCL) DCSA operational semantic model unifying port call reliability and cold-chain reefer telemetry across Databricks Unity Catalog Metric Views and Power BI Semantic Models.\n",
+    "relationships": [
+      {
+        "name": "container_journey_to_port_call",
+        "fromTable": "mv_container_journey_kpis",
+        "fromColumn": "port_call_id",
+        "toTable": "mv_port_call_kpis",
+        "toColumn": "port_call_id"
+      }
+    ],
+    "culture": "en-US",
+    "annotations": [
+      {
+        "name": "OssieAIContext",
+        "value": "{\"examples\": [\"What is the schedule reliability percentage by port?\", \"How many reefer cold-chain excursions occurred across active journeys?\", \"What is average port turnaround time and berth wait hours by vessel?\"], \"instructions\": \"Use mv_port_call_kpis for vessel schedule reliability, turnaround hours, and berth wait analysis, and mv_container_journey_kpis for reefer excursion monitoring, container moves, dwell time, and active eBL document counts. Join on port_call_id when correlating port delays with cold-chain excursions.\\n\", \"synonyms\": [\"DCSA Operations Semantic Layer\", \"Tasman Container Line KPIs\", \"Port Call & Cold-Chain Model\"]}"
+      }
+    ]
+  }
+}

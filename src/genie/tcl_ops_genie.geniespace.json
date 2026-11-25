@@ -1,0 +1,106 @@
+{
+  "version": 2,
+  "config": {
+    "sample_questions": [
+      {
+        "id": "01f10000000000000000000000000001",
+        "question": [
+          "What is fleet-wide schedule reliability percentage and average port turnaround hours by port?"
+        ]
+      },
+      {
+        "id": "01f10000000000000000000000000002",
+        "question": [
+          "What is the cold-chain reefer excursion rate and how many container moves experienced excursions?"
+        ]
+      },
+      {
+        "id": "01f10000000000000000000000000003",
+        "question": [
+          "How many active eBL transport documents and average container dwell hours do we have across Auckland and Tauranga?"
+        ]
+      }
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "identifier": "workspace.gold_dcsa.gold_container_journey_reefer"
+      },
+      {
+        "identifier": "workspace.gold_dcsa.gold_port_call_performance"
+      }
+    ],
+    "metric_views": [
+      {
+        "identifier": "workspace.gold_dcsa.mv_container_journey_kpis"
+      },
+      {
+        "identifier": "workspace.gold_dcsa.mv_port_call_kpis"
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [
+      {
+        "id": "01f10000000000000000000000000010",
+        "content": [
+          "Always query mv_port_call_kpis using MEASURE(...) for schedule reliability, port turnaround, and berth wait metrics, and mv_container_journey_kpis using MEASURE(...) for cold-chain excursion rate, container moves, dwell hours, and active eBL count. Join mv_container_journey_kpis and mv_port_call_kpis on port_call_id when correlating port delays with reefer excursions."
+        ]
+      }
+    ],
+    "sql_snippets": {
+      "filters": [
+        {
+          "id": "01f10000000000000000000000000020",
+          "sql": [
+            "un_location_code IN ('NZAKL', 'NZTRG', 'NZLYT')"
+          ],
+          "display_name": "New Zealand Ports",
+          "synonyms": [
+            "NZ ports",
+            "New Zealand terminals"
+          ]
+        }
+      ],
+      "expressions": [
+        {
+          "id": "01f10000000000000000000000000030",
+          "sql": [
+            "DATE_TRUNC('MONTH', call_date)"
+          ],
+          "display_name": "Port Call Month",
+          "alias": "call_month"
+        }
+      ],
+      "measures": [
+        {
+          "id": "01f10000000000000000000000000040",
+          "sql": [
+            "MEASURE(mv_port_call_kpis.schedule_reliability_pct)"
+          ],
+          "display_name": "Schedule Reliability %",
+          "alias": "schedule_reliability_pct",
+          "synonyms": [
+            "on time performance",
+            "otp",
+            "schedule reliability"
+          ]
+        },
+        {
+          "id": "01f10000000000000000000000000041",
+          "sql": [
+            "MEASURE(mv_container_journey_kpis.cold_chain_excursion_rate_pct)"
+          ],
+          "display_name": "Cold-Chain Excursion Rate %",
+          "alias": "cold_chain_excursion_rate_pct",
+          "synonyms": [
+            "excursion rate",
+            "cold chain failure rate",
+            "reefer alarm rate"
+          ]
+        }
+      ]
+    }
+  }
+}

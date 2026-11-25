@@ -1,0 +1,266 @@
+apiVersion: v3.1.0
+kind: DataContract
+id: tcl-reeferpulse-iot-telemetry
+name: TCL ReeferPulse IoT Container Telemetry
+version: 2.0.0
+status: active
+domain: maritime-dcsa-logistics
+dataProduct: tcl-reeferpulse-iot-telemetry
+description:
+  purpose: Governed DCSA T&T v3.0.0 refrigerated container telemetry stream curated in Silver
+    enforcing physical thermal and GPS bounds.
+  usage: Auto-compiled from models/linkml/dcsa/dcsa_enterprise.yaml via tcl_compiler.compile_dcsa;
+    do not edit generated schema blocks by hand.
+servers:
+- server: databricks_lakehouse
+  type: databricks
+  catalog: tcl_lakehouse
+  schema: silver_dcsa
+team:
+  name: TCL DCSA Data Architecture
+  members:
+  - username: tcl-data-platform
+    name: TCL Data Platform Engineering
+    role: owner
+slaProperties:
+- property: latency
+  value: '5'
+  unit: minutes
+  description: Maximum allowed end-to-end ingestion freshness SLA.
+schema:
+- name: silver_reeferpulse_iot_telemetry
+  physicalName: silver_reeferpulse_iot_telemetry
+  physicalType: table
+  description: DCSA Track & Trace v3.0.0 refrigerated container IoT telemetry packet
+    with physical safety bounds.
+  properties:
+  - name: reading_id
+    logicalType: string
+    physicalType: STRING
+    description: Unique telemetry packet identifier emitted by the reefer modem.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: equipment_reference
+    logicalType: string
+    physicalType: STRING
+    description: ISO 6346 identifier of the monitored reefer container.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{4}[0-9]{7}$
+  - name: recorded_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp recorded by the reefer sensor controller.
+    required: true
+    classification: internal
+  - name: setpoint_temp_c
+    logicalType: integer
+    physicalType: INT
+    description: Target cargo setpoint temperature in degrees Celsius (-40C to +30C).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: -40.0
+      maximum: 30.0
+  - name: return_air_temp_c
+    logicalType: number
+    physicalType: DOUBLE
+    description: Return air probe temperature in degrees Celsius (-45C to +60C); rejects
+      sensor faults such as -99C.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: -45.0
+      maximum: 60.0
+  - name: relative_humidity_pct
+    logicalType: number
+    physicalType: DOUBLE
+    description: Cargo chamber relative humidity percentage (0 to 100).
+    required: false
+    classification: internal
+    logicalTypeOptions:
+      minimum: 0.0
+      maximum: 100.0
+  - name: power_status
+    logicalType: string
+    physicalType: STRING
+    description: Reefer compressor/power supply state (ON, OFF, ALARM, DEFROST, UNKNOWN).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(ON|OFF|ALARM|DEFROST|UNKNOWN)$
+  - name: latitude
+    logicalType: number
+    physicalType: DOUBLE
+    description: GPS latitude reported with the telemetry reading (-90 to +90).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: -90.0
+      maximum: 90.0
+  - name: longitude
+    logicalType: number
+    physicalType: DOUBLE
+    description: GPS longitude reported with the telemetry reading (-180 to +180).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: -180.0
+      maximum: 180.0
+  - name: excursion_flag
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: True when supply or return temperature breached cold-chain tolerance
+      bands.
+    required: true
+    classification: internal
+  quality:
+  - name: reeferpulse_iot_telemetry_reading_id_not_null
+    type: sql
+    description: reading_id must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (reading_id IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_equipment_reference_not_null
+    type: sql
+    description: equipment_reference must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (equipment_reference
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_equipment_reference_pattern
+    type: sql
+    description: equipment_reference must match regex ^[A-Z]{4}[0-9]{7}$.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (equipment_reference
+      RLIKE '^[A-Z]{4}[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_recorded_at_not_null
+    type: sql
+    description: recorded_at must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (recorded_at IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_setpoint_temp_c_not_null
+    type: sql
+    description: setpoint_temp_c must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (setpoint_temp_c
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_setpoint_temp_c_min_bound
+    type: sql
+    description: setpoint_temp_c must be >= -40.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (setpoint_temp_c
+      >= -40.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_setpoint_temp_c_max_bound
+    type: sql
+    description: setpoint_temp_c must be <= 30.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (setpoint_temp_c
+      <= 30.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_return_air_temp_c_not_null
+    type: sql
+    description: return_air_temp_c must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (return_air_temp_c
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_return_air_temp_c_min_bound
+    type: sql
+    description: return_air_temp_c must be >= -45.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (return_air_temp_c
+      >= -45.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_return_air_temp_c_max_bound
+    type: sql
+    description: return_air_temp_c must be <= 60.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (return_air_temp_c
+      <= 60.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_relative_humidity_pct_min_bound
+    type: sql
+    description: relative_humidity_pct must be >= 0.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT ((relative_humidity_pct
+      IS NULL OR relative_humidity_pct >= 0.0))
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_relative_humidity_pct_max_bound
+    type: sql
+    description: relative_humidity_pct must be <= 100.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT ((relative_humidity_pct
+      IS NULL OR relative_humidity_pct <= 100.0))
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_power_status_not_null
+    type: sql
+    description: power_status must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (power_status
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_power_status_enum_values
+    type: sql
+    description: power_status must belong to DCSA enum PowerStatus.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (power_status
+      IN ('ON', 'OFF', 'ALARM', 'DEFROST', 'UNKNOWN'))
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_latitude_not_null
+    type: sql
+    description: latitude must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (latitude IS NOT
+      NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_latitude_min_bound
+    type: sql
+    description: latitude must be >= -90.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (latitude >= -90.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_latitude_max_bound
+    type: sql
+    description: latitude must be <= 90.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (latitude <= 90.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_longitude_not_null
+    type: sql
+    description: longitude must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (longitude IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_longitude_min_bound
+    type: sql
+    description: longitude must be >= -180.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (longitude >=
+      -180.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_longitude_max_bound
+    type: sql
+    description: longitude must be <= 180.0.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (longitude <=
+      180.0)
+    mustBe: 0
+    severity: error
+  - name: reeferpulse_iot_telemetry_excursion_flag_not_null
+    type: sql
+    description: excursion_flag must not be NULL on bronze_dcsa.reeferpulse_iot_telemetry.
+    query: SELECT COUNT(*) FROM reeferpulse_iot_telemetry WHERE NOT (excursion_flag
+      IS NOT NULL)
+    mustBe: 0
+    severity: error

@@ -1,0 +1,169 @@
+id: https://tasmancontainerline.example/linkml/dcsa/ebl/v3
+name: dcsa_ebl_v3
+title: DCSA eBL, Booking, and Operational Vessel Schedules (OVS) Domain Model
+description: Transport documents (with PII governance annotations), shipment events, bookings, and OVS carrier schedules.
+version: 3.0.0
+prefixes:
+  dcsa_ebl: https://tasmancontainerline.example/linkml/dcsa/ebl/v3/
+  dcsa_common: https://tasmancontainerline.example/linkml/dcsa/common/
+  linkml: https://w3id.org/linkml/
+default_prefix: dcsa_ebl
+default_range: string
+imports:
+  - linkml:types
+  - dcsa_common
+
+classes:
+  TransportDocument:
+    description: DCSA Electronic Bill of Lading (eBL v3) transport document master record.
+    attributes:
+      transport_document_reference:
+        range: string
+        identifier: true
+        required: true
+        description: Unique transport document / Bill of Lading reference number.
+      carrier_booking_reference:
+        range: string
+        required: true
+        description: Associated DCSA carrier booking reference.
+      document_status:
+        range: ShipmentEventTypeCode
+        required: true
+        description: Current DCSA eBL workflow state (e.g., DRFT, APPR, ISSU, SURR).
+      issue_date:
+        range: date
+        required: true
+        description: Date the transport document was issued or drafted.
+      shipper_name:
+        range: string
+        required: true
+        description: Legal commercial shipper organization name.
+      shipper_contact_email:
+        range: string
+        required: true
+        pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+        description: Shipper primary contact email address (governed PII attribute).
+        annotations:
+          pii: "true"
+          pii_category: direct_identifier
+          classification: confidential
+      consignee_name:
+        range: string
+        required: true
+        description: Designated consignee party name (governed PII attribute).
+        annotations:
+          pii: "true"
+          pii_category: party_name
+          classification: confidential
+      port_of_loading:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port of loading.
+      port_of_discharge:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port of discharge.
+      vessel_imo_number:
+        range: string
+        pattern: "^[0-9]{7}$"
+        description: 7-digit IMO number of the primary ocean vessel.
+
+  ShipmentEvent:
+    mixins:
+      - AuditableEvent
+    description: DCSA ShipmentEvent tracking booking and eBL document approval, issuance, and surrender transitions.
+    attributes:
+      shipment_event_type_code:
+        range: ShipmentEventTypeCode
+        required: true
+        description: DCSA shipment status transition code.
+      document_type_code:
+        range: string
+        required: true
+        pattern: "^(CBR|BKG|SHI|SRM|TRD|ARN|VGM|CAS|CUS|DGD|OOG)$"
+        description: DCSA document type code (e.g., TRD for Transport Document, CBR for Carrier Booking).
+      document_id:
+        range: string
+        required: true
+        description: Identifier of the referenced TransportDocument or BookingRecord.
+      reason:
+        range: string
+        description: Optional status change note or rejection reason.
+
+  BookingRecord:
+    description: DCSA Booking v2 freight booking request and confirmation record.
+    attributes:
+      carrier_booking_reference:
+        range: string
+        identifier: true
+        required: true
+        description: Unique carrier booking reference identifier.
+      booking_status:
+        range: ShipmentEventTypeCode
+        required: true
+        description: Current DCSA booking lifecycle status.
+      booking_created_at:
+        range: datetime
+        required: true
+        description: UTC timestamp when booking was created.
+      place_of_receipt:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE origin place of receipt.
+      place_of_delivery:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE destination place of delivery.
+      teu_count:
+        range: integer
+        required: true
+        minimum_value: 1
+        maximum_value: 25000
+        description: Booked capacity in Twenty-foot Equivalent Units (1 to 25000).
+      reefer_required:
+        range: boolean
+        required: true
+        description: True when refrigerated containers are required for the booking.
+
+  CarrierSchedule:
+    description: DCSA Operational Vessel Schedules (OVS) proforma and planned port call schedule.
+    attributes:
+      schedule_id:
+        range: string
+        identifier: true
+        required: true
+        description: Unique vessel schedule port call slot identifier.
+      vessel_imo_number:
+        range: string
+        required: true
+        pattern: "^[0-9]{7}$"
+        description: 7-digit IMO vessel identifier.
+      vessel_name:
+        range: string
+        required: true
+        description: Registered commercial vessel name.
+      carrier_service_code:
+        range: string
+        required: true
+        description: Tasman trade lane service loop code (e.g., TASMAN-EXPRESS).
+      carrier_voyage_number:
+        range: string
+        required: true
+        description: Planned operational voyage code.
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: Scheduled UN/LOCODE port of call.
+      planned_arrival_utc:
+        range: datetime
+        required: true
+        description: Scheduled baseline arrival timestamp in UTC.
+      planned_departure_utc:
+        range: datetime
+        required: true
+        description: Scheduled baseline departure timestamp in UTC.

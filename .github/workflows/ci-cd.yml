@@ -1,0 +1,87 @@
+name: TCL DCSA CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Model, Contract, Semantic & Unit Test Gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python 3.12 and sync dependencies
+        run: |
+          uv python install 3.12
+          uv sync
+
+      - name: Lint Python codebase (ruff)
+        run: uv run ruff check .
+
+      - name: Re-compile LinkML DCSA models and verify zero drift
+        run: |
+          uv run python -m tcl_compiler.compile_dcsa
+          git diff --exit-code generated contracts
+
+      - name: Lint all 5 ODCS v3.1.0 contracts
+        run: |
+          set -e
+          for contract in contracts/odcs/*.odcs.yaml; do
+            echo "Linting $contract"
+            uv run datacontract lint "$contract"
+          done
+
+      - name: Verify breaking-change detection gate
+        run: |
+          set -e
+          if uv run datacontract breaking \
+            contracts/odcs/reeferpulse_iot_telemetry.odcs.yaml \
+            tests/fixtures/reeferpulse_iot_telemetry_breaking.odcs.yaml; then
+            echo "ERROR: Expected breaking check to fail on breaking fixture"
+            exit 1
+          fi
+          echo "Breaking-change detector flagged schema breakage as expected."
+
+      - name: Compile Apache Ossie semantic spine (Databricks + Power BI)
+        run: |
+          uv run python -m tcl_compiler.compile_semantic
+          git diff --exit-code generated
+
+      - name: Run full pytest suite
+        run: uv run pytest -v
+
+  cd-databricks:
+    name: Deploy Databricks Asset Bundle (dev)
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate and deploy bundle when workspace secrets are configured
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          set -e
+          if [[ -z "${DATABRICKS_HOST}" || -z "${DATABRICKS_TOKEN}" ]]; then
+            echo "[cd-databricks] DATABRICKS_HOST / DATABRICKS_TOKEN not configured; skipping live deploy."
+            exit 0
+          fi
+          databricks bundle validate -t dev
+          databricks bundle deploy -t dev

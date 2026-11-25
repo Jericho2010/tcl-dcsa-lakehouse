@@ -1,0 +1,18 @@
+resources:
+  pipelines:
+    dcsa_medallion_pipeline:
+      name: dcsa_medallion_pipeline
+      catalog: ${var.catalog}
+      schema: silver_dcsa
+      serverless: true
+      channel: CURRENT
+      configuration:
+        tcl.catalog: ${var.catalog}
+        tcl.ingestion_mode: ${var.ingestion_mode}
+      libraries:
+        - file:
+            path: ../src/pipelines/dcsa_medallion/bronze_ingestion.py
+        - file:
+            path: ../src/pipelines/dcsa_medallion/silver_conformance.py
+        - file:
+            path: ../src/pipelines/dcsa_medallion/gold_marts.py

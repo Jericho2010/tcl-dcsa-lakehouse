@@ -1,0 +1,242 @@
+apiVersion: v3.1.0
+kind: DataContract
+id: tcl-gold-dcsa-port-call-kpis
+name: TCL Gold DCSA Port Call Performance KPIs
+version: 1.0.0
+status: active
+domain: maritime-dcsa-logistics
+dataProduct: tcl-gold-dcsa-port-call-kpis
+description:
+  purpose: Curated Gold port call turnaround, berth wait time, and schedule reliability
+    contract consumed by analytics and AI agents.
+  usage: Auto-compiled from models/linkml/dcsa/dcsa_enterprise.yaml via tcl_compiler.compile_dcsa;
+    do not edit generated schema blocks by hand.
+servers:
+- server: databricks_lakehouse
+  type: databricks
+  catalog: tcl_lakehouse
+  schema: gold_dcsa
+team:
+  name: TCL DCSA Data Architecture
+  members:
+  - username: tcl-data-platform
+    name: TCL Data Platform Engineering
+    role: owner
+slaProperties:
+- property: latency
+  value: '60'
+  unit: minutes
+  description: Maximum allowed end-to-end ingestion freshness SLA.
+schema:
+- name: gold_port_call_performance
+  physicalName: gold_port_call_performance
+  physicalType: table
+  description: Curated Gold analytical dataset summarizing port call turnaround, berth
+    wait time, and schedule reliability per port call.
+  properties:
+  - name: port_call_id
+    logicalType: string
+    physicalType: STRING
+    description: Canonical port call primary key matching silver_port_call_turnaround.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: vessel_imo_number
+    logicalType: string
+    physicalType: STRING
+    description: 7-digit IMO ship identification number.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9]{7}$
+  - name: vessel_name
+    logicalType: string
+    physicalType: STRING
+    description: Vessel name for operational reporting.
+    required: true
+    classification: internal
+  - name: carrier_voyage_number
+    logicalType: string
+    physicalType: STRING
+    description: Operational carrier voyage identifier.
+    required: true
+    classification: internal
+  - name: un_location_code
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port identifier.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: port_name
+    logicalType: string
+    physicalType: STRING
+    description: Normalized port name.
+    required: true
+    classification: internal
+  - name: call_date
+    logicalType: date
+    physicalType: DATE
+    description: Port call arrival calendar date.
+    required: true
+    classification: internal
+  - name: on_time_flag
+    logicalType: integer
+    physicalType: BIGINT
+    description: Binary schedule reliability indicator (1 = arrived within OVS SLA
+      window, 0 = delayed).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: 0
+      maximum: 1
+  - name: port_turnaround_hours
+    logicalType: number
+    physicalType: DOUBLE
+    description: Total elapsed hours between Pilot Boarding Place arrival and berth
+      departure.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: 0.0
+      maximum: 720.0
+  - name: berth_wait_hours
+    logicalType: number
+    physicalType: DOUBLE
+    description: Elapsed anchorage/wait hours between Pilot Boarding Place arrival
+      and berth all-fast.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: 0.0
+      maximum: 720.0
+  quality:
+  - name: gold_port_call_performance_port_call_id_not_null
+    type: sql
+    description: port_call_id must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (port_call_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_vessel_imo_number_not_null
+    type: sql
+    description: vessel_imo_number must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (vessel_imo_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_vessel_imo_number_pattern
+    type: sql
+    description: vessel_imo_number must match regex ^[0-9]{7}$.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (vessel_imo_number
+      RLIKE '^[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_vessel_name_not_null
+    type: sql
+    description: vessel_name must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (vessel_name
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_carrier_voyage_number_not_null
+    type: sql
+    description: carrier_voyage_number must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (carrier_voyage_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_un_location_code_not_null
+    type: sql
+    description: un_location_code must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (un_location_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_un_location_code_pattern
+    type: sql
+    description: un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (un_location_code
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_port_name_not_null
+    type: sql
+    description: port_name must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (port_name IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_call_date_not_null
+    type: sql
+    description: call_date must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (call_date IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_on_time_flag_not_null
+    type: sql
+    description: on_time_flag must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (on_time_flag
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_on_time_flag_min_bound
+    type: sql
+    description: on_time_flag must be >= 0.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (on_time_flag
+      >= 0)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_on_time_flag_max_bound
+    type: sql
+    description: on_time_flag must be <= 1.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (on_time_flag
+      <= 1)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_port_turnaround_hours_not_null
+    type: sql
+    description: port_turnaround_hours must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (port_turnaround_hours
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_port_turnaround_hours_min_bound
+    type: sql
+    description: port_turnaround_hours must be >= 0.0.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (port_turnaround_hours
+      >= 0.0)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_port_turnaround_hours_max_bound
+    type: sql
+    description: port_turnaround_hours must be <= 720.0.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (port_turnaround_hours
+      <= 720.0)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_berth_wait_hours_not_null
+    type: sql
+    description: berth_wait_hours must not be NULL on gold_dcsa.gold_port_call_performance.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (berth_wait_hours
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_berth_wait_hours_min_bound
+    type: sql
+    description: berth_wait_hours must be >= 0.0.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (berth_wait_hours
+      >= 0.0)
+    mustBe: 0
+    severity: error
+  - name: gold_port_call_performance_berth_wait_hours_max_bound
+    type: sql
+    description: berth_wait_hours must be <= 720.0.
+    query: SELECT COUNT(*) FROM gold_port_call_performance WHERE NOT (berth_wait_hours
+      <= 720.0)
+    mustBe: 0
+    severity: error

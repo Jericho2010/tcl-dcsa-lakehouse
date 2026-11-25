@@ -1,0 +1,1034 @@
+{
+  "silver_dcsa.silver_portgate_equipment_events": {
+    "schema": "silver_dcsa",
+    "table": "silver_portgate_equipment_events",
+    "class_name": "EquipmentEvent",
+    "rules": [
+      {
+        "name": "equipment_event_type_code_not_null",
+        "column": "equipment_event_type_code",
+        "sql": "equipment_event_type_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "equipment_event_type_code must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "equipment_event_type_code_enum_values",
+        "column": "equipment_event_type_code",
+        "sql": "equipment_event_type_code IN ('LOAD', 'DISC', 'GTIN', 'GTOT', 'STUF', 'STRP', 'PICK', 'DROP', 'INSP', 'RSEA', 'RMVD')",
+        "action": "drop",
+        "source_rule": "enum:EquipmentEventTypeCode",
+        "description": "equipment_event_type_code must belong to DCSA enum EquipmentEventTypeCode."
+      },
+      {
+        "name": "equipment_reference_not_null",
+        "column": "equipment_reference",
+        "sql": "equipment_reference IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "equipment_reference must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "equipment_reference_pattern",
+        "column": "equipment_reference",
+        "sql": "equipment_reference RLIKE '^[A-Z]{4}[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{4}[0-9]{7}$",
+        "description": "equipment_reference must match regex ^[A-Z]{4}[0-9]{7}$."
+      },
+      {
+        "name": "iso_equipment_code_not_null",
+        "column": "iso_equipment_code",
+        "sql": "iso_equipment_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "iso_equipment_code must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "iso_equipment_code_pattern",
+        "column": "iso_equipment_code",
+        "sql": "iso_equipment_code RLIKE '^[0-9A-Z]{4}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9A-Z]{4}$",
+        "description": "iso_equipment_code must match regex ^[0-9A-Z]{4}$."
+      },
+      {
+        "name": "empty_indicator_code_not_null",
+        "column": "empty_indicator_code",
+        "sql": "empty_indicator_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "empty_indicator_code must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "empty_indicator_code_pattern",
+        "column": "empty_indicator_code",
+        "sql": "empty_indicator_code RLIKE '^(EMPTY|LADEN)$'",
+        "action": "drop",
+        "source_rule": "pattern:^(EMPTY|LADEN)$",
+        "description": "empty_indicator_code must match regex ^(EMPTY|LADEN)$."
+      },
+      {
+        "name": "un_location_code_not_null",
+        "column": "un_location_code",
+        "sql": "un_location_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "un_location_code must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "un_location_code_pattern",
+        "column": "un_location_code",
+        "sql": "un_location_code RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "event_id_not_null",
+        "column": "event_id",
+        "sql": "event_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "event_id must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "event_created_date_time_not_null",
+        "column": "event_created_date_time",
+        "sql": "event_created_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_created_date_time must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "event_date_time_not_null",
+        "column": "event_date_time",
+        "sql": "event_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_date_time must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "event_classifier_code_not_null",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_classifier_code must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      },
+      {
+        "name": "event_classifier_code_enum_values",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IN ('PLN', 'ACT', 'EST')",
+        "action": "drop",
+        "source_rule": "enum:EventClassifierCode",
+        "description": "event_classifier_code must belong to DCSA enum EventClassifierCode."
+      },
+      {
+        "name": "source_system_not_null",
+        "column": "source_system",
+        "sql": "source_system IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "source_system must not be NULL on silver_dcsa.silver_portgate_equipment_events."
+      }
+    ]
+  },
+  "silver_dcsa.silver_portgate_transport_events": {
+    "schema": "silver_dcsa",
+    "table": "silver_portgate_transport_events",
+    "class_name": "TransportEvent",
+    "rules": [
+      {
+        "name": "transport_event_type_code_not_null",
+        "column": "transport_event_type_code",
+        "sql": "transport_event_type_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "transport_event_type_code must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "transport_event_type_code_enum_values",
+        "column": "transport_event_type_code",
+        "sql": "transport_event_type_code IN ('ARRI', 'DEPA')",
+        "action": "drop",
+        "source_rule": "enum:TransportEventTypeCode",
+        "description": "transport_event_type_code must belong to DCSA enum TransportEventTypeCode."
+      },
+      {
+        "name": "transport_call_id_not_null",
+        "column": "transport_call_id",
+        "sql": "transport_call_id IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "transport_call_id must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "vessel_imo_number_not_null",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_imo_number must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "vessel_imo_number_pattern",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number RLIKE '^[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9]{7}$",
+        "description": "vessel_imo_number must match regex ^[0-9]{7}$."
+      },
+      {
+        "name": "carrier_voyage_number_not_null",
+        "column": "carrier_voyage_number",
+        "sql": "carrier_voyage_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_voyage_number must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "un_location_code_not_null",
+        "column": "un_location_code",
+        "sql": "un_location_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "un_location_code must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "un_location_code_pattern",
+        "column": "un_location_code",
+        "sql": "un_location_code RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "event_id_not_null",
+        "column": "event_id",
+        "sql": "event_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "event_id must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "event_created_date_time_not_null",
+        "column": "event_created_date_time",
+        "sql": "event_created_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_created_date_time must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "event_date_time_not_null",
+        "column": "event_date_time",
+        "sql": "event_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_date_time must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "event_classifier_code_not_null",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_classifier_code must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      },
+      {
+        "name": "event_classifier_code_enum_values",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IN ('PLN', 'ACT', 'EST')",
+        "action": "drop",
+        "source_rule": "enum:EventClassifierCode",
+        "description": "event_classifier_code must belong to DCSA enum EventClassifierCode."
+      },
+      {
+        "name": "source_system_not_null",
+        "column": "source_system",
+        "sql": "source_system IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "source_system must not be NULL on silver_dcsa.silver_portgate_transport_events."
+      }
+    ]
+  },
+  "silver_dcsa.silver_reeferpulse_iot_telemetry": {
+    "schema": "silver_dcsa",
+    "table": "silver_reeferpulse_iot_telemetry",
+    "class_name": "ReeferTelemetryReading",
+    "rules": [
+      {
+        "name": "reading_id_not_null",
+        "column": "reading_id",
+        "sql": "reading_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "reading_id must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "equipment_reference_not_null",
+        "column": "equipment_reference",
+        "sql": "equipment_reference IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "equipment_reference must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "equipment_reference_pattern",
+        "column": "equipment_reference",
+        "sql": "equipment_reference RLIKE '^[A-Z]{4}[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{4}[0-9]{7}$",
+        "description": "equipment_reference must match regex ^[A-Z]{4}[0-9]{7}$."
+      },
+      {
+        "name": "recorded_at_not_null",
+        "column": "recorded_at",
+        "sql": "recorded_at IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "recorded_at must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "setpoint_temp_c_not_null",
+        "column": "setpoint_temp_c",
+        "sql": "setpoint_temp_c IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "setpoint_temp_c must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "setpoint_temp_c_min_bound",
+        "column": "setpoint_temp_c",
+        "sql": "setpoint_temp_c >= -40.0",
+        "action": "drop",
+        "source_rule": "minimum_value:-40.0",
+        "description": "setpoint_temp_c must be >= -40.0."
+      },
+      {
+        "name": "setpoint_temp_c_max_bound",
+        "column": "setpoint_temp_c",
+        "sql": "setpoint_temp_c <= 30.0",
+        "action": "drop",
+        "source_rule": "maximum_value:30.0",
+        "description": "setpoint_temp_c must be <= 30.0."
+      },
+      {
+        "name": "supply_air_temp_c_not_null",
+        "column": "supply_air_temp_c",
+        "sql": "supply_air_temp_c IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "supply_air_temp_c must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "supply_air_temp_c_min_bound",
+        "column": "supply_air_temp_c",
+        "sql": "supply_air_temp_c >= -45.0",
+        "action": "drop",
+        "source_rule": "minimum_value:-45.0",
+        "description": "supply_air_temp_c must be >= -45.0."
+      },
+      {
+        "name": "supply_air_temp_c_max_bound",
+        "column": "supply_air_temp_c",
+        "sql": "supply_air_temp_c <= 60.0",
+        "action": "drop",
+        "source_rule": "maximum_value:60.0",
+        "description": "supply_air_temp_c must be <= 60.0."
+      },
+      {
+        "name": "return_air_temp_c_not_null",
+        "column": "return_air_temp_c",
+        "sql": "return_air_temp_c IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "return_air_temp_c must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "return_air_temp_c_min_bound",
+        "column": "return_air_temp_c",
+        "sql": "return_air_temp_c >= -45.0",
+        "action": "drop",
+        "source_rule": "minimum_value:-45.0",
+        "description": "return_air_temp_c must be >= -45.0."
+      },
+      {
+        "name": "return_air_temp_c_max_bound",
+        "column": "return_air_temp_c",
+        "sql": "return_air_temp_c <= 60.0",
+        "action": "drop",
+        "source_rule": "maximum_value:60.0",
+        "description": "return_air_temp_c must be <= 60.0."
+      },
+      {
+        "name": "relative_humidity_pct_min_bound",
+        "column": "relative_humidity_pct",
+        "sql": "(relative_humidity_pct IS NULL OR relative_humidity_pct >= 0.0)",
+        "action": "drop",
+        "source_rule": "minimum_value:0.0",
+        "description": "relative_humidity_pct must be >= 0.0."
+      },
+      {
+        "name": "relative_humidity_pct_max_bound",
+        "column": "relative_humidity_pct",
+        "sql": "(relative_humidity_pct IS NULL OR relative_humidity_pct <= 100.0)",
+        "action": "drop",
+        "source_rule": "maximum_value:100.0",
+        "description": "relative_humidity_pct must be <= 100.0."
+      },
+      {
+        "name": "power_status_not_null",
+        "column": "power_status",
+        "sql": "power_status IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "power_status must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "power_status_enum_values",
+        "column": "power_status",
+        "sql": "power_status IN ('ON', 'OFF', 'ALARM', 'DEFROST', 'UNKNOWN')",
+        "action": "drop",
+        "source_rule": "enum:PowerStatus",
+        "description": "power_status must belong to DCSA enum PowerStatus."
+      },
+      {
+        "name": "latitude_not_null",
+        "column": "latitude",
+        "sql": "latitude IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "latitude must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "latitude_min_bound",
+        "column": "latitude",
+        "sql": "latitude >= -90.0",
+        "action": "drop",
+        "source_rule": "minimum_value:-90.0",
+        "description": "latitude must be >= -90.0."
+      },
+      {
+        "name": "latitude_max_bound",
+        "column": "latitude",
+        "sql": "latitude <= 90.0",
+        "action": "drop",
+        "source_rule": "maximum_value:90.0",
+        "description": "latitude must be <= 90.0."
+      },
+      {
+        "name": "longitude_not_null",
+        "column": "longitude",
+        "sql": "longitude IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "longitude must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      },
+      {
+        "name": "longitude_min_bound",
+        "column": "longitude",
+        "sql": "longitude >= -180.0",
+        "action": "drop",
+        "source_rule": "minimum_value:-180.0",
+        "description": "longitude must be >= -180.0."
+      },
+      {
+        "name": "longitude_max_bound",
+        "column": "longitude",
+        "sql": "longitude <= 180.0",
+        "action": "drop",
+        "source_rule": "maximum_value:180.0",
+        "description": "longitude must be <= 180.0."
+      },
+      {
+        "name": "excursion_flag_not_null",
+        "column": "excursion_flag",
+        "sql": "excursion_flag IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "excursion_flag must not be NULL on silver_dcsa.silver_reeferpulse_iot_telemetry."
+      }
+    ]
+  },
+  "silver_dcsa.silver_dcsa_ebl_current": {
+    "schema": "silver_dcsa",
+    "table": "silver_dcsa_ebl_current",
+    "class_name": "TransportDocument",
+    "rules": [
+      {
+        "name": "transport_document_reference_not_null",
+        "column": "transport_document_reference",
+        "sql": "transport_document_reference IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "transport_document_reference must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "carrier_booking_reference_not_null",
+        "column": "carrier_booking_reference",
+        "sql": "carrier_booking_reference IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_booking_reference must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "document_status_not_null",
+        "column": "document_status",
+        "sql": "document_status IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "document_status must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "document_status_enum_values",
+        "column": "document_status",
+        "sql": "document_status IN ('RECE', 'DRFT', 'PENA', 'PENU', 'REJE', 'APPR', 'ISSU', 'SURR', 'SUBM', 'VOID', 'CONF', 'REQS', 'CMPL', 'HOLD', 'RELS')",
+        "action": "drop",
+        "source_rule": "enum:ShipmentEventTypeCode",
+        "description": "document_status must belong to DCSA enum ShipmentEventTypeCode."
+      },
+      {
+        "name": "issue_date_not_null",
+        "column": "issue_date",
+        "sql": "issue_date IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "issue_date must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "shipper_name_not_null",
+        "column": "shipper_name",
+        "sql": "shipper_name IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "shipper_name must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "shipper_contact_email_not_null",
+        "column": "shipper_contact_email",
+        "sql": "shipper_contact_email IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "shipper_contact_email must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "shipper_contact_email_pattern",
+        "column": "shipper_contact_email",
+        "sql": "shipper_contact_email RLIKE '^[^@\\\\s]+@[^@\\\\s]+\\\\.[^@\\\\s]+$'",
+        "action": "drop",
+        "source_rule": "pattern:^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+        "description": "shipper_contact_email must match regex ^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$."
+      },
+      {
+        "name": "consignee_name_not_null",
+        "column": "consignee_name",
+        "sql": "consignee_name IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "consignee_name must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "port_of_loading_not_null",
+        "column": "port_of_loading",
+        "sql": "port_of_loading IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "port_of_loading must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "port_of_loading_pattern",
+        "column": "port_of_loading",
+        "sql": "port_of_loading RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "port_of_loading must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "port_of_discharge_not_null",
+        "column": "port_of_discharge",
+        "sql": "port_of_discharge IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "port_of_discharge must not be NULL on silver_dcsa.silver_dcsa_ebl_current."
+      },
+      {
+        "name": "port_of_discharge_pattern",
+        "column": "port_of_discharge",
+        "sql": "port_of_discharge RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "port_of_discharge must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "vessel_imo_number_pattern",
+        "column": "vessel_imo_number",
+        "sql": "(vessel_imo_number IS NULL OR vessel_imo_number RLIKE '^[0-9]{7}$')",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9]{7}$",
+        "description": "vessel_imo_number must match regex ^[0-9]{7}$."
+      }
+    ]
+  },
+  "silver_dcsa.silver_voyagecore_bookings": {
+    "schema": "silver_dcsa",
+    "table": "silver_voyagecore_bookings",
+    "class_name": "BookingRecord",
+    "rules": [
+      {
+        "name": "carrier_booking_reference_not_null",
+        "column": "carrier_booking_reference",
+        "sql": "carrier_booking_reference IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "carrier_booking_reference must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "booking_status_not_null",
+        "column": "booking_status",
+        "sql": "booking_status IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "booking_status must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "booking_status_enum_values",
+        "column": "booking_status",
+        "sql": "booking_status IN ('RECE', 'DRFT', 'PENA', 'PENU', 'REJE', 'APPR', 'ISSU', 'SURR', 'SUBM', 'VOID', 'CONF', 'REQS', 'CMPL', 'HOLD', 'RELS')",
+        "action": "drop",
+        "source_rule": "enum:ShipmentEventTypeCode",
+        "description": "booking_status must belong to DCSA enum ShipmentEventTypeCode."
+      },
+      {
+        "name": "booking_created_at_not_null",
+        "column": "booking_created_at",
+        "sql": "booking_created_at IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "booking_created_at must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "place_of_receipt_not_null",
+        "column": "place_of_receipt",
+        "sql": "place_of_receipt IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "place_of_receipt must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "place_of_receipt_pattern",
+        "column": "place_of_receipt",
+        "sql": "place_of_receipt RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "place_of_receipt must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "place_of_delivery_not_null",
+        "column": "place_of_delivery",
+        "sql": "place_of_delivery IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "place_of_delivery must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "place_of_delivery_pattern",
+        "column": "place_of_delivery",
+        "sql": "place_of_delivery RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "place_of_delivery must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "teu_count_not_null",
+        "column": "teu_count",
+        "sql": "teu_count IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "teu_count must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      },
+      {
+        "name": "teu_count_min_bound",
+        "column": "teu_count",
+        "sql": "teu_count >= 1",
+        "action": "drop",
+        "source_rule": "minimum_value:1",
+        "description": "teu_count must be >= 1."
+      },
+      {
+        "name": "teu_count_max_bound",
+        "column": "teu_count",
+        "sql": "teu_count <= 25000",
+        "action": "drop",
+        "source_rule": "maximum_value:25000",
+        "description": "teu_count must be <= 25000."
+      },
+      {
+        "name": "reefer_required_not_null",
+        "column": "reefer_required",
+        "sql": "reefer_required IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "reefer_required must not be NULL on silver_dcsa.silver_voyagecore_bookings."
+      }
+    ]
+  },
+  "silver_dcsa.silver_voyagecore_carrier_schedules": {
+    "schema": "silver_dcsa",
+    "table": "silver_voyagecore_carrier_schedules",
+    "class_name": "CarrierSchedule",
+    "rules": [
+      {
+        "name": "schedule_id_not_null",
+        "column": "schedule_id",
+        "sql": "schedule_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "schedule_id must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "vessel_imo_number_not_null",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_imo_number must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "vessel_imo_number_pattern",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number RLIKE '^[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9]{7}$",
+        "description": "vessel_imo_number must match regex ^[0-9]{7}$."
+      },
+      {
+        "name": "vessel_name_not_null",
+        "column": "vessel_name",
+        "sql": "vessel_name IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_name must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "carrier_service_code_not_null",
+        "column": "carrier_service_code",
+        "sql": "carrier_service_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_service_code must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "carrier_voyage_number_not_null",
+        "column": "carrier_voyage_number",
+        "sql": "carrier_voyage_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_voyage_number must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "un_location_code_not_null",
+        "column": "un_location_code",
+        "sql": "un_location_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "un_location_code must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "un_location_code_pattern",
+        "column": "un_location_code",
+        "sql": "un_location_code RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "planned_arrival_utc_not_null",
+        "column": "planned_arrival_utc",
+        "sql": "planned_arrival_utc IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "planned_arrival_utc must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      },
+      {
+        "name": "planned_departure_utc_not_null",
+        "column": "planned_departure_utc",
+        "sql": "planned_departure_utc IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "planned_departure_utc must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules."
+      }
+    ]
+  },
+  "silver_dcsa.silver_harboursync_jit_port_calls": {
+    "schema": "silver_dcsa",
+    "table": "silver_harboursync_jit_port_calls",
+    "class_name": "PortCallTimestamp",
+    "rules": [
+      {
+        "name": "port_call_id_not_null",
+        "column": "port_call_id",
+        "sql": "port_call_id IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "port_call_id must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "vessel_imo_number_not_null",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_imo_number must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "vessel_imo_number_pattern",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number RLIKE '^[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9]{7}$",
+        "description": "vessel_imo_number must match regex ^[0-9]{7}$."
+      },
+      {
+        "name": "carrier_voyage_number_not_null",
+        "column": "carrier_voyage_number",
+        "sql": "carrier_voyage_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_voyage_number must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "un_location_code_not_null",
+        "column": "un_location_code",
+        "sql": "un_location_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "un_location_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "un_location_code_pattern",
+        "column": "un_location_code",
+        "sql": "un_location_code RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "jit_phase_code_not_null",
+        "column": "jit_phase_code",
+        "sql": "jit_phase_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "jit_phase_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "jit_phase_code_enum_values",
+        "column": "jit_phase_code",
+        "sql": "jit_phase_code IN ('ETA_PBP', 'ATA_PBP', 'ETB_BERTH', 'ATB_BERTH', 'ATD_BERTH')",
+        "action": "drop",
+        "source_rule": "enum:JitPhaseCode",
+        "description": "jit_phase_code must belong to DCSA enum JitPhaseCode."
+      },
+      {
+        "name": "event_id_not_null",
+        "column": "event_id",
+        "sql": "event_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "event_id must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "event_created_date_time_not_null",
+        "column": "event_created_date_time",
+        "sql": "event_created_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_created_date_time must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "event_date_time_not_null",
+        "column": "event_date_time",
+        "sql": "event_date_time IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_date_time must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "event_classifier_code_not_null",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "event_classifier_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      },
+      {
+        "name": "event_classifier_code_enum_values",
+        "column": "event_classifier_code",
+        "sql": "event_classifier_code IN ('PLN', 'ACT', 'EST')",
+        "action": "drop",
+        "source_rule": "enum:EventClassifierCode",
+        "description": "event_classifier_code must belong to DCSA enum EventClassifierCode."
+      },
+      {
+        "name": "source_system_not_null",
+        "column": "source_system",
+        "sql": "source_system IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "source_system must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls."
+      }
+    ]
+  },
+  "gold_dcsa.gold_port_call_performance": {
+    "schema": "gold_dcsa",
+    "table": "gold_port_call_performance",
+    "class_name": "PortCallPerformanceKpi",
+    "rules": [
+      {
+        "name": "port_call_id_not_null",
+        "column": "port_call_id",
+        "sql": "port_call_id IS NOT NULL",
+        "action": "fail",
+        "source_rule": "required",
+        "description": "port_call_id must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "vessel_imo_number_not_null",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_imo_number must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "vessel_imo_number_pattern",
+        "column": "vessel_imo_number",
+        "sql": "vessel_imo_number RLIKE '^[0-9]{7}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[0-9]{7}$",
+        "description": "vessel_imo_number must match regex ^[0-9]{7}$."
+      },
+      {
+        "name": "vessel_name_not_null",
+        "column": "vessel_name",
+        "sql": "vessel_name IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "vessel_name must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "carrier_voyage_number_not_null",
+        "column": "carrier_voyage_number",
+        "sql": "carrier_voyage_number IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "carrier_voyage_number must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "un_location_code_not_null",
+        "column": "un_location_code",
+        "sql": "un_location_code IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "un_location_code must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "un_location_code_pattern",
+        "column": "un_location_code",
+        "sql": "un_location_code RLIKE '^[A-Z]{2}[A-Z2-9]{3}$'",
+        "action": "drop",
+        "source_rule": "pattern:^[A-Z]{2}[A-Z2-9]{3}$",
+        "description": "un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$."
+      },
+      {
+        "name": "port_name_not_null",
+        "column": "port_name",
+        "sql": "port_name IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "port_name must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "call_date_not_null",
+        "column": "call_date",
+        "sql": "call_date IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "call_date must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "on_time_flag_not_null",
+        "column": "on_time_flag",
+        "sql": "on_time_flag IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "on_time_flag must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "on_time_flag_min_bound",
+        "column": "on_time_flag",
+        "sql": "on_time_flag >= 0",
+        "action": "drop",
+        "source_rule": "minimum_value:0",
+        "description": "on_time_flag must be >= 0."
+      },
+      {
+        "name": "on_time_flag_max_bound",
+        "column": "on_time_flag",
+        "sql": "on_time_flag <= 1",
+        "action": "drop",
+        "source_rule": "maximum_value:1",
+        "description": "on_time_flag must be <= 1."
+      },
+      {
+        "name": "port_turnaround_hours_not_null",
+        "column": "port_turnaround_hours",
+        "sql": "port_turnaround_hours IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "port_turnaround_hours must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "port_turnaround_hours_min_bound",
+        "column": "port_turnaround_hours",
+        "sql": "port_turnaround_hours >= 0.0",
+        "action": "drop",
+        "source_rule": "minimum_value:0.0",
+        "description": "port_turnaround_hours must be >= 0.0."
+      },
+      {
+        "name": "port_turnaround_hours_max_bound",
+        "column": "port_turnaround_hours",
+        "sql": "port_turnaround_hours <= 720.0",
+        "action": "drop",
+        "source_rule": "maximum_value:720.0",
+        "description": "port_turnaround_hours must be <= 720.0."
+      },
+      {
+        "name": "berth_wait_hours_not_null",
+        "column": "berth_wait_hours",
+        "sql": "berth_wait_hours IS NOT NULL",
+        "action": "drop",
+        "source_rule": "required",
+        "description": "berth_wait_hours must not be NULL on gold_dcsa.gold_port_call_performance."
+      },
+      {
+        "name": "berth_wait_hours_min_bound",
+        "column": "berth_wait_hours",
+        "sql": "berth_wait_hours >= 0.0",
+        "action": "drop",
+        "source_rule": "minimum_value:0.0",
+        "description": "berth_wait_hours must be >= 0.0."
+      },
+      {
+        "name": "berth_wait_hours_max_bound",
+        "column": "berth_wait_hours",
+        "sql": "berth_wait_hours <= 720.0",
+        "action": "drop",
+        "source_rule": "maximum_value:720.0",
+        "description": "berth_wait_hours must be <= 720.0."
+      }
+    ]
+  }
+}

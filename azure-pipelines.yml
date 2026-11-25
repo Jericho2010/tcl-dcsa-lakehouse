@@ -1,0 +1,101 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  PYTHON_VERSION: "3.12"
+
+stages:
+  - stage: Compile_And_Gate
+    displayName: "Compile LinkML/Ossie, Lint ODCS Contracts & Run Unit Tests"
+    jobs:
+      - job: ContractAndModelGate
+        displayName: "Contract & Semantic Spine CI"
+        steps:
+          - checkout: self
+            fetchDepth: 0
+
+          - script: |
+              set -e
+              curl -LsSf https://astral.sh/uv/install.sh | sh
+              export PATH="$HOME/.local/bin:$PATH"
+              uv python install $(PYTHON_VERSION)
+              uv sync
+              uv run ruff check .
+              uv run python -m tcl_compiler.compile_dcsa
+              for f in contracts/odcs/*.odcs.yaml; do
+                uv run datacontract lint "$f"
+              done
+              uv run python -m tcl_compiler.compile_semantic
+              uv run pytest -v
+            displayName: "uv sync, compile, ODCS lint, ruff & pytest"
+
+  - stage: Deploy_Dev
+    displayName: "Deploy DABs Target: dev"
+    dependsOn: Compile_And_Gate
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DeployDev
+        steps:
+          - script: |
+              set -e
+              curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+              databricks bundle validate -t dev
+              databricks bundle deploy -t dev
+            env:
+              DATABRICKS_HOST: $(DATABRICKS_DEV_HOST)
+              DATABRICKS_TOKEN: $(DATABRICKS_DEV_TOKEN)
+            displayName: "Databricks bundle validate & deploy (dev)"
+
+  - stage: Deploy_Staging
+    displayName: "Deploy DABs Target: staging (Azure Enterprise Mode)"
+    dependsOn: Deploy_Dev
+    condition: succeeded()
+    jobs:
+      - deployment: DeployStaging
+        environment: tcl-dcsa-staging
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - script: |
+                    set -e
+                    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+                    databricks bundle validate -t staging
+                    databricks bundle deploy -t staging
+                  env:
+                    DATABRICKS_HOST: $(DATABRICKS_STAGING_HOST)
+                    DATABRICKS_TOKEN: $(DATABRICKS_STAGING_TOKEN)
+                  displayName: "Databricks bundle deploy (staging)"
+
+  - stage: Deploy_Prod
+    displayName: "Deploy DABs Target: prod (Manual Approval Gate)"
+    dependsOn: Deploy_Staging
+    condition: succeeded()
+    jobs:
+      - deployment: DeployProd
+        environment: tcl-dcsa-prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - script: |
+                    set -e
+                    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+                    databricks bundle validate -t prod
+                    databricks bundle deploy -t prod
+                  env:
+                    DATABRICKS_HOST: $(DATABRICKS_PROD_HOST)
+                    DATABRICKS_TOKEN: $(DATABRICKS_PROD_TOKEN)
+                  displayName: "Databricks bundle deploy (prod)"

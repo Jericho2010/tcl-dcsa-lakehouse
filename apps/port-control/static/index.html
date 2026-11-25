@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCL Port Call & Reefer Exception Workbench</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <h1 class="text-lg font-semibold tracking-tight text-white">
+            Tasman Container Line · Port Call & Reefer Exception Workbench
+          </h1>
+        </div>
+        <p class="text-xs text-slate-400 mt-0.5">
+          DCSA T&T v3 · eBL v3 · OVS · JIT v1 · Unified UC Metric Views (`gold_dcsa`)
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="mode-badge" class="px-2.5 py-1 rounded text-xs font-mono bg-cyan-950 text-cyan-300 border border-cyan-800">
+          loading...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+    <!-- KPI Row -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Schedule Reliability</p>
+        <p id="kpi-reliability" class="text-2xl font-bold text-emerald-400 mt-1">--</p>
+        <p id="kpi-calls" class="text-xs text-slate-400 mt-1">--</p>
+      </div>
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Avg Port Turnaround</p>
+        <p id="kpi-turnaround" class="text-2xl font-bold text-cyan-400 mt-1">--</p>
+        <p id="kpi-berth" class="text-xs text-slate-400 mt-1">--</p>
+      </div>
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Cold-Chain Excursion Rate</p>
+        <p id="kpi-excursion-rate" class="text-2xl font-bold text-amber-400 mt-1">--</p>
+        <p id="kpi-moves" class="text-xs text-slate-400 mt-1">--</p>
+      </div>
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+        <p class="text-xs uppercase tracking-wider text-slate-400">Active eBL / Quarantine</p>
+        <p id="kpi-ebls" class="text-2xl font-bold text-indigo-400 mt-1">--</p>
+        <p id="kpi-quarantine" class="text-xs text-slate-400 mt-1">--</p>
+      </div>
+    </section>
+
+    <!-- Port Breakdown + Exceptions -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-5">
+        <h2 class="text-sm font-semibold text-white mb-3">Port Schedule Reliability (`mv_port_call_kpis`)</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-2 pr-3">UN/LOCODE</th>
+                <th class="py-2 pr-3">Port</th>
+                <th class="py-2 pr-3">Calls</th>
+                <th class="py-2 pr-3">Reliability</th>
+                <th class="py-2">Turnaround (h)</th>
+              </tr>
+            </thead>
+            <tbody id="ports-body" class="divide-y divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+        <div>
+          <h2 class="text-sm font-semibold text-amber-300 mb-2">Active Reefer Cold-Chain Excursions</h2>
+          <div id="excursions-list" class="space-y-2 text-xs"></div>
+        </div>
+        <div class="border-t border-slate-800 pt-4">
+          <h2 class="text-sm font-semibold text-rose-300 mb-2">Silver Quarantine Inspector (Contract Failures)</h2>
+          <div id="quarantine-list" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Triage Write-Back & Genie Q&A -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+        <h2 class="text-sm font-semibold text-white">Exception Triage Write-Back (`governance_dcsa`)</h2>
+        <form id="triage-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <input id="triage-id" value="rf-TCLU1000008-0022" placeholder="Exception ID" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100" required />
+          <input id="triage-entity-id" value="TCLU1000008" placeholder="Equipment or Port Call ID" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100" required />
+          <select id="triage-type" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100">
+            <option value="reefer_excursion">reefer_excursion</option>
+            <option value="quarantine_record">quarantine_record</option>
+            <option value="port_delay">port_delay</option>
+          </select>
+          <select id="triage-severity" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100">
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
+          </select>
+          <select id="triage-disposition" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100">
+            <option value="ESCALATE_TERMINAL">ESCALATE_TERMINAL</option>
+            <option value="REROUTE_INSPECTION">REROUTE_INSPECTION</option>
+            <option value="DISMISS_SENSOR_NOISE">DISMISS_SENSOR_NOISE</option>
+            <option value="MONITOR">MONITOR</option>
+          </select>
+          <input id="triage-by" value="duty.controller" placeholder="Triaged By" class="bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100" required />
+          <input id="triage-note" value="Dispatch terminal technician for cargo probe verification." placeholder="Operator note" class="sm:col-span-2 bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100" />
+          <button type="submit" class="sm:col-span-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded px-4 py-2 transition">
+            Submit Triage Decision
+          </button>
+        </form>
+        <div class="border-t border-slate-800 pt-3">
+          <h3 class="text-xs font-semibold text-slate-400 mb-2">Recent Triage Log</h3>
+          <div id="triage-history" class="space-y-2 text-xs max-h-48 overflow-y-auto"></div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-4">
+        <h2 class="text-sm font-semibold text-white">Genie Operational Q&A (`mv_port_call_kpis` & `mv_container_journey_kpis`)</h2>
+        <form id="genie-form" class="flex gap-2 text-xs">
+          <input id="genie-question" value="Which ports have the highest schedule reliability and what is our reefer excursion rate?" class="flex-1 bg-slate-950 border border-slate-700 rounded px-3 py-2 text-slate-100" required />
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded px-4 py-2 transition">
+            Ask Genie
+          </button>
+        </form>
+        <div id="genie-response" class="rounded-lg bg-slate-950 border border-slate-800 p-4 text-xs space-y-2 text-slate-300">
+          <p class="text-slate-400">Submit a natural-language question above to query UC Metric Views via Genie.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function loadDashboard() {
+      const [health, kpis, exc, triage] = await Promise.all([
+        fetch("/api/health").then(r => r.json()),
+        fetch("/api/kpis").then(r => r.json()),
+        fetch("/api/exceptions").then(r => r.json()),
+        fetch("/api/triage").then(r => r.json()),
+      ]);
+
+      document.getElementById("mode-badge").textContent = `${health.mode.toUpperCase()} · catalog=${health.catalog}`;
+      const pc = kpis.port_call_kpis || {};
+      const cj = kpis.container_journey_kpis || {};
+
+      document.getElementById("kpi-reliability").textContent = `${((Number(pc.schedule_reliability_pct || 0)) * 100).toFixed(1)}%`;
+      document.getElementById("kpi-calls").textContent = `${pc.on_time_calls || 0} / ${pc.total_port_calls || 0} calls on time`;
+      document.getElementById("kpi-turnaround").textContent = `${Number(pc.avg_port_turnaround_hours || 0).toFixed(1)} hrs`;
+      document.getElementById("kpi-berth").textContent = `Avg berth wait: ${Number(pc.avg_berth_wait_hours || 0).toFixed(2)} hrs`;
+      document.getElementById("kpi-excursion-rate").textContent = `${((Number(cj.cold_chain_excursion_rate_pct || 0)) * 100).toFixed(1)}%`;
+      document.getElementById("kpi-moves").textContent = `${cj.reefer_excursion_count || 0} excursions / ${cj.total_container_moves || 0} moves`;
+      document.getElementById("kpi-ebls").textContent = `${cj.active_ebl_count || 0} Active eBLs`;
+      document.getElementById("kpi-quarantine").textContent = `${(exc.quarantine_records || []).length} quarantined rows blocked`;
+
+      const portsBody = document.getElementById("ports-body");
+      portsBody.innerHTML = (kpis.ports || []).map(p => `
+        <tr>
+          <td class="py-2 pr-3 font-mono text-cyan-300">${p.un_location_code}</td>
+          <td class="py-2 pr-3">${p.port_name}</td>
+          <td class="py-2 pr-3">${p.on_time_calls}/${p.total_port_calls}</td>
+          <td class="py-2 pr-3 text-emerald-400">${(Number(p.schedule_reliability_pct) * 100).toFixed(1)}%</td>
+          <td class="py-2">${Number(p.avg_port_turnaround_hours).toFixed(1)}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("excursions-list").innerHTML = (exc.reefer_excursions || []).map(r => `
+        <div class="rounded bg-amber-950/30 border border-amber-800/50 p-2.5 flex justify-between items-center">
+          <div>
+            <span class="font-mono font-semibold text-amber-200">${r.equipment_reference}</span>
+            <span class="text-slate-400 ml-2">Supply ${r.supply_air_temp_c}C vs Setpoint ${r.setpoint_temp_c}C</span>
+          </div>
+          <span class="px-2 py-0.5 rounded bg-amber-900/60 text-amber-200 font-mono">${r.power_status}</span>
+        </div>
+      `).join("");
+
+      document.getElementById("quarantine-list").innerHTML = (exc.quarantine_records || []).map(q => `
+        <div class="rounded bg-rose-950/30 border border-rose-800/50 p-2.5">
+          <div class="flex justify-between">
+            <span class="font-mono text-rose-200">${q.record_id}</span>
+            <span class="font-mono text-slate-400">${q.source_table}</span>
+          </div>
+          <p class="text-slate-300 mt-1">${q.observed_value} · <span class="text-rose-300">${q.quarantine_reason}</span></p>
+        </div>
+      `).join("");
+
+      document.getElementById("triage-history").innerHTML = (triage.items || []).map(item => `
+        <div class="rounded bg-slate-950 border border-slate-800 p-2.5">
+          <div class="flex justify-between font-mono text-slate-300">
+            <span>${item.equipment_or_call_id} · ${item.disposition}</span>
+            <span class="text-cyan-400">${item.severity}</span>
+          </div>
+          <p class="text-slate-400 mt-1">${item.operator_note || ""} — ${item.triaged_by}</p>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("triage-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await fetch("/api/triage", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          exception_id: document.getElementById("triage-id").value,
+          equipment_or_call_id: document.getElementById("triage-entity-id").value,
+          entity_type: document.getElementById("triage-type").value,
+          severity: document.getElementById("triage-severity").value,
+          disposition: document.getElementById("triage-disposition").value,
+          triaged_by: document.getElementById("triage-by").value,
+          operator_note: document.getElementById("triage-note").value,
+        }),
+      });
+      await loadDashboard();
+    });
+
+    document.getElementById("genie-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = document.getElementById("genie-question").value;
+      const box = document.getElementById("genie-response");
+      box.innerHTML = `<p class="text-slate-400">Querying Genie...</p>`;
+      const res = await fetch("/api/genie/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: q}),
+      }).then(r => r.json());
+      box.innerHTML = `
+        <p class="text-slate-100 leading-relaxed">${res.answer}</p>
+        ${res.generated_sql ? `<pre class="mt-2 p-2.5 rounded bg-slate-900 text-cyan-300 overflow-x-auto font-mono">${res.generated_sql}</pre>` : ""}
+      `;
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>

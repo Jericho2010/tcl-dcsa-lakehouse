@@ -1,0 +1,433 @@
+apiVersion: v3.1.0
+kind: DataContract
+id: tcl-portgate-tos-events
+name: TCL PortGate TOS Equipment and Transport Events
+version: 1.0.0
+status: active
+domain: maritime-dcsa-logistics
+dataProduct: tcl-portgate-tos-events
+description:
+  purpose: Governed DCSA Track & Trace v3 equipment handling and vessel transport
+    events curated in Silver from PortGate TOS.
+  usage: Auto-compiled from models/linkml/dcsa/dcsa_enterprise.yaml via tcl_compiler.compile_dcsa;
+    do not edit generated schema blocks by hand.
+servers:
+- server: databricks_lakehouse
+  type: databricks
+  catalog: tcl_lakehouse
+  schema: silver_dcsa
+team:
+  name: TCL DCSA Data Architecture
+  members:
+  - username: tcl-data-platform
+    name: TCL Data Platform Engineering
+    role: owner
+slaProperties:
+- property: latency
+  value: '15'
+  unit: minutes
+  description: Maximum allowed end-to-end ingestion freshness SLA.
+schema:
+- name: silver_portgate_equipment_events
+  physicalName: silver_portgate_equipment_events
+  physicalType: table
+  description: DCSA Track & Trace v3 container equipment handling event captured at
+    terminal gates, quaysides, or depots.
+  properties:
+  - name: equipment_event_type_code
+    logicalType: string
+    physicalType: STRING
+    description: DCSA equipment milestone code (e.g., LOAD, DISC, GTIN, GTOT).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(LOAD|DISC|GTIN|GTOT|STUF|STRP|PICK|DROP|INSP|RSEA|RMVD)$
+  - name: equipment_reference
+    logicalType: string
+    physicalType: STRING
+    description: ISO 6346 container identifier (e.g., TCLU1234567).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{4}[0-9]{7}$
+  - name: iso_equipment_code
+    logicalType: string
+    physicalType: STRING
+    description: 4-character ISO 6346 container size and type code (e.g., 45R1, 42G1).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9A-Z]{4}$
+  - name: empty_indicator_code
+    logicalType: string
+    physicalType: STRING
+    description: Container load state indicator (EMPTY or LADEN).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(EMPTY|LADEN)$
+  - name: un_location_code
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port where the equipment event occurred.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: facility_code
+    logicalType: string
+    physicalType: STRING
+    description: SMDG terminal facility code.
+    required: false
+    classification: internal
+  - name: transport_call_id
+    logicalType: string
+    physicalType: STRING
+    description: Foreign reference linking vessel-side events to the port call.
+    required: false
+    classification: internal
+  - name: carrier_voyage_number
+    logicalType: string
+    physicalType: STRING
+    description: Operational carrier voyage identifier.
+    required: false
+    classification: internal
+  - name: event_id
+    logicalType: string
+    physicalType: STRING
+    description: Globally unique deterministic identifier for the DCSA event record.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: event_created_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the source system created the event payload.
+    required: true
+    classification: internal
+  - name: event_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the operational event occurred, is estimated,
+      or is planned.
+    required: true
+    classification: internal
+  - name: event_classifier_code
+    logicalType: string
+    physicalType: STRING
+    description: Classification of event_date_time (PLN, ACT, or EST).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(PLN|ACT|EST)$
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+    description: Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).
+    required: true
+    classification: internal
+  quality:
+  - name: silver_portgate_equipment_events_equipment_event_type_code_not_null
+    type: sql
+    description: equipment_event_type_code must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (equipment_event_type_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_equipment_event_type_code_enum_values
+    type: sql
+    description: equipment_event_type_code must belong to DCSA enum EquipmentEventTypeCode.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (equipment_event_type_code
+      IN ('LOAD', 'DISC', 'GTIN', 'GTOT', 'STUF', 'STRP', 'PICK', 'DROP', 'INSP',
+      'RSEA', 'RMVD'))
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_equipment_reference_not_null
+    type: sql
+    description: equipment_reference must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (equipment_reference
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_equipment_reference_pattern
+    type: sql
+    description: equipment_reference must match regex ^[A-Z]{4}[0-9]{7}$.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (equipment_reference
+      RLIKE '^[A-Z]{4}[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_iso_equipment_code_not_null
+    type: sql
+    description: iso_equipment_code must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (iso_equipment_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_iso_equipment_code_pattern
+    type: sql
+    description: iso_equipment_code must match regex ^[0-9A-Z]{4}$.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (iso_equipment_code
+      RLIKE '^[0-9A-Z]{4}$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_empty_indicator_code_not_null
+    type: sql
+    description: empty_indicator_code must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (empty_indicator_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_empty_indicator_code_pattern
+    type: sql
+    description: empty_indicator_code must match regex ^(EMPTY|LADEN)$.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (empty_indicator_code
+      RLIKE '^(EMPTY|LADEN)$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_un_location_code_not_null
+    type: sql
+    description: un_location_code must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (un_location_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_un_location_code_pattern
+    type: sql
+    description: un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (un_location_code
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_event_id_not_null
+    type: sql
+    description: event_id must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (event_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_event_created_date_time_not_null
+    type: sql
+    description: event_created_date_time must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (event_created_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_event_date_time_not_null
+    type: sql
+    description: event_date_time must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (event_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_event_classifier_code_not_null
+    type: sql
+    description: event_classifier_code must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (event_classifier_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_event_classifier_code_enum_values
+    type: sql
+    description: event_classifier_code must belong to DCSA enum EventClassifierCode.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (event_classifier_code
+      IN ('PLN', 'ACT', 'EST'))
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_equipment_events_source_system_not_null
+    type: sql
+    description: source_system must not be NULL on silver_dcsa.silver_portgate_equipment_events.
+    query: SELECT COUNT(*) FROM silver_portgate_equipment_events WHERE NOT (source_system
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+- name: silver_portgate_transport_events
+  physicalName: silver_portgate_transport_events
+  physicalType: table
+  description: DCSA Track & Trace v3 vessel arrival and departure milestone event
+    for a transport call.
+  properties:
+  - name: transport_event_type_code
+    logicalType: string
+    physicalType: STRING
+    description: Vessel movement event type (ARRI or DEPA).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(ARRI|DEPA)$
+  - name: transport_call_id
+    logicalType: string
+    physicalType: STRING
+    description: Unique identifier of the transport call at the terminal.
+    required: true
+    classification: internal
+  - name: vessel_imo_number
+    logicalType: string
+    physicalType: STRING
+    description: 7-digit IMO ship identification number.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9]{7}$
+  - name: carrier_voyage_number
+    logicalType: string
+    physicalType: STRING
+    description: Operational carrier voyage identifier.
+    required: true
+    classification: internal
+  - name: un_location_code
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port where the vessel event applies.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: delay_reason_code
+    logicalType: string
+    physicalType: STRING
+    description: Standardized SMDG delay reason code when behind schedule.
+    required: false
+    classification: internal
+  - name: change_remark
+    logicalType: string
+    physicalType: STRING
+    description: Operational commentary explaining schedule updates.
+    required: false
+    classification: internal
+  - name: event_id
+    logicalType: string
+    physicalType: STRING
+    description: Globally unique deterministic identifier for the DCSA event record.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: event_created_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the source system created the event payload.
+    required: true
+    classification: internal
+  - name: event_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the operational event occurred, is estimated,
+      or is planned.
+    required: true
+    classification: internal
+  - name: event_classifier_code
+    logicalType: string
+    physicalType: STRING
+    description: Classification of event_date_time (PLN, ACT, or EST).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(PLN|ACT|EST)$
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+    description: Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).
+    required: true
+    classification: internal
+  quality:
+  - name: silver_portgate_transport_events_transport_event_type_code_not_null
+    type: sql
+    description: transport_event_type_code must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (transport_event_type_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_transport_event_type_code_enum_values
+    type: sql
+    description: transport_event_type_code must belong to DCSA enum TransportEventTypeCode.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (transport_event_type_code
+      IN ('ARRI', 'DEPA'))
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_transport_call_id_not_null
+    type: sql
+    description: transport_call_id must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (transport_call_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_vessel_imo_number_not_null
+    type: sql
+    description: vessel_imo_number must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (vessel_imo_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_vessel_imo_number_pattern
+    type: sql
+    description: vessel_imo_number must match regex ^[0-9]{7}$.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (vessel_imo_number
+      RLIKE '^[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_carrier_voyage_number_not_null
+    type: sql
+    description: carrier_voyage_number must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (carrier_voyage_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_un_location_code_not_null
+    type: sql
+    description: un_location_code must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (un_location_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_un_location_code_pattern
+    type: sql
+    description: un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (un_location_code
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_event_id_not_null
+    type: sql
+    description: event_id must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (event_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_event_created_date_time_not_null
+    type: sql
+    description: event_created_date_time must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (event_created_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_event_date_time_not_null
+    type: sql
+    description: event_date_time must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (event_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_event_classifier_code_not_null
+    type: sql
+    description: event_classifier_code must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (event_classifier_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_event_classifier_code_enum_values
+    type: sql
+    description: event_classifier_code must belong to DCSA enum EventClassifierCode.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (event_classifier_code
+      IN ('PLN', 'ACT', 'EST'))
+    mustBe: 0
+    severity: error
+  - name: silver_portgate_transport_events_source_system_not_null
+    type: sql
+    description: source_system must not be NULL on silver_dcsa.silver_portgate_transport_events.
+    query: SELECT COUNT(*) FROM silver_portgate_transport_events WHERE NOT (source_system
+      IS NOT NULL)
+    mustBe: 0
+    severity: error

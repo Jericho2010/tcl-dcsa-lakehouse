@@ -1,0 +1,227 @@
+apiVersion: v3.1.0
+kind: DataContract
+id: tcl-harboursync-jit-port-calls
+name: TCL HarbourSync JIT Port Call Timestamps
+version: 1.0.0
+status: active
+domain: maritime-dcsa-logistics
+dataProduct: tcl-harboursync-jit-port-calls
+description:
+  purpose: Governed DCSA Just-In-Time (JIT) v1.x five-phase vessel port call arrival
+    and berth timestamps curated in Silver.
+  usage: Auto-compiled from models/linkml/dcsa/dcsa_enterprise.yaml via tcl_compiler.compile_dcsa;
+    do not edit generated schema blocks by hand.
+servers:
+- server: databricks_lakehouse
+  type: databricks
+  catalog: tcl_lakehouse
+  schema: silver_dcsa
+team:
+  name: TCL DCSA Data Architecture
+  members:
+  - username: tcl-data-platform
+    name: TCL Data Platform Engineering
+    role: owner
+slaProperties:
+- property: latency
+  value: '15'
+  unit: minutes
+  description: Maximum allowed end-to-end ingestion freshness SLA.
+schema:
+- name: silver_harboursync_jit_port_calls
+  physicalName: silver_harboursync_jit_port_calls
+  physicalType: table
+  description: DCSA Just-In-Time port call milestone timestamp spanning ETA_PBP, ATA_PBP,
+    ETB_BERTH, ATB_BERTH, and ATD_BERTH.
+  properties:
+  - name: port_call_id
+    logicalType: string
+    physicalType: STRING
+    description: Canonical port call identifier joining carrier schedule, terminal
+      berth, and vessel events.
+    required: true
+    classification: internal
+  - name: vessel_imo_number
+    logicalType: string
+    physicalType: STRING
+    description: 7-digit IMO vessel identifier.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9]{7}$
+  - name: carrier_voyage_number
+    logicalType: string
+    physicalType: STRING
+    description: Carrier voyage code for the port call.
+    required: true
+    classification: internal
+  - name: un_location_code
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port identifier where the JIT milestone was recorded.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: jit_phase_code
+    logicalType: string
+    physicalType: STRING
+    description: One of the 5 JIT phases (ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH,
+      ATD_BERTH).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(ETA_PBP|ATA_PBP|ETB_BERTH|ATB_BERTH|ATD_BERTH)$
+  - name: terminal_code
+    logicalType: string
+    physicalType: STRING
+    description: SMDG container terminal facility code.
+    required: false
+    classification: internal
+  - name: berth_code
+    logicalType: string
+    physicalType: STRING
+    description: Assigned terminal berth identifier.
+    required: false
+    classification: internal
+  - name: delay_reason_code
+    logicalType: string
+    physicalType: STRING
+    description: SMDG delay reason code when vessel misses target window.
+    required: false
+    classification: internal
+  - name: event_id
+    logicalType: string
+    physicalType: STRING
+    description: Globally unique deterministic identifier for the DCSA event record.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: event_created_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the source system created the event payload.
+    required: true
+    classification: internal
+  - name: event_date_time
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when the operational event occurred, is estimated,
+      or is planned.
+    required: true
+    classification: internal
+  - name: event_classifier_code
+    logicalType: string
+    physicalType: STRING
+    description: Classification of event_date_time (PLN, ACT, or EST).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(PLN|ACT|EST)$
+  - name: source_system
+    logicalType: string
+    physicalType: STRING
+    description: Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).
+    required: true
+    classification: internal
+  quality:
+  - name: silver_harboursync_jit_port_calls_port_call_id_not_null
+    type: sql
+    description: port_call_id must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (port_call_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_vessel_imo_number_not_null
+    type: sql
+    description: vessel_imo_number must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (vessel_imo_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_vessel_imo_number_pattern
+    type: sql
+    description: vessel_imo_number must match regex ^[0-9]{7}$.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (vessel_imo_number
+      RLIKE '^[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_carrier_voyage_number_not_null
+    type: sql
+    description: carrier_voyage_number must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (carrier_voyage_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_un_location_code_not_null
+    type: sql
+    description: un_location_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (un_location_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_un_location_code_pattern
+    type: sql
+    description: un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (un_location_code
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_jit_phase_code_not_null
+    type: sql
+    description: jit_phase_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (jit_phase_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_jit_phase_code_enum_values
+    type: sql
+    description: jit_phase_code must belong to DCSA enum JitPhaseCode.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (jit_phase_code
+      IN ('ETA_PBP', 'ATA_PBP', 'ETB_BERTH', 'ATB_BERTH', 'ATD_BERTH'))
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_event_id_not_null
+    type: sql
+    description: event_id must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (event_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_event_created_date_time_not_null
+    type: sql
+    description: event_created_date_time must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (event_created_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_event_date_time_not_null
+    type: sql
+    description: event_date_time must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (event_date_time
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_event_classifier_code_not_null
+    type: sql
+    description: event_classifier_code must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (event_classifier_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_event_classifier_code_enum_values
+    type: sql
+    description: event_classifier_code must belong to DCSA enum EventClassifierCode.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (event_classifier_code
+      IN ('PLN', 'ACT', 'EST'))
+    mustBe: 0
+    severity: error
+  - name: silver_harboursync_jit_port_calls_source_system_not_null
+    type: sql
+    description: source_system must not be NULL on silver_dcsa.silver_harboursync_jit_port_calls.
+    query: SELECT COUNT(*) FROM silver_harboursync_jit_port_calls WHERE NOT (source_system
+      IS NOT NULL)
+    mustBe: 0
+    severity: error

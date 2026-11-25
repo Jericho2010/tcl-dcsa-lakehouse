@@ -1,0 +1,74 @@
+# Metric view: tcl_lakehouse.gold_dcsa.mv_container_journey_kpis
+version: '1.1'
+source: tcl_lakehouse.gold_dcsa.gold_container_journey_reefer
+comment: Curated Gold container journey and reefer IoT thermal excursion dataset.
+dimensions:
+- name: journey_id
+  expr: journey_id
+  comment: Unique container journey grain identifier.
+- name: port_call_id
+  expr: port_call_id
+  comment: Foreign key linking container moves to mv_port_call_kpis.
+  synonyms:
+  - port call fk
+  - transport call key
+- name: equipment_reference
+  expr: equipment_reference
+  comment: ISO 6346 container identifier (4 letters + 7 digits).
+  synonyms:
+  - container number
+  - reefer unit id
+- name: un_location_code
+  expr: un_location_code
+  comment: UN/LOCODE port where the container movement occurred.
+  synonyms:
+  - movement port code
+- name: transport_document_reference
+  expr: transport_document_reference
+  comment: DCSA eBL transport document reference covering the shipment.
+  synonyms:
+  - ebl number
+  - bill of lading
+- name: journey_date
+  expr: journey_date
+  comment: Calendar date of the container journey milestone.
+  synonyms:
+  - container move date
+- name: excursion_flag_int
+  expr: excursion_flag_int
+  comment: Binary thermal excursion flag (1 = reefer excursion observed, 0 = within bounds).
+- name: dwell_hours
+  expr: dwell_hours
+  comment: Terminal dwell duration in hours from discharge/gate-in to gate-out/load.
+measures:
+- name: cold_chain_excursion_rate_pct
+  expr: SUM(excursion_flag_int) / NULLIF(COUNT(*), 0)
+  comment: Ratio of container moves experiencing a reefer cold-chain thermal excursion.
+  synonyms:
+  - excursion rate
+  - cold chain failure rate
+  - reefer breach pct
+- name: total_container_moves
+  expr: COUNT(*)
+  comment: Total number of tracked container journey records.
+  synonyms:
+  - container moves
+  - total boxes moved
+- name: reefer_excursion_count
+  expr: SUM(excursion_flag_int)
+  comment: Count of container journeys recording a reefer temperature excursion.
+  synonyms:
+  - excursion count
+  - cold chain alarms
+- name: avg_dwell_hours
+  expr: AVG(dwell_hours)
+  comment: Average container terminal dwell time in hours.
+  synonyms:
+  - mean container dwell
+  - average yard stay
+- name: active_ebl_count
+  expr: COUNT(DISTINCT transport_document_reference)
+  comment: Count of distinct active eBL transport documents in container journeys.
+  synonyms:
+  - distinct ebl count
+  - active bills of lading

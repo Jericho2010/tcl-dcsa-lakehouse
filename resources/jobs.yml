@@ -1,0 +1,87 @@
+resources:
+  jobs:
+    tcl_dcsa_e2e_orchestrator:
+      name: tcl_dcsa_e2e_orchestrator
+      environments:
+        - environment_key: dcsa_serverless_env
+          spec:
+            environment_version: "2"
+            dependencies:
+              - pyyaml
+              - pydantic>=2.0
+        - environment_key: dcsa_contract_test_env
+          spec:
+            environment_version: "2"
+            dependencies:
+              - datacontract-cli[dataframe,duckdb]
+              - pandas>=2.1,<3.0
+              - duckdb
+              - pyyaml
+              - pydantic>=2.0
+      tasks:
+        - task_key: bootstrap_uc_objects
+          environment_key: dcsa_serverless_env
+          spark_python_task:
+            python_file: ../src/jobs/bootstrap_uc_objects.py
+            parameters:
+              - --catalog
+              - ${var.catalog}
+
+        - task_key: ingest_harboursync_jit
+          depends_on:
+            - task_key: bootstrap_uc_objects
+          environment_key: dcsa_serverless_env
+          spark_python_task:
+            python_file: ../src/jobs/ingest_harboursync_jit.py
+            parameters:
+              - --catalog
+              - ${var.catalog}
+              - --ingestion-mode
+              - ${var.ingestion_mode}
+
+        - task_key: run_dcsa_medallion_pipeline
+          depends_on:
+            - task_key: ingest_harboursync_jit
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.dcsa_medallion_pipeline.id}
+
+        - task_key: deploy_serving_governance
+          depends_on:
+            - task_key: run_dcsa_medallion_pipeline
+          environment_key: dcsa_serverless_env
+          spark_python_task:
+            python_file: ../src/jobs/deploy_serving_governance.py
+            parameters:
+              - --catalog
+              - ${var.catalog}
+
+        - task_key: run_contract_tests
+          depends_on:
+            - task_key: deploy_serving_governance
+          environment_key: dcsa_contract_test_env
+          spark_python_task:
+            python_file: ../src/jobs/run_contract_tests.py
+            parameters:
+              - --catalog
+              - ${var.catalog}
+
+    tcl_contract_quality_gate:
+      name: tcl_contract_quality_gate
+      environments:
+        - environment_key: dcsa_contract_test_env
+          spec:
+            environment_version: "2"
+            dependencies:
+              - datacontract-cli[dataframe,duckdb]
+              - pandas>=2.1,<3.0
+              - duckdb
+              - pyyaml
+              - pydantic>=2.0
+      tasks:
+        - task_key: execute_odcs_contract_tests
+          environment_key: dcsa_contract_test_env
+          spark_python_task:
+            python_file: ../src/jobs/run_contract_tests.py
+            parameters:
+              - --catalog
+              - ${var.catalog}

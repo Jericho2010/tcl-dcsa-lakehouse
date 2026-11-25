@@ -1,0 +1,491 @@
+apiVersion: v3.1.0
+kind: DataContract
+id: tcl-voyagecore-ebl-bookings
+name: TCL VoyageCore eBL, Bookings and Carrier Schedules
+version: 1.0.0
+status: active
+domain: maritime-dcsa-logistics
+dataProduct: tcl-voyagecore-ebl-bookings
+description:
+  purpose: Governed DCSA eBL v3 transport documents (SCD Type 1 current view with
+    PII governance), bookings, and OVS carrier schedules curated in Silver.
+  usage: Auto-compiled from models/linkml/dcsa/dcsa_enterprise.yaml via tcl_compiler.compile_dcsa;
+    do not edit generated schema blocks by hand.
+servers:
+- server: databricks_lakehouse
+  type: databricks
+  catalog: tcl_lakehouse
+  schema: silver_dcsa
+team:
+  name: TCL DCSA Data Architecture
+  members:
+  - username: tcl-data-platform
+    name: TCL Data Platform Engineering
+    role: owner
+slaProperties:
+- property: latency
+  value: '30'
+  unit: minutes
+  description: Maximum allowed end-to-end ingestion freshness SLA.
+schema:
+- name: silver_dcsa_ebl_current
+  physicalName: silver_dcsa_ebl_current
+  physicalType: table
+  description: DCSA Electronic Bill of Lading (eBL v3) transport document master record.
+  properties:
+  - name: transport_document_reference
+    logicalType: string
+    physicalType: STRING
+    description: Unique transport document / Bill of Lading reference number.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: carrier_booking_reference
+    logicalType: string
+    physicalType: STRING
+    description: Associated DCSA carrier booking reference.
+    required: true
+    classification: internal
+  - name: document_status
+    logicalType: string
+    physicalType: STRING
+    description: Current DCSA eBL workflow state (e.g., DRFT, APPR, ISSU, SURR).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(RECE|DRFT|PENA|PENU|REJE|APPR|ISSU|SURR|SUBM|VOID|CONF|REQS|CMPL|HOLD|RELS)$
+  - name: issue_date
+    logicalType: date
+    physicalType: DATE
+    description: Date the transport document was issued or drafted.
+    required: true
+    classification: internal
+  - name: shipper_name
+    logicalType: string
+    physicalType: STRING
+    description: Legal commercial shipper organization name.
+    required: true
+    classification: internal
+  - name: shipper_contact_email
+    logicalType: string
+    physicalType: STRING
+    description: Shipper primary contact email address (governed PII attribute).
+    required: true
+    classification: confidential
+    tags:
+    - pii
+    - pii_category:direct_identifier
+    logicalTypeOptions:
+      pattern: ^[^@\s]+@[^@\s]+\.[^@\s]+$
+  - name: consignee_name
+    logicalType: string
+    physicalType: STRING
+    description: Designated consignee party name (governed PII attribute).
+    required: true
+    classification: confidential
+    tags:
+    - pii
+    - pii_category:party_name
+  - name: port_of_loading
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port of loading.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: port_of_discharge
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE port of discharge.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: vessel_imo_number
+    logicalType: string
+    physicalType: STRING
+    description: 7-digit IMO number of the primary ocean vessel.
+    required: false
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9]{7}$
+  quality:
+  - name: silver_dcsa_ebl_current_transport_document_reference_not_null
+    type: sql
+    description: transport_document_reference must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (transport_document_reference
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_carrier_booking_reference_not_null
+    type: sql
+    description: carrier_booking_reference must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (carrier_booking_reference
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_document_status_not_null
+    type: sql
+    description: document_status must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (document_status
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_document_status_enum_values
+    type: sql
+    description: document_status must belong to DCSA enum ShipmentEventTypeCode.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (document_status
+      IN ('RECE', 'DRFT', 'PENA', 'PENU', 'REJE', 'APPR', 'ISSU', 'SURR', 'SUBM',
+      'VOID', 'CONF', 'REQS', 'CMPL', 'HOLD', 'RELS'))
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_issue_date_not_null
+    type: sql
+    description: issue_date must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (issue_date IS NOT
+      NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_shipper_name_not_null
+    type: sql
+    description: shipper_name must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (shipper_name IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_shipper_contact_email_not_null
+    type: sql
+    description: shipper_contact_email must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (shipper_contact_email
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_shipper_contact_email_pattern
+    type: sql
+    description: shipper_contact_email must match regex ^[^@\s]+@[^@\s]+\.[^@\s]+$.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (shipper_contact_email
+      RLIKE '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_consignee_name_not_null
+    type: sql
+    description: consignee_name must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (consignee_name
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_port_of_loading_not_null
+    type: sql
+    description: port_of_loading must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (port_of_loading
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_port_of_loading_pattern
+    type: sql
+    description: port_of_loading must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (port_of_loading
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_port_of_discharge_not_null
+    type: sql
+    description: port_of_discharge must not be NULL on silver_dcsa.silver_dcsa_ebl_current.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (port_of_discharge
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_port_of_discharge_pattern
+    type: sql
+    description: port_of_discharge must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT (port_of_discharge
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_dcsa_ebl_current_vessel_imo_number_pattern
+    type: sql
+    description: vessel_imo_number must match regex ^[0-9]{7}$.
+    query: SELECT COUNT(*) FROM silver_dcsa_ebl_current WHERE NOT ((vessel_imo_number
+      IS NULL OR vessel_imo_number RLIKE '^[0-9]{7}$'))
+    mustBe: 0
+    severity: error
+- name: silver_voyagecore_bookings
+  physicalName: silver_voyagecore_bookings
+  physicalType: table
+  description: DCSA Booking v2 freight booking request and confirmation record.
+  properties:
+  - name: carrier_booking_reference
+    logicalType: string
+    physicalType: STRING
+    description: Unique carrier booking reference identifier.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: booking_status
+    logicalType: string
+    physicalType: STRING
+    description: Current DCSA booking lifecycle status.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^(RECE|DRFT|PENA|PENU|REJE|APPR|ISSU|SURR|SUBM|VOID|CONF|REQS|CMPL|HOLD|RELS)$
+  - name: booking_created_at
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: UTC timestamp when booking was created.
+    required: true
+    classification: internal
+  - name: place_of_receipt
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE origin place of receipt.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: place_of_delivery
+    logicalType: string
+    physicalType: STRING
+    description: UN/LOCODE destination place of delivery.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: teu_count
+    logicalType: integer
+    physicalType: BIGINT
+    description: Booked capacity in Twenty-foot Equivalent Units (1 to 25000).
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      minimum: 1
+      maximum: 25000
+  - name: reefer_required
+    logicalType: boolean
+    physicalType: BOOLEAN
+    description: True when refrigerated containers are required for the booking.
+    required: true
+    classification: internal
+  quality:
+  - name: silver_voyagecore_bookings_carrier_booking_reference_not_null
+    type: sql
+    description: carrier_booking_reference must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (carrier_booking_reference
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_booking_status_not_null
+    type: sql
+    description: booking_status must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (booking_status
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_booking_status_enum_values
+    type: sql
+    description: booking_status must belong to DCSA enum ShipmentEventTypeCode.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (booking_status
+      IN ('RECE', 'DRFT', 'PENA', 'PENU', 'REJE', 'APPR', 'ISSU', 'SURR', 'SUBM',
+      'VOID', 'CONF', 'REQS', 'CMPL', 'HOLD', 'RELS'))
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_booking_created_at_not_null
+    type: sql
+    description: booking_created_at must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (booking_created_at
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_place_of_receipt_not_null
+    type: sql
+    description: place_of_receipt must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (place_of_receipt
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_place_of_receipt_pattern
+    type: sql
+    description: place_of_receipt must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (place_of_receipt
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_place_of_delivery_not_null
+    type: sql
+    description: place_of_delivery must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (place_of_delivery
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_place_of_delivery_pattern
+    type: sql
+    description: place_of_delivery must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (place_of_delivery
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_teu_count_not_null
+    type: sql
+    description: teu_count must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (teu_count IS
+      NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_teu_count_min_bound
+    type: sql
+    description: teu_count must be >= 1.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (teu_count >=
+      1)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_teu_count_max_bound
+    type: sql
+    description: teu_count must be <= 25000.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (teu_count <=
+      25000)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_bookings_reefer_required_not_null
+    type: sql
+    description: reefer_required must not be NULL on silver_dcsa.silver_voyagecore_bookings.
+    query: SELECT COUNT(*) FROM silver_voyagecore_bookings WHERE NOT (reefer_required
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+- name: silver_voyagecore_carrier_schedules
+  physicalName: silver_voyagecore_carrier_schedules
+  physicalType: table
+  description: DCSA Operational Vessel Schedules (OVS) proforma and planned port call
+    schedule.
+  properties:
+  - name: schedule_id
+    logicalType: string
+    physicalType: STRING
+    description: Unique vessel schedule port call slot identifier.
+    required: true
+    classification: internal
+    primaryKey: true
+    primaryKeyPosition: 1
+    unique: true
+  - name: vessel_imo_number
+    logicalType: string
+    physicalType: STRING
+    description: 7-digit IMO vessel identifier.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[0-9]{7}$
+  - name: vessel_name
+    logicalType: string
+    physicalType: STRING
+    description: Registered commercial vessel name.
+    required: true
+    classification: internal
+  - name: carrier_service_code
+    logicalType: string
+    physicalType: STRING
+    description: Tasman trade lane service loop code (e.g., TASMAN-EXPRESS).
+    required: true
+    classification: internal
+  - name: carrier_voyage_number
+    logicalType: string
+    physicalType: STRING
+    description: Planned operational voyage code.
+    required: true
+    classification: internal
+  - name: un_location_code
+    logicalType: string
+    physicalType: STRING
+    description: Scheduled UN/LOCODE port of call.
+    required: true
+    classification: internal
+    logicalTypeOptions:
+      pattern: ^[A-Z]{2}[A-Z2-9]{3}$
+  - name: planned_arrival_utc
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Scheduled baseline arrival timestamp in UTC.
+    required: true
+    classification: internal
+  - name: planned_departure_utc
+    logicalType: timestamp
+    physicalType: TIMESTAMP
+    description: Scheduled baseline departure timestamp in UTC.
+    required: true
+    classification: internal
+  quality:
+  - name: silver_voyagecore_carrier_schedules_schedule_id_not_null
+    type: sql
+    description: schedule_id must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (schedule_id
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_vessel_imo_number_not_null
+    type: sql
+    description: vessel_imo_number must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (vessel_imo_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_vessel_imo_number_pattern
+    type: sql
+    description: vessel_imo_number must match regex ^[0-9]{7}$.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (vessel_imo_number
+      RLIKE '^[0-9]{7}$')
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_vessel_name_not_null
+    type: sql
+    description: vessel_name must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (vessel_name
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_carrier_service_code_not_null
+    type: sql
+    description: carrier_service_code must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (carrier_service_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_carrier_voyage_number_not_null
+    type: sql
+    description: carrier_voyage_number must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (carrier_voyage_number
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_un_location_code_not_null
+    type: sql
+    description: un_location_code must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (un_location_code
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_un_location_code_pattern
+    type: sql
+    description: un_location_code must match regex ^[A-Z]{2}[A-Z2-9]{3}$.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (un_location_code
+      RLIKE '^[A-Z]{2}[A-Z2-9]{3}$')
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_planned_arrival_utc_not_null
+    type: sql
+    description: planned_arrival_utc must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (planned_arrival_utc
+      IS NOT NULL)
+    mustBe: 0
+    severity: error
+  - name: silver_voyagecore_carrier_schedules_planned_departure_utc_not_null
+    type: sql
+    description: planned_departure_utc must not be NULL on silver_dcsa.silver_voyagecore_carrier_schedules.
+    query: SELECT COUNT(*) FROM silver_voyagecore_carrier_schedules WHERE NOT (planned_departure_utc
+      IS NOT NULL)
+    mustBe: 0
+    severity: error

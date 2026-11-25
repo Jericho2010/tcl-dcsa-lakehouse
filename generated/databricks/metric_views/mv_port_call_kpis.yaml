@@ -1,0 +1,88 @@
+# Metric view: tcl_lakehouse.gold_dcsa.mv_port_call_kpis
+version: '1.1'
+source: tcl_lakehouse.gold_dcsa.gold_port_call_performance
+comment: Curated Gold port call performance metrics per JIT and OVS port call.
+dimensions:
+- name: port_call_id
+  expr: port_call_id
+  comment: Canonical port call primary key joining schedule and JIT phases.
+  synonyms:
+  - call id
+  - transport call key
+- name: vessel_imo_number
+  expr: vessel_imo_number
+  comment: 7-digit IMO ship identification number.
+  synonyms:
+  - imo number
+  - ship id
+- name: vessel_name
+  expr: vessel_name
+  comment: Registered ocean vessel name.
+  synonyms:
+  - ship name
+  - vessel
+- name: carrier_voyage_number
+  expr: carrier_voyage_number
+  comment: Operational carrier voyage identifier.
+  synonyms:
+  - voyage number
+  - voyage code
+- name: un_location_code
+  expr: un_location_code
+  comment: 5-character UN/LOCODE port identifier (e.g. NZAKL, AUSYD).
+  synonyms:
+  - port code
+  - locode
+- name: port_name
+  expr: port_name
+  comment: Human-readable port terminal name.
+  synonyms:
+  - port
+  - harbor name
+- name: call_date
+  expr: call_date
+  comment: Calendar date of the vessel arrival at Pilot Boarding Place.
+  synonyms:
+  - arrival date
+  - port call date
+- name: on_time_flag
+  expr: on_time_flag
+  comment: Binary indicator (1 = arrived within OVS SLA window, 0 = delayed).
+- name: port_turnaround_hours
+  expr: port_turnaround_hours
+  comment: Elapsed hours from Pilot Boarding Place arrival to berth departure.
+- name: berth_wait_hours
+  expr: berth_wait_hours
+  comment: Elapsed wait hours from Pilot Boarding Place arrival to berth all-fast.
+measures:
+- name: schedule_reliability_pct
+  expr: SUM(on_time_flag) / NULLIF(COUNT(*), 0)
+  comment: Share of vessel port calls arriving on time against OVS schedule SLA.
+  synonyms:
+  - on time performance
+  - otp
+  - schedule reliability
+- name: avg_port_turnaround_hours
+  expr: AVG(port_turnaround_hours)
+  comment: Average vessel turnaround duration in hours from PBP arrival to departure.
+  synonyms:
+  - average turnaround time
+  - mean port stay
+- name: avg_berth_wait_hours
+  expr: AVG(berth_wait_hours)
+  comment: Average anchorage waiting hours before vessel berthing.
+  synonyms:
+  - berth congestion wait
+  - average anchorage wait
+- name: total_port_calls
+  expr: COUNT(*)
+  comment: Total number of completed vessel port calls.
+  synonyms:
+  - port call count
+  - vessel arrivals
+- name: on_time_calls
+  expr: SUM(on_time_flag)
+  comment: Count of vessel port calls meeting OVS arrival reliability SLA.
+  synonyms:
+  - reliable calls
+  - punctual port calls

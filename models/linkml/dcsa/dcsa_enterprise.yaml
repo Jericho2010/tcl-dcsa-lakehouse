@@ -1,0 +1,74 @@
+id: https://tasmancontainerline.example/linkml/dcsa/enterprise
+name: dcsa_enterprise
+title: Tasman Container Line (TCL) Enterprise DCSA Umbrella Schema
+description: Unified LinkML umbrella schema importing DCSA Common, T&T v3, eBL/OVS v3, and JIT v1 domain models alongside curated Gold KPI schemas.
+version: 1.0.0
+prefixes:
+  dcsa_ent: https://tasmancontainerline.example/linkml/dcsa/enterprise/
+  dcsa_common: https://tasmancontainerline.example/linkml/dcsa/common/
+  dcsa_tnt: https://tasmancontainerline.example/linkml/dcsa/tnt/v3/
+  dcsa_ebl: https://tasmancontainerline.example/linkml/dcsa/ebl/v3/
+  dcsa_jit: https://tasmancontainerline.example/linkml/dcsa/jit/v1/
+  linkml: https://w3id.org/linkml/
+default_prefix: dcsa_ent
+default_range: string
+imports:
+  - linkml:types
+  - dcsa_common
+  - dcsa_tnt_v3
+  - dcsa_ebl_v3
+  - dcsa_jit_v1
+
+classes:
+  PortCallPerformanceKpi:
+    description: Curated Gold analytical dataset summarizing port call turnaround, berth wait time, and schedule reliability per port call.
+    attributes:
+      port_call_id:
+        range: string
+        identifier: true
+        required: true
+        description: Canonical port call primary key matching silver_port_call_turnaround.
+      vessel_imo_number:
+        range: string
+        required: true
+        pattern: "^[0-9]{7}$"
+        description: 7-digit IMO ship identification number.
+      vessel_name:
+        range: string
+        required: true
+        description: Vessel name for operational reporting.
+      carrier_voyage_number:
+        range: string
+        required: true
+        description: Operational carrier voyage identifier.
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port identifier.
+      port_name:
+        range: string
+        required: true
+        description: Normalized port name.
+      call_date:
+        range: date
+        required: true
+        description: Port call arrival calendar date.
+      on_time_flag:
+        range: integer
+        required: true
+        minimum_value: 0
+        maximum_value: 1
+        description: Binary schedule reliability indicator (1 = arrived within OVS SLA window, 0 = delayed).
+      port_turnaround_hours:
+        range: float
+        required: true
+        minimum_value: 0.0
+        maximum_value: 720.0
+        description: Total elapsed hours between Pilot Boarding Place arrival and berth departure.
+      berth_wait_hours:
+        range: float
+        required: true
+        minimum_value: 0.0
+        maximum_value: 720.0
+        description: Elapsed anchorage/wait hours between Pilot Boarding Place arrival and berth all-fast.

@@ -1,0 +1,11 @@
+resources:
+  apps:
+    tcl_port_control:
+      name: tcl-port-control
+      description: "TCL Port Call & Reefer Exception Workbench (Metric Views, Silver Quarantine, Triage Write-Back & Genie)."
+      source_code_path: ../apps/port-control
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE

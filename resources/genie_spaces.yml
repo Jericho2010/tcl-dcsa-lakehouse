@@ -1,0 +1,7 @@
+resources:
+  genie_spaces:
+    tcl_ops_genie:
+      title: "TCL DCSA Port & Reefer Operations Genie"
+      description: "Natural-language BI Genie space governed by Unity Catalog Metric Views (mv_port_call_kpis, mv_container_journey_kpis)."
+      warehouse_id: ${var.warehouse_id}
+      file_path: ../src/genie/tcl_ops_genie.geniespace.json

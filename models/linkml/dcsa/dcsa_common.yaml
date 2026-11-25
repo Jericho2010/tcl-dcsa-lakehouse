@@ -1,0 +1,183 @@
+id: https://tasmancontainerline.example/linkml/dcsa/common
+name: dcsa_common
+title: DCSA Common Domain Types, Enums, and Event Mixins
+description: Shared UN/LOCODE types, ISO 6346 container equipment patterns, DCSA standard enums, Location entity, and AuditableEvent mixin.
+version: 3.0.0
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  dcsa_common: https://tasmancontainerline.example/linkml/dcsa/common/
+  linkml: https://w3id.org/linkml/
+default_prefix: dcsa_common
+default_range: string
+imports:
+  - linkml:types
+
+types:
+  UNLocationCode:
+    typeof: string
+    pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+    description: UN/LOCODE 5-character port or inland location code (e.g., NZAKL, AUSYD, SGSIN).
+
+  EquipmentReference:
+    typeof: string
+    pattern: "^[A-Z]{4}[0-9]{7}$"
+    description: ISO 6346 container equipment identifier (4-letter owner/category prefix plus 7 digits).
+
+enums:
+  EventClassifierCode:
+    description: DCSA classifier indicating whether an event timestamp is planned, actual, or estimated.
+    permissible_values:
+      PLN:
+        description: Planned schedule timestamp.
+      ACT:
+        description: Actual observed timestamp.
+      EST:
+        description: Estimated forecast timestamp.
+
+  EquipmentEventTypeCode:
+    description: DCSA Track & Trace v3 equipment milestone event codes.
+    permissible_values:
+      LOAD:
+        description: Container loaded onto vessel.
+      DISC:
+        description: Container discharged from vessel.
+      GTIN:
+        description: Container gated into terminal.
+      GTOT:
+        description: Container gated out of terminal.
+      STUF:
+        description: Container stuffed at origin.
+      STRP:
+        description: Container stripped at destination.
+      PICK:
+        description: Empty container picked up.
+      DROP:
+        description: Empty container returned/dropped off.
+      INSP:
+        description: Container inspected.
+      RSEA:
+        description: Container resealed.
+      RMVD:
+        description: Seal removed from container.
+
+  TransportEventTypeCode:
+    description: DCSA Track & Trace v3 vessel transport milestone codes.
+    permissible_values:
+      ARRI:
+        description: Vessel arrived at transport call location.
+      DEPA:
+        description: Vessel departed from transport call location.
+
+  ShipmentEventTypeCode:
+    description: DCSA eBL / Booking shipment lifecycle document status codes.
+    permissible_values:
+      RECE:
+        description: Received by carrier.
+      DRFT:
+        description: Draft created.
+      PENA:
+        description: Pending approval.
+      PENU:
+        description: Pending update.
+      REJE:
+        description: Rejected.
+      APPR:
+        description: Approved.
+      ISSU:
+        description: Issued.
+      SURR:
+        description: Surrendered.
+      SUBM:
+        description: Submitted.
+      VOID:
+        description: Voided.
+      CONF:
+        description: Confirmed.
+      REQS:
+        description: Requested.
+      CMPL:
+        description: Completed.
+      HOLD:
+        description: Placed on hold.
+      RELS:
+        description: Released.
+
+  PowerStatus:
+    description: Refrigerated container power supply telemetry state.
+    permissible_values:
+      "ON":
+        description: Reefer unit powered on and regulating.
+      "OFF":
+        description: Reefer unit powered off.
+      ALARM:
+        description: Reefer unit reporting active alarm condition.
+      DEFROST:
+        description: Reefer unit running defrost cycle.
+      UNKNOWN:
+        description: Power status unavailable from IoT gateway.
+
+  JitPhaseCode:
+    description: DCSA Just-In-Time (JIT) v1.x port call timestamp milestone phases.
+    permissible_values:
+      ETA_PBP:
+        description: Estimated time of arrival at Pilot Boarding Place.
+      ATA_PBP:
+        description: Actual time of arrival at Pilot Boarding Place.
+      ETB_BERTH:
+        description: Estimated time alongside berth.
+      ATB_BERTH:
+        description: Actual time alongside berth (all fast).
+      ATD_BERTH:
+        description: Actual time of departure from berth.
+
+classes:
+  Location:
+    description: Normalized UN/LOCODE maritime terminal or port geographic reference.
+    attributes:
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: 5-character UN/LOCODE port identifier.
+      location_name:
+        range: string
+        description: Human-readable port or terminal name.
+      facility_code:
+        range: string
+        description: SMDG or BIC terminal facility code within the UN/LOCODE.
+      latitude:
+        range: float
+        minimum_value: -90.0
+        maximum_value: 90.0
+        description: WGS84 latitude in decimal degrees.
+      longitude:
+        range: float
+        minimum_value: -180.0
+        maximum_value: 180.0
+        description: WGS84 longitude in decimal degrees.
+
+  AuditableEvent:
+    mixin: true
+    description: Common audit and event timing attributes inherited across DCSA event classes.
+    attributes:
+      event_id:
+        range: string
+        identifier: true
+        required: true
+        description: Globally unique deterministic identifier for the DCSA event record.
+      event_created_date_time:
+        range: datetime
+        required: true
+        description: UTC timestamp when the source system created the event payload.
+      event_date_time:
+        range: datetime
+        required: true
+        description: UTC timestamp when the operational event occurred, is estimated, or is planned.
+      event_classifier_code:
+        range: EventClassifierCode
+        required: true
+        description: Classification of event_date_time (PLN, ACT, or EST).
+      source_system:
+        range: string
+        required: true
+        description: Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).

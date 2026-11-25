@@ -1,0 +1,39 @@
+/// Non-destructive specialist DAX measures preserved outside Apache Ossie core generation.
+/// Automate the boring 80% (dcsa_ops.model.bim), protect the specialist 20% here.
+
+measure 'Schedule Reliability % (Rolling 30D)' =
+    VAR MaxCallDate = MAX ( 'mv_port_call_kpis'[call_date] )
+    RETURN
+        CALCULATE (
+            [schedule_reliability_pct],
+            DATESINPERIOD ( 'mv_port_call_kpis'[call_date], MaxCallDate, -30, DAY )
+        )
+    formatString: 0.0%
+    displayFolder: Executive Time Intelligence
+
+measure 'Port Turnaround Hours (Weighted 30D Delta)' =
+    VAR Current30D =
+        CALCULATE (
+            [avg_port_turnaround_hours],
+            DATESINPERIOD ( 'mv_port_call_kpis'[call_date], MAX ( 'mv_port_call_kpis'[call_date] ), -30, DAY )
+        )
+    VAR Prior30D =
+        CALCULATE (
+            [avg_port_turnaround_hours],
+            DATESINPERIOD ( 'mv_port_call_kpis'[call_date], MAX ( 'mv_port_call_kpis'[call_date] ) - 30, -30, DAY )
+        )
+    RETURN
+        Current30D - Prior30D
+    formatString: +0.00;-0.00;0.00
+    displayFolder: Executive Time Intelligence
+
+measure 'Reefer Excursion Dwell-Weighted Exposure' =
+    DIVIDE (
+        SUMX (
+            'mv_container_journey_kpis',
+            'mv_container_journey_kpis'[excursion_flag_int] * 'mv_container_journey_kpis'[dwell_hours]
+        ),
+        SUM ( 'mv_container_journey_kpis'[dwell_hours] )
+    )
+    formatString: 0.00%
+    displayFolder: Cold-Chain Risk Analytics

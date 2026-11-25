@@ -1,0 +1,149 @@
+id: https://tasmancontainerline.example/linkml/dcsa/tnt/v3
+name: dcsa_tnt_v3
+title: DCSA Track and Trace v3.0.0 Domain Model
+description: Equipment events, vessel transport events, and reefer IoT telemetry readings conforming to DCSA T&T v3.0.0.
+version: 3.0.0
+prefixes:
+  dcsa_tnt: https://tasmancontainerline.example/linkml/dcsa/tnt/v3/
+  dcsa_common: https://tasmancontainerline.example/linkml/dcsa/common/
+  linkml: https://w3id.org/linkml/
+default_prefix: dcsa_tnt
+default_range: string
+imports:
+  - linkml:types
+  - dcsa_common
+
+classes:
+  EquipmentEvent:
+    mixins:
+      - AuditableEvent
+    description: DCSA Track & Trace v3 container equipment handling event captured at terminal gates, quaysides, or depots.
+    attributes:
+      equipment_event_type_code:
+        range: EquipmentEventTypeCode
+        required: true
+        description: DCSA equipment milestone code (e.g., LOAD, DISC, GTIN, GTOT).
+      equipment_reference:
+        range: EquipmentReference
+        pattern: "^[A-Z]{4}[0-9]{7}$"
+        required: true
+        description: ISO 6346 container identifier (e.g., TCLU1234567).
+      iso_equipment_code:
+        range: string
+        required: true
+        pattern: "^[0-9A-Z]{4}$"
+        description: 4-character ISO 6346 container size and type code (e.g., 45R1, 42G1).
+      empty_indicator_code:
+        range: string
+        required: true
+        pattern: "^(EMPTY|LADEN)$"
+        description: Container load state indicator (EMPTY or LADEN).
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port where the equipment event occurred.
+      facility_code:
+        range: string
+        description: SMDG terminal facility code.
+      transport_call_id:
+        range: string
+        description: Foreign reference linking vessel-side events to the port call.
+      carrier_voyage_number:
+        range: string
+        description: Operational carrier voyage identifier.
+
+  TransportEvent:
+    mixins:
+      - AuditableEvent
+    description: DCSA Track & Trace v3 vessel arrival and departure milestone event for a transport call.
+    attributes:
+      transport_event_type_code:
+        range: TransportEventTypeCode
+        required: true
+        description: Vessel movement event type (ARRI or DEPA).
+      transport_call_id:
+        range: string
+        required: true
+        description: Unique identifier of the transport call at the terminal.
+      vessel_imo_number:
+        range: string
+        required: true
+        pattern: "^[0-9]{7}$"
+        description: 7-digit IMO ship identification number.
+      carrier_voyage_number:
+        range: string
+        required: true
+        description: Operational carrier voyage identifier.
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port where the vessel event applies.
+      delay_reason_code:
+        range: string
+        description: Standardized SMDG delay reason code when behind schedule.
+      change_remark:
+        range: string
+        description: Operational commentary explaining schedule updates.
+
+  ReeferTelemetryReading:
+    description: DCSA Track & Trace v3.0.0 refrigerated container IoT telemetry packet with physical safety bounds.
+    attributes:
+      reading_id:
+        range: string
+        identifier: true
+        required: true
+        description: Unique telemetry packet identifier emitted by the reefer modem.
+      equipment_reference:
+        range: EquipmentReference
+        pattern: "^[A-Z]{4}[0-9]{7}$"
+        required: true
+        description: ISO 6346 identifier of the monitored reefer container.
+      recorded_at:
+        range: datetime
+        required: true
+        description: UTC timestamp recorded by the reefer sensor controller.
+      setpoint_temp_c:
+        range: float
+        required: true
+        minimum_value: -40.0
+        maximum_value: 30.0
+        description: Target cargo setpoint temperature in degrees Celsius (-40C to +30C).
+      supply_air_temp_c:
+        range: float
+        required: true
+        minimum_value: -45.0
+        maximum_value: 60.0
+        description: Supply air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.
+      return_air_temp_c:
+        range: float
+        required: true
+        minimum_value: -45.0
+        maximum_value: 60.0
+        description: Return air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.
+      relative_humidity_pct:
+        range: float
+        minimum_value: 0.0
+        maximum_value: 100.0
+        description: Cargo chamber relative humidity percentage (0 to 100).
+      power_status:
+        range: PowerStatus
+        required: true
+        description: Reefer compressor/power supply state (ON, OFF, ALARM, DEFROST, UNKNOWN).
+      latitude:
+        range: float
+        required: true
+        minimum_value: -90.0
+        maximum_value: 90.0
+        description: GPS latitude reported with the telemetry reading (-90 to +90).
+      longitude:
+        range: float
+        required: true
+        minimum_value: -180.0
+        maximum_value: 180.0
+        description: GPS longitude reported with the telemetry reading (-180 to +180).
+      excursion_flag:
+        range: boolean
+        required: true
+        description: True when supply or return temperature breached cold-chain tolerance bands.

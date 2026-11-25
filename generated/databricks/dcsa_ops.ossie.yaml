@@ -1,0 +1,438 @@
+version: 0.3.0.dev0
+name: dcsa_ops
+description: |
+  Tasman Container Line (TCL) DCSA operational semantic model unifying port call reliability and cold-chain reefer telemetry across Databricks Unity Catalog Metric Views and Power BI Semantic Models.
+ai_context:
+  instructions: |
+    Use mv_port_call_kpis for vessel schedule reliability, turnaround hours, and berth wait analysis, and mv_container_journey_kpis for reefer excursion monitoring, container moves, dwell time, and active eBL document counts. Join on port_call_id when correlating port delays with cold-chain excursions.
+  synonyms:
+  - DCSA Operations Semantic Layer
+  - Tasman Container Line KPIs
+  - Port Call & Cold-Chain Model
+  examples:
+  - What is the schedule reliability percentage by port?
+  - How many reefer cold-chain excursions occurred across active journeys?
+  - What is average port turnaround time and berth wait hours by vessel?
+datasets:
+- name: mv_port_call_kpis
+  source: tcl_lakehouse.gold_dcsa.mv_port_call_kpis
+  primary_key:
+  - port_call_id
+  description: Curated Gold port call performance metrics per JIT and OVS port call.
+  ai_context:
+    instructions: Aggregate schedule reliability, berth waiting, and turnaround metrics by port or vessel.
+    synonyms:
+    - port call kpis
+    - schedule reliability table
+    - vessel port performance
+  fields:
+  - name: port_call_id
+    datatype: String
+    expression:
+      sql: port_call_id
+    description: Canonical port call primary key joining schedule and JIT phases.
+    ai_context:
+      synonyms:
+      - call id
+      - transport call key
+  - name: vessel_imo_number
+    datatype: String
+    expression:
+      sql: vessel_imo_number
+    description: 7-digit IMO ship identification number.
+    ai_context:
+      synonyms:
+      - imo number
+      - ship id
+  - name: vessel_name
+    datatype: String
+    expression:
+      sql: vessel_name
+    description: Registered ocean vessel name.
+    ai_context:
+      synonyms:
+      - ship name
+      - vessel
+  - name: carrier_voyage_number
+    datatype: String
+    expression:
+      sql: carrier_voyage_number
+    description: Operational carrier voyage identifier.
+    ai_context:
+      synonyms:
+      - voyage number
+      - voyage code
+  - name: un_location_code
+    datatype: String
+    expression:
+      sql: un_location_code
+    description: 5-character UN/LOCODE port identifier (e.g. NZAKL, AUSYD).
+    ai_context:
+      synonyms:
+      - port code
+      - locode
+  - name: port_name
+    datatype: String
+    expression:
+      sql: port_name
+    description: Human-readable port terminal name.
+    ai_context:
+      synonyms:
+      - port
+      - harbor name
+  - name: call_date
+    datatype: Date
+    expression:
+      sql: call_date
+    description: Calendar date of the vessel arrival at Pilot Boarding Place.
+    dimension:
+      is_time: true
+    ai_context:
+      synonyms:
+      - arrival date
+      - port call date
+  - name: on_time_flag
+    datatype: Integer
+    expression:
+      sql: on_time_flag
+    description: Binary indicator (1 = arrived within OVS SLA window, 0 = delayed).
+  - name: port_turnaround_hours
+    datatype: Float
+    expression:
+      sql: port_turnaround_hours
+    description: Elapsed hours from Pilot Boarding Place arrival to berth departure.
+  - name: berth_wait_hours
+    datatype: Float
+    expression:
+      sql: berth_wait_hours
+    description: Elapsed wait hours from Pilot Boarding Place arrival to berth all-fast.
+  metrics:
+  - name: schedule_reliability_pct
+    expression:
+      sql: SUM(on_time_flag) / NULLIF(COUNT(*), 0)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.schedule_reliability_pct)
+    description: Share of vessel port calls arriving on time against OVS schedule SLA.
+    ai_context:
+      synonyms:
+      - on time performance
+      - otp
+      - schedule reliability
+  - name: avg_port_turnaround_hours
+    expression:
+      sql: AVG(port_turnaround_hours)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.avg_port_turnaround_hours)
+    description: Average vessel turnaround duration in hours from PBP arrival to departure.
+    ai_context:
+      synonyms:
+      - average turnaround time
+      - mean port stay
+  - name: avg_berth_wait_hours
+    expression:
+      sql: AVG(berth_wait_hours)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.avg_berth_wait_hours)
+    description: Average anchorage waiting hours before vessel berthing.
+    ai_context:
+      synonyms:
+      - berth congestion wait
+      - average anchorage wait
+  - name: total_port_calls
+    expression:
+      sql: COUNT(*)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.total_port_calls)
+    description: Total number of completed vessel port calls.
+    ai_context:
+      synonyms:
+      - port call count
+      - vessel arrivals
+  - name: on_time_calls
+    expression:
+      sql: SUM(on_time_flag)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.on_time_calls)
+    description: Count of vessel port calls meeting OVS arrival reliability SLA.
+    ai_context:
+      synonyms:
+      - reliable calls
+      - punctual port calls
+- name: mv_container_journey_kpis
+  source: tcl_lakehouse.gold_dcsa.mv_container_journey_kpis
+  primary_key:
+  - journey_id
+  description: Curated Gold container journey and reefer IoT thermal excursion dataset.
+  ai_context:
+    instructions: Measure cold-chain reefer excursions, dwell duration, moves, and active eBL volume.
+    synonyms:
+    - container journey kpis
+    - reefer cold chain table
+    - shipment movement metrics
+  fields:
+  - name: journey_id
+    datatype: String
+    expression:
+      sql: journey_id
+    description: Unique container journey grain identifier.
+  - name: port_call_id
+    datatype: String
+    expression:
+      sql: port_call_id
+    description: Foreign key linking container moves to mv_port_call_kpis.
+    ai_context:
+      synonyms:
+      - port call fk
+      - transport call key
+  - name: equipment_reference
+    datatype: String
+    expression:
+      sql: equipment_reference
+    description: ISO 6346 container identifier (4 letters + 7 digits).
+    ai_context:
+      synonyms:
+      - container number
+      - reefer unit id
+  - name: un_location_code
+    datatype: String
+    expression:
+      sql: un_location_code
+    description: UN/LOCODE port where the container movement occurred.
+    ai_context:
+      synonyms:
+      - movement port code
+  - name: transport_document_reference
+    datatype: String
+    expression:
+      sql: transport_document_reference
+    description: DCSA eBL transport document reference covering the shipment.
+    ai_context:
+      synonyms:
+      - ebl number
+      - bill of lading
+  - name: journey_date
+    datatype: Date
+    expression:
+      sql: journey_date
+    description: Calendar date of the container journey milestone.
+    dimension:
+      is_time: true
+    ai_context:
+      synonyms:
+      - container move date
+  - name: excursion_flag_int
+    datatype: Integer
+    expression:
+      sql: excursion_flag_int
+    description: Binary thermal excursion flag (1 = reefer excursion observed, 0 = within bounds).
+  - name: dwell_hours
+    datatype: Float
+    expression:
+      sql: dwell_hours
+    description: Terminal dwell duration in hours from discharge/gate-in to gate-out/load.
+  metrics:
+  - name: cold_chain_excursion_rate_pct
+    expression:
+      sql: SUM(excursion_flag_int) / NULLIF(COUNT(*), 0)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.cold_chain_excursion_rate_pct)
+    description: Ratio of container moves experiencing a reefer cold-chain thermal excursion.
+    ai_context:
+      synonyms:
+      - excursion rate
+      - cold chain failure rate
+      - reefer breach pct
+  - name: total_container_moves
+    expression:
+      sql: COUNT(*)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.total_container_moves)
+    description: Total number of tracked container journey records.
+    ai_context:
+      synonyms:
+      - container moves
+      - total boxes moved
+  - name: reefer_excursion_count
+    expression:
+      sql: SUM(excursion_flag_int)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.reefer_excursion_count)
+    description: Count of container journeys recording a reefer temperature excursion.
+    ai_context:
+      synonyms:
+      - excursion count
+      - cold chain alarms
+  - name: avg_dwell_hours
+    expression:
+      sql: AVG(dwell_hours)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.avg_dwell_hours)
+    description: Average container terminal dwell time in hours.
+    ai_context:
+      synonyms:
+      - mean container dwell
+      - average yard stay
+  - name: active_ebl_count
+    expression:
+      sql: COUNT(DISTINCT transport_document_reference)
+      dialects:
+      - dialect: DATABRICKS
+        expression: MEASURE(source.active_ebl_count)
+    description: Count of distinct active eBL transport documents in container journeys.
+    ai_context:
+      synonyms:
+      - distinct ebl count
+      - active bills of lading
+relationships:
+- name: container_journey_to_port_call
+  from: mv_container_journey_kpis
+  to: mv_port_call_kpis
+  from_columns:
+  - port_call_id
+  to_columns:
+  - port_call_id
+metrics:
+- name: schedule_reliability_pct
+  expression:
+    sql: SUM(mv_port_call_kpis.on_time_flag) / NULLIF(COUNT(mv_port_call_kpis.port_call_id), 0)
+  description: Share of vessel port calls arriving on time against OVS schedule SLA.
+  ai_context:
+    synonyms:
+    - on time performance
+    - otp
+    - schedule reliability
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_port_call_kpis
+      formatString: 0.0%
+- name: avg_port_turnaround_hours
+  expression:
+    sql: AVG(mv_port_call_kpis.port_turnaround_hours)
+  description: Average vessel turnaround duration in hours from PBP arrival to departure.
+  ai_context:
+    synonyms:
+    - average turnaround time
+    - mean port stay
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_port_call_kpis
+- name: avg_berth_wait_hours
+  expression:
+    sql: AVG(mv_port_call_kpis.berth_wait_hours)
+  description: Average anchorage waiting hours before vessel berthing.
+  ai_context:
+    synonyms:
+    - berth congestion wait
+    - average anchorage wait
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_port_call_kpis
+- name: total_port_calls
+  expression:
+    sql: COUNT(mv_port_call_kpis.port_call_id)
+  description: Total number of completed vessel port calls.
+  ai_context:
+    synonyms:
+    - port call count
+    - vessel arrivals
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_port_call_kpis
+- name: on_time_calls
+  expression:
+    sql: SUM(mv_port_call_kpis.on_time_flag)
+  description: Count of vessel port calls meeting OVS arrival reliability SLA.
+  ai_context:
+    synonyms:
+    - reliable calls
+    - punctual port calls
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_port_call_kpis
+- name: cold_chain_excursion_rate_pct
+  expression:
+    sql: SUM(mv_container_journey_kpis.excursion_flag_int) / NULLIF(COUNT(mv_container_journey_kpis.journey_id),
+      0)
+  description: Ratio of container moves experiencing a reefer cold-chain thermal excursion.
+  ai_context:
+    synonyms:
+    - excursion rate
+    - cold chain failure rate
+    - reefer breach pct
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_container_journey_kpis
+      formatString: 0.0%
+- name: total_container_moves
+  expression:
+    sql: COUNT(mv_container_journey_kpis.journey_id)
+  description: Total number of tracked container journey records.
+  ai_context:
+    synonyms:
+    - container moves
+    - total boxes moved
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_container_journey_kpis
+- name: reefer_excursion_count
+  expression:
+    sql: SUM(mv_container_journey_kpis.excursion_flag_int)
+  description: Count of container journeys recording a reefer temperature excursion.
+  ai_context:
+    synonyms:
+    - excursion count
+    - cold chain alarms
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_container_journey_kpis
+- name: avg_dwell_hours
+  expression:
+    sql: AVG(mv_container_journey_kpis.dwell_hours)
+  description: Average container terminal dwell time in hours.
+  ai_context:
+    synonyms:
+    - mean container dwell
+    - average yard stay
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_container_journey_kpis
+- name: active_ebl_count
+  expression:
+    sql: COUNT(DISTINCT mv_container_journey_kpis.transport_document_reference)
+  description: Count of distinct active eBL transport documents in container journeys.
+  ai_context:
+    synonyms:
+    - distinct ebl count
+    - active bills of lading
+  nonportable_extensions:
+  - vendor_name: POWER_BI
+    data:
+      table: mv_container_journey_kpis
+nonportable_extensions:
+- vendor_name: TCL_GOVERNANCE
+  data:
+    lakehouse_catalog: tcl_lakehouse
+    target_schema: gold_dcsa
+    dcsa_standards:
+    - TNT_3.0.0
+    - EBL_3.0.0
+    - OVS_3.0.0
+    - JIT_1.2.0

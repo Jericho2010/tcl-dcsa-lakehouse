@@ -1,0 +1,810 @@
+{
+    "$defs": {
+        "AuditableEvent": {
+            "additionalProperties": false,
+            "description": "Common audit and event timing attributes inherited across DCSA event classes.",
+            "properties": {
+                "event_classifier_code": {
+                    "$ref": "#/$defs/EventClassifierCode",
+                    "description": "Classification of event_date_time (PLN, ACT, or EST)."
+                },
+                "event_created_date_time": {
+                    "description": "UTC timestamp when the source system created the event payload.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_date_time": {
+                    "description": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_id": {
+                    "description": "Globally unique deterministic identifier for the DCSA event record.",
+                    "type": "string"
+                },
+                "source_system": {
+                    "description": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "event_id",
+                "event_created_date_time",
+                "event_date_time",
+                "event_classifier_code",
+                "source_system"
+            ],
+            "title": "AuditableEvent",
+            "type": "object"
+        },
+        "BookingRecord": {
+            "additionalProperties": false,
+            "description": "DCSA Booking v2 freight booking request and confirmation record.",
+            "properties": {
+                "booking_created_at": {
+                    "description": "UTC timestamp when booking was created.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "booking_status": {
+                    "$ref": "#/$defs/ShipmentEventTypeCode",
+                    "description": "Current DCSA booking lifecycle status."
+                },
+                "carrier_booking_reference": {
+                    "description": "Unique carrier booking reference identifier.",
+                    "type": "string"
+                },
+                "place_of_delivery": {
+                    "description": "UN/LOCODE destination place of delivery.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "place_of_receipt": {
+                    "description": "UN/LOCODE origin place of receipt.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "reefer_required": {
+                    "description": "True when refrigerated containers are required for the booking.",
+                    "type": "boolean"
+                },
+                "teu_count": {
+                    "description": "Booked capacity in Twenty-foot Equivalent Units (1 to 25000).",
+                    "maximum": 25000,
+                    "minimum": 1,
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "carrier_booking_reference",
+                "booking_status",
+                "booking_created_at",
+                "place_of_receipt",
+                "place_of_delivery",
+                "teu_count",
+                "reefer_required"
+            ],
+            "title": "BookingRecord",
+            "type": "object"
+        },
+        "CarrierSchedule": {
+            "additionalProperties": false,
+            "description": "DCSA Operational Vessel Schedules (OVS) proforma and planned port call schedule.",
+            "properties": {
+                "carrier_service_code": {
+                    "description": "Tasman trade lane service loop code (e.g., TASMAN-EXPRESS).",
+                    "type": "string"
+                },
+                "carrier_voyage_number": {
+                    "description": "Planned operational voyage code.",
+                    "type": "string"
+                },
+                "planned_arrival_utc": {
+                    "description": "Scheduled baseline arrival timestamp in UTC.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "planned_departure_utc": {
+                    "description": "Scheduled baseline departure timestamp in UTC.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "schedule_id": {
+                    "description": "Unique vessel schedule port call slot identifier.",
+                    "type": "string"
+                },
+                "un_location_code": {
+                    "description": "Scheduled UN/LOCODE port of call.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "vessel_imo_number": {
+                    "description": "7-digit IMO vessel identifier.",
+                    "pattern": "^[0-9]{7}$",
+                    "type": "string"
+                },
+                "vessel_name": {
+                    "description": "Registered commercial vessel name.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "schedule_id",
+                "vessel_imo_number",
+                "vessel_name",
+                "carrier_service_code",
+                "carrier_voyage_number",
+                "un_location_code",
+                "planned_arrival_utc",
+                "planned_departure_utc"
+            ],
+            "title": "CarrierSchedule",
+            "type": "object"
+        },
+        "EquipmentEvent": {
+            "additionalProperties": false,
+            "description": "DCSA Track & Trace v3 container equipment handling event captured at terminal gates, quaysides, or depots.",
+            "properties": {
+                "carrier_voyage_number": {
+                    "description": "Operational carrier voyage identifier.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "empty_indicator_code": {
+                    "description": "Container load state indicator (EMPTY or LADEN).",
+                    "pattern": "^(EMPTY|LADEN)$",
+                    "type": "string"
+                },
+                "equipment_event_type_code": {
+                    "$ref": "#/$defs/EquipmentEventTypeCode",
+                    "description": "DCSA equipment milestone code (e.g., LOAD, DISC, GTIN, GTOT)."
+                },
+                "equipment_reference": {
+                    "description": "ISO 6346 container identifier (e.g., TCLU1234567).",
+                    "pattern": "^[A-Z]{4}[0-9]{7}$",
+                    "type": "string"
+                },
+                "event_classifier_code": {
+                    "$ref": "#/$defs/EventClassifierCode",
+                    "description": "Classification of event_date_time (PLN, ACT, or EST)."
+                },
+                "event_created_date_time": {
+                    "description": "UTC timestamp when the source system created the event payload.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_date_time": {
+                    "description": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_id": {
+                    "description": "Globally unique deterministic identifier for the DCSA event record.",
+                    "type": "string"
+                },
+                "facility_code": {
+                    "description": "SMDG terminal facility code.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "iso_equipment_code": {
+                    "description": "4-character ISO 6346 container size and type code (e.g., 45R1, 42G1).",
+                    "pattern": "^[0-9A-Z]{4}$",
+                    "type": "string"
+                },
+                "source_system": {
+                    "description": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+                    "type": "string"
+                },
+                "transport_call_id": {
+                    "description": "Foreign reference linking vessel-side events to the port call.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "un_location_code": {
+                    "description": "UN/LOCODE port where the equipment event occurred.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "equipment_event_type_code",
+                "equipment_reference",
+                "iso_equipment_code",
+                "empty_indicator_code",
+                "un_location_code",
+                "event_id",
+                "event_created_date_time",
+                "event_date_time",
+                "event_classifier_code",
+                "source_system"
+            ],
+            "title": "EquipmentEvent",
+            "type": "object"
+        },
+        "EquipmentEventTypeCode": {
+            "description": "DCSA Track & Trace v3 equipment milestone event codes.",
+            "enum": [
+                "LOAD",
+                "DISC",
+                "GTIN",
+                "GTOT",
+                "STUF",
+                "STRP",
+                "PICK",
+                "DROP",
+                "INSP",
+                "RSEA",
+                "RMVD"
+            ],
+            "title": "EquipmentEventTypeCode",
+            "type": "string"
+        },
+        "EventClassifierCode": {
+            "description": "DCSA classifier indicating whether an event timestamp is planned, actual, or estimated.",
+            "enum": [
+                "PLN",
+                "ACT",
+                "EST"
+            ],
+            "title": "EventClassifierCode",
+            "type": "string"
+        },
+        "JitPhaseCode": {
+            "description": "DCSA Just-In-Time (JIT) v1.x port call timestamp milestone phases.",
+            "enum": [
+                "ETA_PBP",
+                "ATA_PBP",
+                "ETB_BERTH",
+                "ATB_BERTH",
+                "ATD_BERTH"
+            ],
+            "title": "JitPhaseCode",
+            "type": "string"
+        },
+        "Location": {
+            "additionalProperties": false,
+            "description": "Normalized UN/LOCODE maritime terminal or port geographic reference.",
+            "properties": {
+                "facility_code": {
+                    "description": "SMDG or BIC terminal facility code within the UN/LOCODE.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "latitude": {
+                    "description": "WGS84 latitude in decimal degrees.",
+                    "maximum": 90.0,
+                    "minimum": -90.0,
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "location_name": {
+                    "description": "Human-readable port or terminal name.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "longitude": {
+                    "description": "WGS84 longitude in decimal degrees.",
+                    "maximum": 180.0,
+                    "minimum": -180.0,
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "un_location_code": {
+                    "description": "5-character UN/LOCODE port identifier.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "un_location_code"
+            ],
+            "title": "Location",
+            "type": "object"
+        },
+        "PortCallPerformanceKpi": {
+            "additionalProperties": false,
+            "description": "Curated Gold analytical dataset summarizing port call turnaround, berth wait time, and schedule reliability per port call.",
+            "properties": {
+                "berth_wait_hours": {
+                    "description": "Elapsed anchorage/wait hours between Pilot Boarding Place arrival and berth all-fast.",
+                    "maximum": 720.0,
+                    "minimum": 0.0,
+                    "type": "number"
+                },
+                "call_date": {
+                    "description": "Port call arrival calendar date.",
+                    "format": "date",
+                    "type": "string"
+                },
+                "carrier_voyage_number": {
+                    "description": "Operational carrier voyage identifier.",
+                    "type": "string"
+                },
+                "on_time_flag": {
+                    "description": "Binary schedule reliability indicator (1 = arrived within OVS SLA window, 0 = delayed).",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "type": "integer"
+                },
+                "port_call_id": {
+                    "description": "Canonical port call primary key matching silver_port_call_turnaround.",
+                    "type": "string"
+                },
+                "port_name": {
+                    "description": "Normalized port name.",
+                    "type": "string"
+                },
+                "port_turnaround_hours": {
+                    "description": "Total elapsed hours between Pilot Boarding Place arrival and berth departure.",
+                    "maximum": 720.0,
+                    "minimum": 0.0,
+                    "type": "number"
+                },
+                "un_location_code": {
+                    "description": "UN/LOCODE port identifier.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "vessel_imo_number": {
+                    "description": "7-digit IMO ship identification number.",
+                    "pattern": "^[0-9]{7}$",
+                    "type": "string"
+                },
+                "vessel_name": {
+                    "description": "Vessel name for operational reporting.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "port_call_id",
+                "vessel_imo_number",
+                "vessel_name",
+                "carrier_voyage_number",
+                "un_location_code",
+                "port_name",
+                "call_date",
+                "on_time_flag",
+                "port_turnaround_hours",
+                "berth_wait_hours"
+            ],
+            "title": "PortCallPerformanceKpi",
+            "type": "object"
+        },
+        "PortCallTimestamp": {
+            "additionalProperties": false,
+            "description": "DCSA Just-In-Time port call milestone timestamp spanning ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, and ATD_BERTH.",
+            "properties": {
+                "berth_code": {
+                    "description": "Assigned terminal berth identifier.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "carrier_voyage_number": {
+                    "description": "Carrier voyage code for the port call.",
+                    "type": "string"
+                },
+                "delay_reason_code": {
+                    "description": "SMDG delay reason code when vessel misses target window.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "event_classifier_code": {
+                    "$ref": "#/$defs/EventClassifierCode",
+                    "description": "Classification of event_date_time (PLN, ACT, or EST)."
+                },
+                "event_created_date_time": {
+                    "description": "UTC timestamp when the source system created the event payload.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_date_time": {
+                    "description": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_id": {
+                    "description": "Globally unique deterministic identifier for the DCSA event record.",
+                    "type": "string"
+                },
+                "jit_phase_code": {
+                    "$ref": "#/$defs/JitPhaseCode",
+                    "description": "One of the 5 JIT phases (ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, ATD_BERTH)."
+                },
+                "port_call_id": {
+                    "description": "Canonical port call identifier joining carrier schedule, terminal berth, and vessel events.",
+                    "type": "string"
+                },
+                "source_system": {
+                    "description": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+                    "type": "string"
+                },
+                "terminal_code": {
+                    "description": "SMDG container terminal facility code.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "un_location_code": {
+                    "description": "UN/LOCODE port identifier where the JIT milestone was recorded.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "vessel_imo_number": {
+                    "description": "7-digit IMO vessel identifier.",
+                    "pattern": "^[0-9]{7}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "port_call_id",
+                "vessel_imo_number",
+                "carrier_voyage_number",
+                "un_location_code",
+                "jit_phase_code",
+                "event_id",
+                "event_created_date_time",
+                "event_date_time",
+                "event_classifier_code",
+                "source_system"
+            ],
+            "title": "PortCallTimestamp",
+            "type": "object"
+        },
+        "PowerStatus": {
+            "description": "Refrigerated container power supply telemetry state.",
+            "enum": [
+                "ON",
+                "OFF",
+                "ALARM",
+                "DEFROST",
+                "UNKNOWN"
+            ],
+            "title": "PowerStatus",
+            "type": "string"
+        },
+        "ReeferTelemetryReading": {
+            "additionalProperties": false,
+            "description": "DCSA Track & Trace v3.0.0 refrigerated container IoT telemetry packet with physical safety bounds.",
+            "properties": {
+                "equipment_reference": {
+                    "description": "ISO 6346 identifier of the monitored reefer container.",
+                    "pattern": "^[A-Z]{4}[0-9]{7}$",
+                    "type": "string"
+                },
+                "excursion_flag": {
+                    "description": "True when supply or return temperature breached cold-chain tolerance bands.",
+                    "type": "boolean"
+                },
+                "latitude": {
+                    "description": "GPS latitude reported with the telemetry reading (-90 to +90).",
+                    "maximum": 90.0,
+                    "minimum": -90.0,
+                    "type": "number"
+                },
+                "longitude": {
+                    "description": "GPS longitude reported with the telemetry reading (-180 to +180).",
+                    "maximum": 180.0,
+                    "minimum": -180.0,
+                    "type": "number"
+                },
+                "power_status": {
+                    "$ref": "#/$defs/PowerStatus",
+                    "description": "Reefer compressor/power supply state (ON, OFF, ALARM, DEFROST, UNKNOWN)."
+                },
+                "reading_id": {
+                    "description": "Unique telemetry packet identifier emitted by the reefer modem.",
+                    "type": "string"
+                },
+                "recorded_at": {
+                    "description": "UTC timestamp recorded by the reefer sensor controller.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "relative_humidity_pct": {
+                    "description": "Cargo chamber relative humidity percentage (0 to 100).",
+                    "maximum": 100.0,
+                    "minimum": 0.0,
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "return_air_temp_c": {
+                    "description": "Return air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.",
+                    "maximum": 60.0,
+                    "minimum": -45.0,
+                    "type": "number"
+                },
+                "setpoint_temp_c": {
+                    "description": "Target cargo setpoint temperature in degrees Celsius (-40C to +30C).",
+                    "maximum": 30.0,
+                    "minimum": -40.0,
+                    "type": "number"
+                },
+                "supply_air_temp_c": {
+                    "description": "Supply air probe temperature in degrees Celsius (-45C to +60C); rejects sensor faults such as -99C.",
+                    "maximum": 60.0,
+                    "minimum": -45.0,
+                    "type": "number"
+                }
+            },
+            "required": [
+                "reading_id",
+                "equipment_reference",
+                "recorded_at",
+                "setpoint_temp_c",
+                "supply_air_temp_c",
+                "return_air_temp_c",
+                "power_status",
+                "latitude",
+                "longitude",
+                "excursion_flag"
+            ],
+            "title": "ReeferTelemetryReading",
+            "type": "object"
+        },
+        "ShipmentEvent": {
+            "additionalProperties": false,
+            "description": "DCSA ShipmentEvent tracking booking and eBL document approval, issuance, and surrender transitions.",
+            "properties": {
+                "document_id": {
+                    "description": "Identifier of the referenced TransportDocument or BookingRecord.",
+                    "type": "string"
+                },
+                "document_type_code": {
+                    "description": "DCSA document type code (e.g., TRD for Transport Document, CBR for Carrier Booking).",
+                    "pattern": "^(CBR|BKG|SHI|SRM|TRD|ARN|VGM|CAS|CUS|DGD|OOG)$",
+                    "type": "string"
+                },
+                "event_classifier_code": {
+                    "$ref": "#/$defs/EventClassifierCode",
+                    "description": "Classification of event_date_time (PLN, ACT, or EST)."
+                },
+                "event_created_date_time": {
+                    "description": "UTC timestamp when the source system created the event payload.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_date_time": {
+                    "description": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_id": {
+                    "description": "Globally unique deterministic identifier for the DCSA event record.",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "Optional status change note or rejection reason.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "shipment_event_type_code": {
+                    "$ref": "#/$defs/ShipmentEventTypeCode",
+                    "description": "DCSA shipment status transition code."
+                },
+                "source_system": {
+                    "description": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "shipment_event_type_code",
+                "document_type_code",
+                "document_id",
+                "event_id",
+                "event_created_date_time",
+                "event_date_time",
+                "event_classifier_code",
+                "source_system"
+            ],
+            "title": "ShipmentEvent",
+            "type": "object"
+        },
+        "ShipmentEventTypeCode": {
+            "description": "DCSA eBL / Booking shipment lifecycle document status codes.",
+            "enum": [
+                "RECE",
+                "DRFT",
+                "PENA",
+                "PENU",
+                "REJE",
+                "APPR",
+                "ISSU",
+                "SURR",
+                "SUBM",
+                "VOID",
+                "CONF",
+                "REQS",
+                "CMPL",
+                "HOLD",
+                "RELS"
+            ],
+            "title": "ShipmentEventTypeCode",
+            "type": "string"
+        },
+        "TransportDocument": {
+            "additionalProperties": false,
+            "description": "DCSA Electronic Bill of Lading (eBL v3) transport document master record.",
+            "properties": {
+                "carrier_booking_reference": {
+                    "description": "Associated DCSA carrier booking reference.",
+                    "type": "string"
+                },
+                "consignee_name": {
+                    "description": "Designated consignee party name (governed PII attribute).",
+                    "type": "string"
+                },
+                "document_status": {
+                    "$ref": "#/$defs/ShipmentEventTypeCode",
+                    "description": "Current DCSA eBL workflow state (e.g., DRFT, APPR, ISSU, SURR)."
+                },
+                "issue_date": {
+                    "description": "Date the transport document was issued or drafted.",
+                    "format": "date",
+                    "type": "string"
+                },
+                "port_of_discharge": {
+                    "description": "UN/LOCODE port of discharge.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "port_of_loading": {
+                    "description": "UN/LOCODE port of loading.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "shipper_contact_email": {
+                    "description": "Shipper primary contact email address (governed PII attribute).",
+                    "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+                    "type": "string"
+                },
+                "shipper_name": {
+                    "description": "Legal commercial shipper organization name.",
+                    "type": "string"
+                },
+                "transport_document_reference": {
+                    "description": "Unique transport document / Bill of Lading reference number.",
+                    "type": "string"
+                },
+                "vessel_imo_number": {
+                    "description": "7-digit IMO number of the primary ocean vessel.",
+                    "pattern": "^[0-9]{7}$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "transport_document_reference",
+                "carrier_booking_reference",
+                "document_status",
+                "issue_date",
+                "shipper_name",
+                "shipper_contact_email",
+                "consignee_name",
+                "port_of_loading",
+                "port_of_discharge"
+            ],
+            "title": "TransportDocument",
+            "type": "object"
+        },
+        "TransportEvent": {
+            "additionalProperties": false,
+            "description": "DCSA Track & Trace v3 vessel arrival and departure milestone event for a transport call.",
+            "properties": {
+                "carrier_voyage_number": {
+                    "description": "Operational carrier voyage identifier.",
+                    "type": "string"
+                },
+                "change_remark": {
+                    "description": "Operational commentary explaining schedule updates.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "delay_reason_code": {
+                    "description": "Standardized SMDG delay reason code when behind schedule.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "event_classifier_code": {
+                    "$ref": "#/$defs/EventClassifierCode",
+                    "description": "Classification of event_date_time (PLN, ACT, or EST)."
+                },
+                "event_created_date_time": {
+                    "description": "UTC timestamp when the source system created the event payload.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_date_time": {
+                    "description": "UTC timestamp when the operational event occurred, is estimated, or is planned.",
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "event_id": {
+                    "description": "Globally unique deterministic identifier for the DCSA event record.",
+                    "type": "string"
+                },
+                "source_system": {
+                    "description": "Originating operational system identifier (e.g., portgate_tos, voyagecore_ebl).",
+                    "type": "string"
+                },
+                "transport_call_id": {
+                    "description": "Unique identifier of the transport call at the terminal.",
+                    "type": "string"
+                },
+                "transport_event_type_code": {
+                    "$ref": "#/$defs/TransportEventTypeCode",
+                    "description": "Vessel movement event type (ARRI or DEPA)."
+                },
+                "un_location_code": {
+                    "description": "UN/LOCODE port where the vessel event applies.",
+                    "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+                    "type": "string"
+                },
+                "vessel_imo_number": {
+                    "description": "7-digit IMO ship identification number.",
+                    "pattern": "^[0-9]{7}$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "transport_event_type_code",
+                "transport_call_id",
+                "vessel_imo_number",
+                "carrier_voyage_number",
+                "un_location_code",
+                "event_id",
+                "event_created_date_time",
+                "event_date_time",
+                "event_classifier_code",
+                "source_system"
+            ],
+            "title": "TransportEvent",
+            "type": "object"
+        },
+        "TransportEventTypeCode": {
+            "description": "DCSA Track & Trace v3 vessel transport milestone codes.",
+            "enum": [
+                "ARRI",
+                "DEPA"
+            ],
+            "title": "TransportEventTypeCode",
+            "type": "string"
+        }
+    },
+    "$id": "https://tasmancontainerline.example/linkml/dcsa/enterprise",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.12.0",
+    "title": "dcsa_enterprise",
+    "type": "object",
+    "version": "1.0.0"
+}

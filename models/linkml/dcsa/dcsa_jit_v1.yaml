@@ -1,0 +1,52 @@
+id: https://tasmancontainerline.example/linkml/dcsa/jit/v1
+name: dcsa_jit_v1
+title: DCSA Just-In-Time (JIT) Port Call v1.x Domain Model
+description: Five-phase vessel port call optimization timestamps across pilot boarding and berth operations.
+version: 1.2.0
+prefixes:
+  dcsa_jit: https://tasmancontainerline.example/linkml/dcsa/jit/v1/
+  dcsa_common: https://tasmancontainerline.example/linkml/dcsa/common/
+  linkml: https://w3id.org/linkml/
+default_prefix: dcsa_jit
+default_range: string
+imports:
+  - linkml:types
+  - dcsa_common
+
+classes:
+  PortCallTimestamp:
+    mixins:
+      - AuditableEvent
+    description: DCSA Just-In-Time port call milestone timestamp spanning ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, and ATD_BERTH.
+    attributes:
+      port_call_id:
+        range: string
+        required: true
+        description: Canonical port call identifier joining carrier schedule, terminal berth, and vessel events.
+      vessel_imo_number:
+        range: string
+        required: true
+        pattern: "^[0-9]{7}$"
+        description: 7-digit IMO vessel identifier.
+      carrier_voyage_number:
+        range: string
+        required: true
+        description: Carrier voyage code for the port call.
+      un_location_code:
+        range: UNLocationCode
+        pattern: "^[A-Z]{2}[A-Z2-9]{3}$"
+        required: true
+        description: UN/LOCODE port identifier where the JIT milestone was recorded.
+      jit_phase_code:
+        range: JitPhaseCode
+        required: true
+        description: One of the 5 JIT phases (ETA_PBP, ATA_PBP, ETB_BERTH, ATB_BERTH, ATD_BERTH).
+      terminal_code:
+        range: string
+        description: SMDG container terminal facility code.
+      berth_code:
+        range: string
+        description: Assigned terminal berth identifier.
+      delay_reason_code:
+        range: string
+        description: SMDG delay reason code when vessel misses target window.

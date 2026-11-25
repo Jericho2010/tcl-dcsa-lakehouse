@@ -1,0 +1,37 @@
+bundle:
+  name: tcl-dcsa-lakehouse
+  engine: direct
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Target Unity Catalog name hosting bronze_dcsa, silver_dcsa, gold_dcsa, governance_dcsa
+    default: workspace
+  warehouse_id:
+    description: Serverless SQL Warehouse ID for Genie Space and TCL Port Control App
+    default: ""
+  ingestion_mode:
+    description: Ingestion topology (free_edition UC Volumes vs azure_enterprise Event Hubs + Lakeflow Connect)
+    default: free_edition
+
+targets:
+  dev:
+    default: true
+    mode: development
+    variables:
+      catalog: workspace
+      ingestion_mode: free_edition
+
+  staging:
+    mode: development
+    variables:
+      catalog: tcl_staging
+      ingestion_mode: azure_enterprise
+
+  prod:
+    mode: production
+    variables:
+      catalog: tcl_prod
+      ingestion_mode: azure_enterprise
