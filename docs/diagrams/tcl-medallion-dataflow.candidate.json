@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "TCL DCSA Medallion Lineage, Quarantine & PII Masking",
+    "output": ".archify/dataflow-tcl-medallion-20261127-164000/tcl-medallion-dataflow.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [1080, 520],
+    "repository": {
+      "url": "https://github.com/Jericho2010/tcl-dcsa-lakehouse.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ecd3e42e1a3431d4575f036fe17d03cd92b0eb4e"
+    }
+  },
+  "stages": [
+    { "label": "DCSA Sources" },
+    { "label": "Bronze Landing" },
+    { "label": "Silver Conformance" },
+    { "label": "Gold & Metrics" },
+    { "label": "Serving & Audit" }
+  ],
+  "nodes": [
+    {
+      "id": "src_tos_jit",
+      "type": "external",
+      "label": "PortGate + JIT",
+      "sublabel": "T&T v3 + 5-phase",
+      "stage": 0,
+      "row": 0,
+      "tag": "JSON webhooks",
+      "sources": [
+        { "path": "src/generators/dcsa_synthetic_generator.py", "line": 1, "end_line": 120, "label": "TOS + JIT payloads" }
+      ]
+    },
+    {
+      "id": "src_iot",
+      "type": "messagebus",
+      "label": "ReeferPulse IoT",
+      "sublabel": "thermal + GPS",
+      "stage": 0,
+      "row": 1,
+      "tag": "Event Hubs / Vol",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/bronze_ingestion.py", "line": 93, "end_line": 142, "label": "Kafka or Volume mode" }
+      ]
+    },
+    {
+      "id": "src_erp",
+      "type": "database",
+      "label": "VoyageCore ERP",
+      "sublabel": "eBL + OVS CDC",
+      "stage": 0,
+      "row": 2,
+      "tag": "out-of-order CDC",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/bronze_ingestion.py", "line": 149, "end_line": 200, "label": "ERP CDC ingestion" }
+      ]
+    },
+    {
+      "id": "bronze_raw",
+      "type": "database",
+      "label": "bronze_dcsa.*",
+      "sublabel": "append-only raw",
+      "stage": 1,
+      "row": 1,
+      "tag": "reuse Bronze",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/bronze_ingestion.py", "line": 26, "end_line": 86, "label": "Auto Loader cloudFiles" }
+      ]
+    },
+    {
+      "id": "silver_quarantine",
+      "type": "security",
+      "label": "Silver Quarantine",
+      "sublabel": "2 TOS + 1 -99C",
+      "stage": 2,
+      "row": 0,
+      "tag": "violation_reason",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/silver_conformance.py", "line": 50, "end_line": 110, "label": "Quarantine tables" }
+      ]
+    },
+    {
+      "id": "silver_clean",
+      "type": "database",
+      "label": "silver_dcsa.*",
+      "sublabel": "LinkML validated",
+      "stage": 2,
+      "row": 1,
+      "tag": "expect_or_drop",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/silver_conformance.py", "line": 41, "end_line": 157, "label": "Clean Silver tables" }
+      ]
+    },
+    {
+      "id": "silver_cdc",
+      "type": "security",
+      "label": "AUTO CDC + Mask",
+      "sublabel": "14 SCD1 / 31 SCD2",
+      "stage": 2,
+      "row": 2,
+      "tag": "mask_pii_email",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/silver_conformance.py", "line": 190, "end_line": 247, "label": "SCD1 + SCD2 flows" },
+        { "path": "src/jobs/deploy_serving_governance.py", "line": 53, "end_line": 95, "label": "Silver PII dynamic mask" }
+      ]
+    },
+    {
+      "id": "gold_marts",
+      "type": "database",
+      "label": "gold_dcsa MVs",
+      "sublabel": "port + reefer",
+      "stage": 3,
+      "row": 1,
+      "tag": "materialized",
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/gold_marts.py", "line": 14, "end_line": 147, "label": "Gold KPI marts" }
+      ]
+    },
+    {
+      "id": "metric_views",
+      "type": "cloud",
+      "label": "UC Metric Views",
+      "sublabel": "10 Ossie KPIs",
+      "stage": 3,
+      "row": 0,
+      "tag": "MEASURE() SQL",
+      "sources": [
+        { "path": "generated/databricks/deploy_metric_views.sql", "line": 6, "end_line": 160, "label": "Compiled Metric Views" }
+      ]
+    },
+    {
+      "id": "odcs_audit",
+      "type": "security",
+      "label": "ODCS Audit Log",
+      "sublabel": "420/420 passed",
+      "stage": 4,
+      "row": 2,
+      "tag": "spark_ibis",
+      "sources": [
+        { "path": "src/jobs/run_contract_tests.py", "line": 1, "end_line": 103, "label": "contract_test_results" }
+      ]
+    },
+    {
+      "id": "consumers",
+      "type": "frontend",
+      "label": "App + Genie + PBI",
+      "sublabel": "governed serving",
+      "stage": 4,
+      "row": 0,
+      "tag": "zero drift",
+      "sources": [
+        { "path": "apps/port-control/app.py", "line": 1, "end_line": 120, "label": "Port Control App" },
+        { "path": "src/genie/tcl_ops_genie.geniespace.json", "line": 1, "end_line": 80, "label": "Genie Space" }
+      ]
+    }
+  ],
+  "flows": [
+    { "id": "f_tos", "from": "src_tos_jit", "to": "bronze_raw", "label": "TOS + JIT JSON", "classification": "operational", "variant": "emphasis", "fromSide": "right", "toSide": "left", "via": [[206, 157], [206, 271]], "labelAt": [206, 198] },
+    { "id": "f_iot", "from": "src_iot", "to": "bronze_raw", "label": "IoT envelopes", "classification": "telemetry", "variant": "emphasis", "route": "straight", "labelAt": [206, 294] },
+    { "id": "f_erp", "from": "src_erp", "to": "bronze_raw", "label": "eBL CDC log", "classification": "PII source", "variant": "security", "fromSide": "right", "toSide": "bottom", "via": [[315, 385]], "labelAt": [236, 368] },
+    { "id": "f_quar", "from": "bronze_raw", "to": "silver_quarantine", "label": "invalid rows", "classification": "quarantine", "variant": "security", "fromSide": "top", "toSide": "left", "via": [[315, 157]], "labelAt": [396, 140] },
+    { "id": "f_clean", "from": "bronze_raw", "to": "silver_clean", "label": "valid events", "classification": "LinkML checked", "variant": "emphasis", "route": "straight", "labelAt": [422, 246] },
+    { "id": "f_cdc", "from": "bronze_raw", "to": "silver_cdc", "label": "sequence_ts CDC", "classification": "PII masked", "variant": "security", "fromSide": "right", "toSide": "left", "via": [[422, 271], [422, 385]], "labelAt": [422, 344] },
+    { "id": "f_g1", "from": "silver_clean", "to": "gold_marts", "label": "conformed facts", "classification": "non-PII", "variant": "emphasis", "route": "straight" },
+    { "id": "f_g2", "from": "silver_cdc", "to": "gold_marts", "label": "masked eBLs", "classification": "SCD1 current", "variant": "security", "fromSide": "right", "toSide": "bottom", "via": [[745, 385]], "labelAt": [666, 368] },
+    { "id": "f_mv", "from": "gold_marts", "to": "metric_views", "label": "Ossie DDL", "classification": "semantic", "variant": "emphasis", "fromSide": "top", "toSide": "bottom", "route": "straight", "labelAt": [820, 214] },
+    { "id": "f_serve", "from": "metric_views", "to": "consumers", "label": "MEASURE() KPIs", "classification": "BI + AI", "variant": "emphasis", "route": "straight" },
+    { "id": "f_triage", "from": "silver_quarantine", "to": "consumers", "label": "triage alerts", "classification": "exception ops", "variant": "dashed", "fromSide": "top", "toSide": "top", "route": "top-channel" },
+    { "id": "f_audit", "from": "gold_marts", "to": "odcs_audit", "label": "ODCS checks", "classification": "420/420 pass", "variant": "security", "fromSide": "right", "toSide": "left", "via": [[852, 271], [852, 385]], "labelAt": [852, 336] }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Quarantine & PII Isolation",
+      "items": [
+        "Poison pills (BAD-CONT-99, 12345, -99.0C) route to Silver quarantine with explicit rule names",
+        "mask_pii_email applies on Silver eBL tables only, never corrupting raw Bronze feeds"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Out-of-Order AUTO CDC",
+      "items": [
+        "sequence_ts reconciles late-arriving ERP updates and DELETE markers cleanly",
+        "Live Free Edition verified 14 SCD1 current records alongside 31 SCD2 history versions"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Governed Semantic & Contract Audit",
+      "items": [
+        "Gold MVs feed UC Metric Views queried identically by Genie and TCL Port Control App",
+        "Live Serverless spark_ibis validated 420/420 ODCS checks across all 5 contracts"
+      ]
+    }
+  ]
+}

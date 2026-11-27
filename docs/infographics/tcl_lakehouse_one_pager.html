@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Tasman Container Line — Executive One-Pager Infographic</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 1120px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 34px 44px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 22px;
+  }
+  .brand-pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0369a1;
+    background: #e0f2fe;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+  .sub {
+    font-size: 15px;
+    color: #475569;
+    margin-top: 5px;
+  }
+  .verified-badge {
+    background: #ecfdf5;
+    border: 1.5px solid #10b981;
+    color: #065f46;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-align: right;
+  }
+  .verified-badge .top { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #059669; }
+  .verified-badge .val { font-size: 16px; font-weight: 800; margin-top: 2px; }
+
+  /* KPI Strip */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .kpi {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-top: 4px solid #0284c7;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  }
+  .kpi.emerald { border-top-color: #059669; }
+  .kpi.rose { border-top-color: #e11d48; }
+  .kpi.violet { border-top-color: #7c3aed; }
+  .kpi.amber { border-top-color: #d97706; }
+  .kpi.slate { border-top-color: #0f172a; }
+  .kpi .num { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
+  .kpi .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-top: 4px; }
+  .kpi .meta { font-size: 11.5px; color: #64748b; margin-top: 4px; }
+
+  /* Layer Ownership */
+  .section-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #0369a1;
+    margin-bottom: 10px;
+  }
+  .layers {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .layer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px 18px;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  }
+  .step-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .t-cyan { background: #e0f2fe; color: #0369a1; }
+  .t-rose { background: #ffe4e6; color: #be123c; }
+  .t-emerald { background: #d1fae5; color: #047857; }
+  .t-violet { background: #ede9fe; color: #6d28d9; }
+  .t-amber { background: #fef3c7; color: #b45309; }
+  .layer h3 { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+  .layer .role { font-size: 12.5px; font-weight: 700; color: #334155; margin-bottom: 8px; }
+  .layer ul { list-style: none; font-size: 12.5px; line-height: 1.5; color: #475569; }
+  .layer ul li { margin-bottom: 5px; padding-left: 14px; position: relative; }
+  .layer ul li::before { content: "•"; position: absolute; left: 0; color: #0284c7; font-weight: 900; }
+  .layer .file {
+    margin-top: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 5px 8px;
+    border-radius: 6px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Bottom Two-Column Split */
+  .bottom {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 18px;
+  }
+  .panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  }
+  .panel h2 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel h2 span { font-size: 12px; font-weight: 600; color: #64748b; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 7px 8px;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+  td {
+    padding: 8px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+  .code { font-family: ui-monospace, monospace; font-weight: 700; color: #0369a1; }
+  .bar-wrap { width: 96px; height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .bar { height: 100%; border-radius: 99px; background: #10b981; }
+  .bar.warn { background: #f59e0b; }
+  .bar.bad { background: #e11d48; }
+  .pill-sm {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .ok { background: #dcfce7; color: #166534; }
+  .alert { background: #ffe4e6; color: #9f1239; }
+
+  .principles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .princ {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+  .pnum {
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .princ strong { font-size: 13px; color: #0f172a; display: block; margin-bottom: 2px; }
+  .princ p { font-size: 12px; color: #475569; line-height: 1.4; }
+
+  .footer {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: #64748b;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="brand-pill">Tasman Container Line (TCL) · Executive Architecture One-Pager</div>
+      <h1>One Domain Blueprint + One Semantic Spec → Zero-Drift Lakehouse</h1>
+      <div class="sub">Standardized on DCSA (T&amp;T v3.0 IoT/Reefer, eBL v3, JIT Port Call, OVS) and verified end-to-end on Databricks Free Edition Serverless</div>
+    </div>
+    <div class="verified-badge">
+      <div class="top">Live Databricks Free Edition Proof</div>
+      <div class="val">5/5 Tasks Passed · 420/420 ODCS Checks</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi emerald">
+      <div class="num">420 / 420</div>
+      <div class="lbl">Live ODCS Checks</div>
+      <div class="meta">Native spark_ibis across 5 contracts</div>
+    </div>
+    <div class="kpi">
+      <div class="num">14 / 31</div>
+      <div class="lbl">AUTO CDC SCD1 / SCD2</div>
+      <div class="meta">Out-of-order eBL CDC reconciled</div>
+    </div>
+    <div class="kpi rose">
+      <div class="num">2 + 1</div>
+      <div class="lbl">Silver Quarantine</div>
+      <div class="meta">Bad ISO 6346/LOCODE + -99.0°C fault</div>
+    </div>
+    <div class="kpi violet">
+      <div class="num">10 KPIs</div>
+      <div class="lbl">Dual-Compiled Metrics</div>
+      <div class="meta">UC Metric Views + Power BI TMSL</div>
+    </div>
+    <div class="kpi amber">
+      <div class="num">6 Ports</div>
+      <div class="lbl">Tasman &amp; Pacific Lanes</div>
+      <div class="meta">15 calls · 30 moves · 4 excursions</div>
+    </div>
+    <div class="kpi slate">
+      <div class="num">15 / 15</div>
+      <div class="lbl">CI &amp; Hygiene Gates</div>
+      <div class="meta">0 ruff errors · 0 drift · 0 dev_ prefixes</div>
+    </div>
+  </div>
+
+  <div class="section-title">Strict Layer Ownership — Each Tool Owns Exactly One Architectural Responsibility</div>
+  <div class="layers">
+    <div class="layer">
+      <span class="step-tag t-cyan">01 · Logical Model</span>
+      <h3>LinkML</h3>
+      <div class="role">Single DCSA Domain Authority</div>
+      <ul>
+        <li>Modular T&amp;T v3, eBL v3, JIT v1, OVS profiles via <code>is_a</code> &amp; mixins</li>
+        <li>Compiles Pydantic, JSON Schema, UC comments &amp; Spark LDP rules</li>
+        <li>Propagates PII tags &amp; ISO 6346 / UN/LOCODE regexes automatically</li>
+      </ul>
+      <span class="file">models/linkml/dcsa/dcsa_enterprise.yaml</span>
+    </div>
+
+    <div class="layer">
+      <span class="step-tag t-rose">02 · Boundary Contract</span>
+      <h3>ODCS v3.1.0</h3>
+      <div class="role">Quality Gate &amp; Drift Shield</div>
+      <ul>
+        <li>5 contracts auto-compiled from LinkML; <code>datacontract lint</code> in CI</li>
+        <li><code>datacontract breaking</code> blocks column drops &amp; type narrowings</li>
+        <li>Live Serverless <code>spark_ibis</code> writes audit rows to <code>governance_dcsa</code></li>
+      </ul>
+      <span class="file">contracts/odcs/*.odcs.yaml</span>
+    </div>
+
+    <div class="layer">
+      <span class="step-tag t-emerald">03 · Execution Engine</span>
+      <h3>Lakeflow LDP</h3>
+      <div class="role">Unified Bronze → Silver → Gold</div>
+      <ul>
+        <li>Single Serverless pipeline using modern <code>pyspark.pipelines</code></li>
+        <li>Dual mode: UC Volume Auto Loader vs Event Hubs Kafka + Lakeflow Connect</li>
+        <li><code>expect_all_or_drop</code> + Quarantine + <code>AUTO CDC</code> SCD1 &amp; SCD2</li>
+      </ul>
+      <span class="file">src/pipelines/dcsa_medallion/*.py</span>
+    </div>
+
+    <div class="layer">
+      <span class="step-tag t-violet">04 · Semantic Layer</span>
+      <h3>Apache Ossie</h3>
+      <div class="role">Vendor-Neutral KPI Rosetta Stone</div>
+      <ul>
+        <li>Single flat Ossie <code>0.3.0.dev0</code> spec with AI synonyms &amp; joins</li>
+        <li><code>ossie-databricks</code> → UC Metric Views DDL (<code>MEASURE()</code>)</li>
+        <li><code>ossie-microsoft</code> → Power BI <code>.model.bim</code> + 20% DAX sidecar</li>
+      </ul>
+      <span class="file">semantic/ossie/dcsa_ops.ossie.yaml</span>
+    </div>
+
+    <div class="layer">
+      <span class="step-tag t-amber">05 · Delivery &amp; Serving</span>
+      <h3>DABs + AI / App</h3>
+      <div class="role">Declarative CI/CD &amp; Consumption</div>
+      <ul>
+        <li><code>engine: direct</code> DABs deploys Pipeline, 5-Task Job, Genie &amp; App</li>
+        <li><code>tcl-port-control</code> FastAPI App reads Metric Views &amp; logs triage</li>
+        <li>Live GitHub Actions CI + Enterprise Azure DevOps reference YAML</li>
+      </ul>
+      <span class="file">databricks.yml · .github/workflows/ci-cd.yml</span>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="panel">
+      <h2>Live Verified Unity Catalog Metric Views (MEASURE() Output) <span>workspace.gold_dcsa.mv_*</span></h2>
+      <table>
+        <thead>
+          <tr>
+            <th>UN/LOCODE</th>
+            <th>Port Terminal</th>
+            <th>Calls</th>
+            <th>Schedule Reliability</th>
+            <th>Avg Turnaround</th>
+            <th>Reefer Excursions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="code">NZAKL</td>
+            <td>Auckland</td>
+            <td>3</td>
+            <td><span class="bar-wrap"><span class="bar" style="width:100%"></span></span>100%</td>
+            <td>18.52 h</td>
+            <td><span class="pill-sm ok">0 / 6 (0%)</span></td>
+          </tr>
+          <tr>
+            <td class="code">NZTRG</td>
+            <td>Tauranga</td>
+            <td>2</td>
+            <td><span class="bar-wrap"><span class="bar" style="width:100%"></span></span>100%</td>
+            <td>21.75 h</td>
+            <td><span class="pill-sm alert">2 / 4 (50%)</span></td>
+          </tr>
+          <tr>
+            <td class="code">NZLYT</td>
+            <td>Lyttelton</td>
+            <td>4</td>
+            <td><span class="bar-wrap"><span class="bar warn" style="width:50%"></span></span>50%</td>
+            <td>22.24 h</td>
+            <td><span class="pill-sm alert">2 / 8 (25%)</span></td>
+          </tr>
+          <tr>
+            <td class="code">AUBNE</td>
+            <td>Brisbane</td>
+            <td>2</td>
+            <td><span class="bar-wrap"><span class="bar" style="width:100%"></span></span>100%</td>
+            <td>18.83 h</td>
+            <td><span class="pill-sm ok">0 / 4 (0%)</span></td>
+          </tr>
+          <tr>
+            <td class="code">AUSYD</td>
+            <td>Sydney</td>
+            <td>3</td>
+            <td><span class="bar-wrap"><span class="bar" style="width:100%"></span></span>100%</td>
+            <td>19.92 h</td>
+            <td><span class="pill-sm ok">0 / 6 (0%)</span></td>
+          </tr>
+          <tr>
+            <td class="code">FJSVA</td>
+            <td>Suva</td>
+            <td>1</td>
+            <td><span class="bar-wrap"><span class="bar bad" style="width:10%"></span></span>0%</td>
+            <td>19.24 h</td>
+            <td><span class="pill-sm ok">0 / 2 (0%)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Low-Toil Governed Lakehouse Principles <span>Proven Live</span></h2>
+      <div class="principles">
+        <div class="princ">
+          <div class="pnum">1</div>
+          <div>
+            <strong>Workspace–Catalog SDLC Binding</strong>
+            <p>Environments isolate at the Catalog boundary (<code>workspace</code> → <code>tcl_staging</code> → <code>tcl_prod</code>); schemas stay pure business subjects (<code>bronze_dcsa</code>, <code>silver_dcsa</code>, <code>gold_dcsa</code>, <code>governance_dcsa</code>).</p>
+          </div>
+        </div>
+        <div class="princ">
+          <div class="pnum">2</div>
+          <div>
+            <strong>Reuse Bronze by Default &amp; Quarantine Explicitly</strong>
+            <p>Raw Bronze preserves all payloads (including poison pills) in governed UC Volumes; Silver enforces LinkML expectations and captures rejected records with exact rule violation reasons.</p>
+          </div>
+        </div>
+        <div class="princ">
+          <div class="pnum">3</div>
+          <div>
+            <strong>80/20 Dynamic PII Masking on Curated Silver</strong>
+            <p>PII annotations in LinkML propagate to ODCS and attach <code>mask_pii_email</code> on Silver eBL tables (<code>ex***@tasman-shipper.example</code>) without breaking upstream Bronze streaming.</p>
+          </div>
+        </div>
+        <div class="princ">
+          <div class="pnum">4</div>
+          <div>
+            <strong>One-Way Emission + Fail-Closed Drift Checks</strong>
+            <p>CI recompiles LinkML &amp; Apache Ossie on every PR and enforces <code>git diff --exit-code</code>, ensuring docs, contracts, LDP expectations, and BI models never silently diverge.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Repository: <strong>github.com/Jericho2010/tcl-dcsa-lakehouse</strong> · Reference Implementation (MIT License)</span>
+    <span>Compiled with LinkML · datacontract-cli (ODCS v3.1.0) · Apache Ossie Converters · Databricks LDP &amp; DABs</span>
+  </div>
+</body>
+</html>

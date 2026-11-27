@@ -97,6 +97,7 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
         "contracts",
         "generated",
         "tests",
+        "docs",
         ".github",
     )
     extra_files = (
@@ -105,6 +106,7 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
         "setup.sh",
         "run.sh",
         "README.md",
+        "CONTRIBUTING.md",
         "SECURITY.md",
         ".gitignore",
     )
@@ -116,7 +118,7 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
         files.append(PROJECT_ROOT / fname)
 
     for path in files:
-        if path.suffix in {".pyc"} or "__pycache__" in path.parts:
+        if path.suffix in {".pyc", ".png", ".jpg", ".webp"} or "__pycache__" in path.parts:
             continue
         text = path.read_text(encoding="utf-8", errors="ignore")
         for pat in forbidden_patterns:
@@ -124,3 +126,38 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
             assert match is None, (
                 f"Forbidden pattern {pat.pattern!r} matched in {path}: {match.group(0)}"
             )
+
+
+def test_documentation_uses_archify_diagrams_and_zero_mermaid() -> None:
+    """Ensure all Archify showcase diagrams & infographics exist and zero Mermaid blocks remain."""
+    expected_assets = (
+        "docs/diagrams/tcl-platform-architecture.html",
+        "docs/diagrams/tcl-platform-architecture.candidate.json",
+        "docs/diagrams/images/tcl-platform-architecture.png",
+        "docs/diagrams/tcl-medallion-dataflow.html",
+        "docs/diagrams/tcl-medallion-dataflow.candidate.json",
+        "docs/diagrams/images/tcl-medallion-dataflow.png",
+        "docs/diagrams/tcl-cicd-orchestration.html",
+        "docs/diagrams/tcl-cicd-orchestration.candidate.json",
+        "docs/diagrams/images/tcl-cicd-orchestration.png",
+        "docs/infographics/tcl_hero_banner.png",
+        "docs/infographics/tcl_lakehouse_one_pager.png",
+        "docs/infographics/tcl_80_20_blueprint.png",
+        "docs/ARCHITECTURE.md",
+        "docs/DCSA_DOMAIN_MODEL.md",
+        "docs/DEPLOYMENT_GUIDE.md",
+        "CONTRIBUTING.md",
+    )
+    for rel in expected_assets:
+        assert (PROJECT_ROOT / rel).is_file(), f"Missing documentation asset: {rel}"
+
+    md_files = [
+        PROJECT_ROOT / "README.md",
+        PROJECT_ROOT / "CONTRIBUTING.md",
+        PROJECT_ROOT / "SECURITY.md",
+        *(PROJECT_ROOT / "docs").rglob("*.md"),
+    ]
+    mermaid_fence = re.compile(r"```" + r"\s*mermaid", re.IGNORECASE)
+    for md in md_files:
+        text = md.read_text(encoding="utf-8")
+        assert mermaid_fence.search(text) is None, f"Mermaid block found in {md}"

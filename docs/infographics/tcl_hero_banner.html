@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Tasman Container Line Hero Banner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 520px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(125deg, #061529 0%, #0b2545 48%, #0e3a5c 82%, #0a4d68 100%);
+    color: #f8fafc;
+    position: relative;
+  }
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .glow-a {
+    position: absolute;
+    width: 640px; height: 640px;
+    right: -120px; top: -180px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(14, 165, 233, 0.08) 45%, transparent 72%);
+  }
+  .glow-b {
+    position: absolute;
+    width: 520px; height: 520px;
+    left: -100px; bottom: -220px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%);
+  }
+  .wrap {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 48px 68px;
+    gap: 40px;
+  }
+  .left {
+    max-width: 890px;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: rgba(14, 165, 233, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.38);
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 10px #34d399;
+  }
+  h1 {
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+  h1 span {
+    background: linear-gradient(90deg, #38bdf8 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    font-size: 21px;
+    line-height: 1.45;
+    color: #cbd5e1;
+    max-width: 800px;
+    margin-bottom: 30px;
+    font-weight: 400;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: rgba(15, 23, 42, 0.56);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    font-size: 14px;
+    font-weight: 600;
+    color: #e2e8f0;
+  }
+  .pill strong {
+    color: #34d399;
+    font-weight: 800;
+  }
+  .pill.cyan strong { color: #38bdf8; }
+  .pill.violet strong { color: #c4b5fd; }
+  .pill.amber strong { color: #fbbf24; }
+  .right {
+    flex: 0 0 540px;
+    height: 410px;
+    position: relative;
+  }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow-a"></div>
+  <div class="glow-b"></div>
+  <div class="wrap">
+    <div class="left">
+      <div class="eyebrow"><span class="dot"></span>Executable Maritime Reference Architecture · Databricks + DCSA</div>
+      <h1>Tasman Container Line<br/><span>Contract- &amp; Model-Driven Lakehouse</span></h1>
+      <p class="subtitle">
+        One logical <strong>LinkML</strong> domain blueprint + one vendor-neutral <strong>Apache Ossie</strong> semantic spec compiling one-way into <strong>ODCS v3.1.0</strong> contracts, <strong>Lakeflow Declarative Pipelines</strong>, <strong>Unity Catalog Metric Views</strong>, <strong>Power BI</strong>, <strong>AI/BI Genie</strong>, and a live <strong>FastAPI Workbench</strong>.
+      </p>
+      <div class="pills">
+        <div class="pill cyan"><strong>4</strong> DCSA Standards (T&amp;T v3 · eBL · JIT · OVS)</div>
+        <div class="pill"><strong>420 / 420</strong> Live Serverless ODCS Checks</div>
+        <div class="pill violet"><strong>10</strong> Dual-Compiled KPIs (UC + Power BI)</div>
+        <div class="pill amber"><strong>0</strong> Hand-Duplicated Rules or dev_ Prefixes</div>
+      </div>
+    </div>
+    <div class="right">
+      <svg viewBox="0 0 540 410" width="540" height="410" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hull" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0f2942"/>
+            <stop offset="100%" stop-color="#1e3a5f"/>
+          </linearGradient>
+          <linearGradient id="route" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="55%" stop-color="#34d399"/>
+            <stop offset="100%" stop-color="#a78bfa"/>
+          </linearGradient>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.22"/>
+            <stop offset="100%" stop-color="#0284c7" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Radar & Blueprint arcs -->
+        <circle cx="280" cy="185" r="165" fill="none" stroke="#38bdf8" stroke-opacity="0.16" stroke-dasharray="4 6"/>
+        <circle cx="280" cy="185" r="120" fill="none" stroke="#34d399" stroke-opacity="0.18" stroke-dasharray="3 5"/>
+        <circle cx="280" cy="185" r="75" fill="none" stroke="#38bdf8" stroke-opacity="0.14"/>
+
+        <!-- Tasman / Pacific Trade Lane Arcs -->
+        <path d="M 65 145 Q 190 42 355 92" fill="none" stroke="url(#route)" stroke-width="2.5" stroke-dasharray="6 4"/>
+        <path d="M 95 215 Q 255 95 465 135" fill="none" stroke="#38bdf8" stroke-opacity="0.7" stroke-width="2"/>
+        <path d="M 355 92 Q 430 105 465 135" fill="none" stroke="#34d399" stroke-width="2.2"/>
+        <path d="M 65 145 Q 78 182 95 215" fill="none" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.7"/>
+
+        <!-- Port Nodes -->
+        <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700">
+          <circle cx="65" cy="145" r="6" fill="#38bdf8"/>
+          <circle cx="65" cy="145" r="12" fill="#38bdf8" fill-opacity="0.2"/>
+          <text x="42" y="130" fill="#bae6fd">AUBNE</text>
+
+          <circle cx="95" cy="215" r="6" fill="#38bdf8"/>
+          <circle cx="95" cy="215" r="12" fill="#38bdf8" fill-opacity="0.2"/>
+          <text x="52" y="240" fill="#bae6fd">AUSYD</text>
+
+          <circle cx="355" cy="92" r="7" fill="#34d399"/>
+          <circle cx="355" cy="92" r="14" fill="#34d399" fill-opacity="0.22"/>
+          <text x="336" y="74" fill="#a7f3d0">NZAKL</text>
+
+          <circle cx="412" cy="112" r="5" fill="#34d399"/>
+          <text x="402" y="98" fill="#a7f3d0">NZTRG</text>
+
+          <circle cx="390" cy="172" r="5" fill="#f59e0b"/>
+          <text x="404" y="176" fill="#fde68a">NZLYT</text>
+
+          <circle cx="465" cy="135" r="6" fill="#a78bfa"/>
+          <circle cx="465" cy="135" r="12" fill="#a78bfa" fill-opacity="0.24"/>
+          <text x="454" y="120" fill="#ddd6fe">FJSVA</text>
+        </g>
+
+        <!-- Modern Stylized Container Vessel -->
+        <g transform="translate(54, 240)">
+          <!-- Container Stacks -->
+          <rect x="78" y="34" width="38" height="16" rx="2" fill="#0ea5e9"/>
+          <rect x="120" y="34" width="38" height="16" rx="2" fill="#10b981"/>
+          <rect x="162" y="34" width="38" height="16" rx="2" fill="#38bdf8"/>
+          <rect x="204" y="34" width="38" height="16" rx="2" fill="#f59e0b"/>
+          <rect x="246" y="34" width="38" height="16" rx="2" fill="#10b981"/>
+          <rect x="288" y="34" width="38" height="16" rx="2" fill="#8b5cf6"/>
+
+          <rect x="96" y="15" width="38" height="16" rx="2" fill="#34d399"/>
+          <rect x="138" y="15" width="38" height="16" rx="2" fill="#0284c7"/>
+          <rect x="180" y="15" width="38" height="16" rx="2" fill="#e11d48"/>
+          <rect x="222" y="15" width="38" height="16" rx="2" fill="#38bdf8"/>
+          <rect x="264" y="15" width="38" height="16" rx="2" fill="#0ea5e9"/>
+
+          <rect x="138" y="-4" width="38" height="16" rx="2" fill="#7dd3fc"/>
+          <rect x="180" y="-4" width="38" height="16" rx="2" fill="#34d399"/>
+          <rect x="222" y="-4" width="38" height="16" rx="2" fill="#a78bfa"/>
+
+          <!-- Bridge Superstructure -->
+          <path d="M 332 50 L 332 0 L 368 0 L 376 14 L 376 50 Z" fill="#e2e8f0"/>
+          <rect x="342" y="8" width="22" height="7" rx="1.5" fill="#0f172a"/>
+          <rect x="348" y="-14" width="12" height="14" rx="2" fill="#0284c7"/>
+          <line x1="354" y1="-14" x2="354" y2="-28" stroke="#7dd3fc" stroke-width="2"/>
+          <circle cx="354" cy="-30" r="3" fill="#34d399"/>
+
+          <!-- Vessel Hull -->
+          <path d="M 22 52 L 408 52 L 386 90 L 58 90 Z" fill="url(#hull)" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="1.5"/>
+          <path d="M 48 80 L 392 80 L 386 90 L 58 90 Z" fill="#0e7490" fill-opacity="0.8"/>
+          <line x1="65" y1="66" x2="365" y2="66" stroke="#7dd3fc" stroke-opacity="0.35" stroke-width="1.2" stroke-dasharray="10 6"/>
+        </g>
+
+        <!-- Ocean Horizon Waves -->
+        <path d="M 16 334 Q 110 322 204 334 T 392 334 T 524 334 L 524 396 L 16 396 Z" fill="url(#sea)"/>
+        <path d="M 16 334 Q 110 322 204 334 T 392 334 T 524 334" fill="none" stroke="#38bdf8" stroke-opacity="0.55" stroke-width="2"/>
+        <path d="M 36 356 Q 130 346 224 356 T 412 356 T 516 356" fill="none" stroke="#34d399" stroke-opacity="0.35" stroke-width="1.5"/>
+
+        <!-- Telemetry Chip Callout -->
+        <rect x="14" y="346" width="240" height="44" rx="8" fill="#061529" fill-opacity="0.86" stroke="#38bdf8" stroke-opacity="0.4"/>
+        <circle cx="32" cy="368" r="5" fill="#34d399"/>
+        <text x="46" y="364" fill="#e2e8f0" font-size="11" font-weight="700">DCSA T&amp;T 3.0 · REEFER TELEMETRY</text>
+        <text x="46" y="380" fill="#7dd3fc" font-family="ui-monospace, monospace" font-size="10">ISO 6346 · UN/LOCODE · -45..+60°C</text>
+
+        <rect x="268" y="346" width="256" height="44" rx="8" fill="#061529" fill-opacity="0.86" stroke="#a78bfa" stroke-opacity="0.45"/>
+        <circle cx="286" cy="368" r="5" fill="#a78bfa"/>
+        <text x="300" y="364" fill="#e2e8f0" font-size="11" font-weight="700">APACHE OSSIE 0.3.0.DEV0</text>
+        <text x="300" y="380" fill="#c4b5fd" font-family="ui-monospace, monospace" font-size="10">UC METRIC VIEWS + POWER BI TMSL</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

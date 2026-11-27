@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Tasman Container Line DCSA Contract-and-Model-Driven Lakehouse",
+    "output": ".archify/architecture-tcl-platform-20261127-164000/tcl-platform-architecture.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Jericho2010/tcl-dcsa-lakehouse.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ecd3e42e1a3431d4575f036fe17d03cd92b0eb4e"
+    }
+  },
+  "components": [
+    {
+      "id": "linkml",
+      "type": "external",
+      "label": "LinkML DCSA Models",
+      "sublabel": "T&T v3, eBL, JIT, OVS",
+      "tag": "Git source",
+      "pos": [40, 70],
+      "size": [172, 66],
+      "sources": [
+        { "path": "models/linkml/dcsa/dcsa_enterprise.yaml", "line": 1, "end_line": 74, "label": "Umbrella DCSA schema" }
+      ]
+    },
+    {
+      "id": "compile_dcsa",
+      "type": "backend",
+      "label": "LinkML Compiler",
+      "sublabel": "SchemaView codegen",
+      "tag": "build-time",
+      "pos": [310, 70],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/tcl_compiler/compile_dcsa.py", "line": 1, "end_line": 90, "label": "ContractSpec registry" }
+      ]
+    },
+    {
+      "id": "odcs_contracts",
+      "type": "security",
+      "label": "ODCS v3.1.0 Contracts",
+      "sublabel": "5x lint + breaking",
+      "tag": "CI + runtime",
+      "pos": [580, 70],
+      "size": [176, 66],
+      "sources": [
+        { "path": "contracts/odcs/voyagecore_ebl_bookings.odcs.yaml", "line": 1, "end_line": 90, "label": "eBL ODCS contract" }
+      ]
+    },
+    {
+      "id": "contract_runner",
+      "type": "security",
+      "label": "Contract Gate Job",
+      "sublabel": "spark_ibis 420 checks",
+      "tag": "serverless",
+      "pos": [855, 70],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/jobs/run_contract_tests.py", "line": 1, "end_line": 103, "label": "Live DataContract test" }
+      ]
+    },
+    {
+      "id": "governance_dcsa",
+      "type": "database",
+      "label": "governance_dcsa",
+      "sublabel": "PII mask + audit logs",
+      "tag": "Unity Catalog",
+      "pos": [1130, 70],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/jobs/deploy_serving_governance.py", "line": 53, "end_line": 95, "label": "mask_pii_email DDL" },
+        { "path": "src/jobs/bootstrap_uc_objects.py", "line": 34, "end_line": 62, "label": "Governance Delta tables" }
+      ]
+    },
+    {
+      "id": "port_control_app",
+      "type": "frontend",
+      "label": "TCL Port Control App",
+      "sublabel": "FastAPI workbench",
+      "tag": "Databricks App",
+      "pos": [1405, 70],
+      "size": [176, 66],
+      "sources": [
+        { "path": "apps/port-control/app.py", "line": 1, "end_line": 120, "label": "Workbench FastAPI routes" }
+      ]
+    },
+    {
+      "id": "dcsa_sources",
+      "type": "external",
+      "label": "4 DCSA Data Sources",
+      "sublabel": "TOS, IoT, ERP, JIT API",
+      "tag": "NZ/AU/Pacific",
+      "pos": [40, 265],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/generators/dcsa_synthetic_generator.py", "line": 1, "end_line": 120, "label": "4-source DCSA generator" },
+        { "path": "src/jobs/ingest_harboursync_jit.py", "line": 16, "end_line": 66, "label": "Serverless landing job" }
+      ]
+    },
+    {
+      "id": "bronze_dcsa",
+      "type": "database",
+      "label": "bronze_dcsa",
+      "sublabel": "Auto Loader / Kafka",
+      "tag": "LDP streaming",
+      "pos": [310, 265],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/bronze_ingestion.py", "line": 72, "end_line": 160, "label": "Dual-mode Bronze tables" }
+      ]
+    },
+    {
+      "id": "silver_dcsa",
+      "type": "database",
+      "label": "silver_dcsa",
+      "sublabel": "Quarantine + AUTO CDC",
+      "tag": "SCD1 & SCD2",
+      "pos": [580, 265],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/silver_conformance.py", "line": 41, "end_line": 218, "label": "Expectations & AUTO CDC" }
+      ]
+    },
+    {
+      "id": "gold_dcsa",
+      "type": "database",
+      "label": "gold_dcsa",
+      "sublabel": "Port + Reefer marts",
+      "tag": "Materialized Views",
+      "pos": [855, 265],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/gold_marts.py", "line": 14, "end_line": 147, "label": "Gold KPI marts" }
+      ]
+    },
+    {
+      "id": "uc_metric_views",
+      "type": "cloud",
+      "label": "UC Metric Views",
+      "sublabel": "mv_port + mv_journey",
+      "tag": "MEASURE() SQL",
+      "pos": [1130, 265],
+      "size": [176, 66],
+      "sources": [
+        { "path": "generated/databricks/deploy_metric_views.sql", "line": 6, "end_line": 160, "label": "Compiled Metric View DDL" }
+      ]
+    },
+    {
+      "id": "genie_space",
+      "type": "frontend",
+      "label": "Databricks AI/BI Genie",
+      "sublabel": "tcl_ops_genie space",
+      "tag": "NLQ on Metrics",
+      "pos": [1405, 265],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/genie/tcl_ops_genie.geniespace.json", "line": 1, "end_line": 80, "label": "Genie Space config" }
+      ]
+    },
+    {
+      "id": "ossie_spec",
+      "type": "external",
+      "label": "Apache Ossie YAML",
+      "sublabel": "v0.3.0.dev0 KPI spec",
+      "tag": "Git source",
+      "pos": [855, 460],
+      "size": [176, 66],
+      "sources": [
+        { "path": "semantic/ossie/dcsa_ops.ossie.yaml", "line": 1, "end_line": 160, "label": "Vendor-neutral Ossie spec" }
+      ]
+    },
+    {
+      "id": "compile_semantic",
+      "type": "backend",
+      "label": "Ossie Converters",
+      "sublabel": "databricks + microsoft",
+      "tag": "build-time",
+      "pos": [1130, 460],
+      "size": [176, 66],
+      "sources": [
+        { "path": "src/tcl_compiler/compile_semantic.py", "line": 44, "end_line": 150, "label": "Dual Ossie compiler" }
+      ]
+    },
+    {
+      "id": "powerbi_model",
+      "type": "frontend",
+      "label": "Power BI TMSL + DAX",
+      "sublabel": "model.bim + 20% TMDL",
+      "tag": "80/20 override",
+      "pos": [1405, 460],
+      "size": [176, 66],
+      "sources": [
+        { "path": "generated/powerbi/dcsa_ops.model.bim", "line": 1, "end_line": 80, "label": "Compiled TMSL model" },
+        { "path": "semantic/powerbi_overrides/README.md", "line": 1, "end_line": 18, "label": "20% DAX override guide" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Build-Time Model & Contract Spine (Git + CI)",
+      "wraps": ["linkml", "compile_dcsa", "odcs_contracts"],
+      "pad": 18
+    },
+    {
+      "kind": "security-group",
+      "label": "Closed-Loop Governance (Serverless + UC)",
+      "wraps": ["contract_runner", "governance_dcsa"],
+      "pad": 18
+    },
+    {
+      "kind": "security-group",
+      "label": "Databricks Serverless Medallion (Pure Business Schemas)",
+      "wraps": ["bronze_dcsa", "silver_dcsa", "gold_dcsa", "uc_metric_views"],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Build-Time Semantic Spine (Apache Ossie)",
+      "wraps": ["ossie_spec", "compile_semantic"],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "Governed Consumption Layer",
+      "wraps": ["port_control_app", "genie_space", "powerbi_model"],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    { "from": "linkml", "to": "compile_dcsa", "label": "SchemaView", "variant": "emphasis" },
+    { "from": "compile_dcsa", "to": "odcs_contracts", "label": "5x ODCS", "variant": "emphasis" },
+    { "from": "compile_dcsa", "to": "silver_dcsa", "label": "LDP rules", "variant": "dashed" },
+    { "from": "odcs_contracts", "to": "contract_runner", "label": "validate", "variant": "security" },
+    { "from": "gold_dcsa", "to": "contract_runner", "label": "Spark read", "variant": "security" },
+    { "from": "contract_runner", "to": "governance_dcsa", "label": "420 results", "variant": "security" },
+    { "from": "dcsa_sources", "to": "bronze_dcsa", "label": "4 feeds", "variant": "emphasis" },
+    { "from": "bronze_dcsa", "to": "silver_dcsa", "label": "LDP stream", "variant": "emphasis" },
+    { "from": "silver_dcsa", "to": "gold_dcsa", "label": "MV join", "variant": "emphasis" },
+    { "from": "gold_dcsa", "to": "uc_metric_views", "label": "source", "variant": "emphasis" },
+    { "from": "uc_metric_views", "to": "genie_space", "label": "MEASURE()", "variant": "emphasis" },
+    { "from": "uc_metric_views", "to": "port_control_app", "label": "SQL API", "variant": "default" },
+    { "from": "governance_dcsa", "to": "port_control_app", "label": "triage", "variant": "security" },
+    { "from": "ossie_spec", "to": "compile_semantic", "label": "one-way", "variant": "emphasis" },
+    { "from": "compile_semantic", "to": "uc_metric_views", "label": "YAML DDL", "variant": "dashed" },
+    { "from": "compile_semantic", "to": "powerbi_model", "label": "TMSL", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Single Source of Domain Truth",
+      "items": [
+        "LinkML compiles Pydantic, JSON Schema, UC comments, LDP rules, and 5 ODCS v3.1.0 contracts",
+        "Zero hand-duplicated ISO 6346, UN/LOCODE, or reefer thermal checks across layers"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Closed-Loop Serverless Governance",
+      "items": [
+        "LDP routes poison-pill rows into Silver quarantine and tracks SCD1 (14) + SCD2 (31) via AUTO CDC",
+        "run_contract_tests.py passes 420/420 native spark_ibis checks into governance_dcsa"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "80/20 Semantic Portability",
+      "items": [
+        "One Apache Ossie 0.3.0.dev0 file compiles to UC Metric Views and Power BI .model.bim",
+        "Specialist Power BI DAX lives safely in semantic/powerbi_overrides/ outside codegen"
+      ]
+    }
+  ]
+}

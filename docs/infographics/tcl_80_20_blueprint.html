@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>80/20 Model-Driven Architecture & Semantic Governance Blueprint</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 820px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 36px 48px 42px 48px;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .kicker {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6d28d9;
+    background: #ede9fe;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 15px; color: #475569; margin-top: 4px; }
+  .tag-box {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .tag-box span { color: #34d399; }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 24px;
+    margin-bottom: 22px;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 26px;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+  .card.auto { border-top: 6px solid #059669; }
+  .card.spec { border-top: 6px solid #7c3aed; }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .pct {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+  .auto .pct { color: #059669; }
+  .spec .pct { color: #7c3aed; }
+  .card-title { font-size: 20px; font-weight: 800; color: #0f172a; }
+  .card-sub { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .rule-chip {
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .auto .rule-chip { background: #d1fae5; color: #065f46; }
+  .spec .rule-chip { background: #ede9fe; color: #5b21b6; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .item h4 { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+  .item p { font-size: 12.5px; color: #475569; line-height: 1.48; }
+  .item code {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 3px 7px;
+    border-radius: 5px;
+  }
+
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .pillar {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .p-badge {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: #0284c7;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .p-badge.g { background: #10b981; }
+  .p-badge.v { background: #8b5cf6; }
+  .pillar strong { display: block; font-size: 14px; color: #ffffff; margin-bottom: 4px; }
+  .pillar p { font-size: 12.5px; color: #cbd5e1; line-height: 1.42; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <div class="kicker">Model-Driven Software Development · Practical 80/20 Pattern</div>
+      <h1>Automate the Boring 80%, Protect the Specialist 20%</h1>
+      <div class="sub">How Tasman Container Line prevents vendor lock-in and two-way sync chaos across Databricks, Power BI, and Unity Catalog</div>
+    </div>
+    <div class="tag-box">Generation Direction: <span>One-Way Only (Git → Targets)</span></div>
+  </div>
+
+  <div class="columns">
+    <div class="card auto">
+      <div class="card-head">
+        <div>
+          <div class="pct">80%</div>
+          <div class="card-title">Automated One-Way Compilation</div>
+          <div class="card-sub">Regenerated deterministically on every CI run — never edited by hand</div>
+        </div>
+        <span class="rule-chip">Zero-Drift · git diff --exit-code</span>
+      </div>
+      <div class="grid-2">
+        <div class="item">
+          <h4>Domain Schemas &amp; Pydantic Models</h4>
+          <p>DCSA entities, ISO 6346 container regex, UN/LOCODE patterns, enums, and reefer thermal limits compiled via LinkML <code>SchemaView</code>.</p>
+          <code>generated/pydantic/dcsa_models.py</code>
+        </div>
+        <div class="item">
+          <h4>ODCS v3.1.0 Boundary Contracts</h4>
+          <p>5 physical Delta table contracts with SLAs, PII classifications, and 420 quality checks validated in CI and live Serverless.</p>
+          <code>contracts/odcs/*.odcs.yaml</code>
+        </div>
+        <div class="item">
+          <h4>LDP Expectations &amp; UC Comments</h4>
+          <p>Spark SQL <code>expect_all_or_drop</code> rules (with double-escaped <code>RLIKE</code>) and table/column documentation auto-emitted from LinkML.</p>
+          <code>generated/ldp_expectations.json</code>
+        </div>
+        <div class="item">
+          <h4>Cross-Platform Core KPIs (Ossie)</h4>
+          <p>10 portable KPIs (<code>SUM</code>, <code>AVG</code>, <code>COUNT</code>, <code>DIVIDE</code>) plus AI synonyms compiled simultaneously to Databricks Metric Views &amp; Power BI TMSL.</p>
+          <code>deploy_metric_views.sql + dcsa_ops.model.bim</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="card spec">
+      <div class="card-head">
+        <div>
+          <div class="pct">20%</div>
+          <div class="card-title">Protected Specialist Extensions</div>
+          <div class="card-sub">Isolated files the compiler never overwrites</div>
+        </div>
+        <span class="rule-chip">Hand-Crafted Safe Zone</span>
+      </div>
+      <div class="stack">
+        <div class="item">
+          <h4>Complex Power BI DAX Time Intelligence</h4>
+          <p>Iterator-weighted and context-modified DAX (<code>CALCULATE</code>, <code>DATESINPERIOD</code>, <code>SUMX</code>) intentionally kept outside portable Ossie SQL.</p>
+          <code>semantic/powerbi_overrides/dax_specialist_measures.tmdl</code>
+        </div>
+        <div class="item">
+          <h4>Role-Aware Dynamic PII Masking &amp; Triage</h4>
+          <p>Unity Catalog SQL mask (<code>mask_pii_email</code>) + FastAPI operator exception triage write-back (<code>exception_triage_log</code>) tailored to port ops.</p>
+          <code>deploy_serving_governance.py + apps/port-control/app.py</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pillars">
+    <div class="pillar">
+      <div class="p-badge">1</div>
+      <div>
+        <strong>Keep One Clean Business Blueprint</strong>
+        <p>Write domain meaning in LinkML and KPI meaning in Apache Ossie in Git — never bend the blueprint to vendor-specific syntax quirks.</p>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="p-badge g">2</div>
+      <div>
+        <strong>Generate One Way Only</strong>
+        <p>Skip fragile two-way sync. Small deterministic compilers push clean updates outward to Databricks, ODCS, and Power BI with zero merge chaos.</p>
+      </div>
+    </div>
+    <div class="pillar">
+      <div class="p-badge v">3</div>
+      <div>
+        <strong>Enforce Closed-Loop Verification</strong>
+        <p>CI proves generated files match Git byte-for-byte, and Databricks Serverless verifies live Silver/Gold tables pass 420/420 ODCS checks.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

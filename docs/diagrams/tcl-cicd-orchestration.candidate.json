@@ -1,0 +1,180 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "TCL DCSA Zero-Drift CI/CD & DABs Orchestration Workflow",
+    "output": ".archify/workflow-tcl-cicd-20261127-164000/tcl-cicd-orchestration.html",
+    "locale": "en",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Jericho2010/tcl-dcsa-lakehouse.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ecd3e42e1a3431d4575f036fe17d03cd92b0eb4e"
+    }
+  },
+  "lanes": [
+    { "id": "ci", "label": "Git & CI/CD Pipelines" },
+    { "id": "gates", "label": "Quality & Drift Gates", "variant": "exception" },
+    { "id": "databricks", "label": "Databricks Serverless" }
+  ],
+  "phases": [
+    { "id": "design", "label": "Author & Compile", "fromCol": 0, "toCol": 1 },
+    { "id": "verify", "label": "Gate & Package", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "execute", "label": "Deploy & Prove", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "grp_ci", "label": "GitHub Actions / Azure DevOps", "lane": "ci", "fromCol": 1, "toCol": 3, "variant": "emphasis" },
+    { "id": "grp_fail", "label": "Fail-Closed PR Block", "lane": "gates", "fromCol": 2, "toCol": 3, "variant": "security" },
+    { "id": "grp_orch", "label": "tcl_dcsa_e2e_orchestrator", "lane": "databricks", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["edit_specs", "compile_spine", "drift_odcs_gate", "pytest_ruff", "dabs_deploy", "ldp_run", "live_contracts", "green_release"],
+  "nodes": [
+    {
+      "id": "edit_specs",
+      "lane": "ci",
+      "col": 0,
+      "type": "external",
+      "label": "Edit YAML Specs",
+      "sublabel": "LinkML + Ossie",
+      "width": 136,
+      "sources": [
+        { "path": "models/linkml/dcsa/dcsa_enterprise.yaml", "line": 1, "end_line": 40, "label": "LinkML specs" },
+        { "path": "semantic/ossie/dcsa_ops.ossie.yaml", "line": 1, "end_line": 40, "label": "Ossie spec" }
+      ]
+    },
+    {
+      "id": "compile_spine",
+      "lane": "ci",
+      "col": 1,
+      "type": "backend",
+      "label": "Compile Spine",
+      "sublabel": "dcsa + semantic",
+      "tag": "uv run",
+      "width": 136,
+      "sources": [
+        { "path": ".github/workflows/ci-cd.yml", "line": 32, "end_line": 60, "label": "CI compile steps" }
+      ]
+    },
+    {
+      "id": "drift_odcs_gate",
+      "lane": "gates",
+      "col": 2,
+      "type": "security",
+      "label": "Drift & ODCS Gate",
+      "sublabel": "lint + breaking",
+      "tag": "git diff check",
+      "width": 136,
+      "sources": [
+        { "path": ".github/workflows/ci-cd.yml", "line": 37, "end_line": 55, "label": "ODCS lint & breaking" }
+      ]
+    },
+    {
+      "id": "pr_blocked",
+      "lane": "gates",
+      "col": 3,
+      "type": "security",
+      "label": "PR Blocked",
+      "sublabel": "breaking schema",
+      "width": 136,
+      "sources": [
+        { "path": "tests/test_odcs_contracts.py", "line": 1, "end_line": 52, "label": "Breaking fixture test" }
+      ]
+    },
+    {
+      "id": "pytest_ruff",
+      "lane": "ci",
+      "col": 2,
+      "type": "backend",
+      "label": "Ruff + Pytest",
+      "sublabel": "15 tests + hygiene",
+      "width": 136,
+      "sources": [
+        { "path": ".github/workflows/ci-cd.yml", "line": 29, "end_line": 63, "label": "Lint and pytest CI" }
+      ]
+    },
+    {
+      "id": "dabs_deploy",
+      "lane": "ci",
+      "col": 3,
+      "type": "cloud",
+      "label": "DABs Deploy",
+      "sublabel": "engine: direct",
+      "tag": "dev/stage/prod",
+      "width": 136,
+      "sources": [
+        { "path": "databricks.yml", "line": 1, "end_line": 37, "label": "DABs bundle root" },
+        { "path": "azure-pipelines.yml", "line": 42, "end_line": 101, "label": "Enterprise CD stages" }
+      ]
+    },
+    {
+      "id": "ldp_run",
+      "lane": "databricks",
+      "col": 4,
+      "type": "database",
+      "label": "Bootstrap + LDP",
+      "sublabel": "ingest + medallion",
+      "tag": "Tasks 1-3",
+      "width": 136,
+      "sources": [
+        { "path": "resources/jobs.yml", "line": 14, "end_line": 45, "label": "Tasks 1-3 DAG" },
+        { "path": "resources/pipelines.yml", "line": 1, "end_line": 18, "label": "Serverless LDP" }
+      ]
+    },
+    {
+      "id": "live_contracts",
+      "lane": "databricks",
+      "col": 5,
+      "type": "security",
+      "label": "Serve + 420 Checks",
+      "sublabel": "MVs, mask, ibis",
+      "tag": "Tasks 4-5",
+      "width": 136,
+      "sources": [
+        { "path": "resources/jobs.yml", "line": 46, "end_line": 87, "label": "Tasks 4-5 & quality gate" }
+      ]
+    },
+    {
+      "id": "green_release",
+      "lane": "ci",
+      "col": 5,
+      "type": "frontend",
+      "label": "Verified Release",
+      "sublabel": "App + Genie live",
+      "width": 136,
+      "sources": [
+        { "path": "resources/apps.yml", "line": 1, "end_line": 6, "label": "Databricks App resource" },
+        { "path": "resources/genie_spaces.yml", "line": 1, "end_line": 7, "label": "Genie Space resource" }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "e1", "from": "edit_specs", "to": "compile_spine", "label": "PR push", "variant": "emphasis" },
+    { "id": "e2", "from": "compile_spine", "to": "drift_odcs_gate", "label": "artifacts", "variant": "emphasis" },
+    { "id": "e3", "from": "drift_odcs_gate", "to": "pr_blocked", "label": "fail", "variant": "security", "role": "error" },
+    { "id": "e4", "from": "drift_odcs_gate", "to": "pytest_ruff", "label": "pass", "variant": "emphasis" },
+    { "id": "e5", "from": "pytest_ruff", "to": "dabs_deploy", "label": "green CI", "variant": "emphasis" },
+    { "id": "e6", "from": "dabs_deploy", "to": "ldp_run", "label": "bundle run", "variant": "emphasis" },
+    { "id": "e7", "from": "ldp_run", "to": "live_contracts", "label": "Delta tables", "variant": "emphasis" },
+    { "id": "e8", "from": "live_contracts", "to": "green_release", "label": "420/420 pass", "variant": "emphasis", "role": "return" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Zero-Drift CI Enforcement",
+      "items": [
+        "CI recompiles LinkML and Apache Ossie and enforces git diff --exit-code on generated files",
+        "datacontract breaking fails the PR automatically on column drops or type narrowings"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Dual CI/CD Target Parity",
+      "items": [
+        "GitHub Actions (.github/workflows/ci-cd.yml) runs live CI/CD for this reference lab",
+        "azure-pipelines.yml provides enterprise Dev -> Staging -> Prod approval stages"
+      ]
+    }
+  ]
+}
