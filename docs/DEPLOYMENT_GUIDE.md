@@ -38,6 +38,22 @@ uv run python -m generators.dcsa_synthetic_generator --output-dir data/sample_la
 
 ## 3. Mode B — Live Databricks Free Edition Deployment (`dev` Target)
 
+### Fast Path — One-Command Deploy Helper (Recommended for External Users)
+
+After authenticating the Databricks CLI once (`databricks auth login --host https://<YOUR-WORKSPACE>.cloud.databricks.com`), run:
+
+```bash
+./scripts/deploy_free_edition.sh --deploy-app
+```
+
+What [`scripts/deploy_free_edition.sh`](../scripts/deploy_free_edition.sh) automates for you:
+- Verifies Databricks CLI authentication and resolves your current workspace username cleanly (never storing secrets or usernames in Git).
+- Auto-detects your Serverless SQL Warehouse ID (or accepts `--warehouse-id <id>` and `--profile <name>`).
+- Handles the **fresh-workspace Genie Space bootstrap** automatically (if `workspace.gold_dcsa.mv_port_call_kpis` does not yet exist on your first run, it runs the 5-task orchestrator to materialize `gold_dcsa` first, then re-deploys the full bundle including `tcl_ops_genie`).
+- Starts and deploys the `tcl-port-control` Databricks App when `--deploy-app` is passed.
+
+### Manual Step-by-Step Alternative
+
 ### Step 1: Authenticate Databricks CLI (OAuth Recommended)
 
 ```bash

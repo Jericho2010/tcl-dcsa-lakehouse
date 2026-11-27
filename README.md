@@ -17,6 +17,9 @@
 
 > **An executable, end-to-end maritime reference Lakehouse proving how one logical LinkML domain model and one vendor-neutral Apache Ossie semantic spec eliminate schema and metric drift across Databricks Lakeflow Declarative Pipelines, ODCS v3.1.0 data contracts, Unity Catalog Metric Views, Power BI, AI/BI Genie, and a native FastAPI Workbench — verified live on Databricks Free Edition.**
 
+> [!NOTE]
+> **Fictional Scenario &amp; Synthetic Data Disclaimer:** **Tasman Container Line (TCL)**, all four operational source systems (**PortGate TOS**, **ReeferPulse IoT Mesh**, **VoyageCore ERP**, and **HarbourSync Port API**), all vessels (`MV TASMAN HORIZON`, `MV AOTEAROA STAR`, `MV CORAL TRADER`), container numbers, eBL documents, `@tasman-shipper.example` contacts, and KPI metrics are **100% fictional and synthetically generated** for this open-source architectural reference lab. No real ocean carrier, customer, employer, or proprietary production data is represented.
+
 <p align="center">
   <img src="docs/infographics/tcl_lakehouse_one_pager.png" alt="Tasman Container Line Executive One-Pager Infographic" width="100%" />
 </p>
@@ -27,33 +30,40 @@
 
 ## Table of Contents
 
-1. [Why This Architecture Exists](#why-this-architecture-exists)
+1. [The Fictional Backstory: Tasman Container Line (TCL)](#the-fictional-backstory-tasman-container-line-tcl)
 2. [Interactive Archify Architecture Diagrams](#interactive-archify-architecture-diagrams)
 3. [Strict Layer Ownership Matrix](#strict-layer-ownership-matrix)
 4. [The 80/20 Model-Driven Blueprint](#the-8020-model-driven-blueprint)
 5. [Low-Toil Governed Lakehouse Principles](#low-toil-governed-lakehouse-principles)
 6. [Deployment Modes: Free Edition vs. Azure Enterprise](#deployment-modes-free-edition-vs-azure-enterprise)
 7. [Live Databricks Free Edition Verification](#live-databricks-free-edition-verification)
-8. [2-Minute Local Quickstart](#2-minute-local-quickstart)
+8. [Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)](#build-it-yourself-2-min-local--10-min-databricks-free-edition)
 9. [Empirical Databricks Serverless &amp; Ossie Field Notes](#empirical-databricks-serverless--ossie-field-notes)
 10. [Documentation &amp; Repository Map](#documentation--repository-map)
 11. [Build Log](#build-log)
 
 ---
 
-## Why This Architecture Exists
+## The Fictional Backstory: Tasman Container Line (TCL)
 
-Enterprise data platforms rarely fail because teams cannot write Spark or SQL. They fail because **meaning gets rewritten five times**:
+### Meet TCL (Fictional Regional Ocean Carrier)
 
-1. Domain architects sketch shipping standards in slide decks.
-2. Data engineers hand-code regexes and bounds inside streaming pipelines.
-3. Governance teams duplicate schemas in YAML contracts or catalog UIs.
-4. BI developers re-implement core KPIs inside Power BI DAX.
-5. AI/BI natural-language assistants guess SQL joins over undocumented tables.
+Founded in 2014 in Auckland (`NZAKL`), **Tasman Container Line (TCL)** is a fictional regional container shipping line moving temperature-sensitive New Zealand primary exports — dairy, kiwifruit, king salmon, and chilled beef — alongside general container freight across a tight weekly six-port Tasman Sea and South Pacific liner loop:
 
-**Tasman Container Line (TCL)** — a realistic regional ocean carrier operating across New Zealand (`NZAKL`, `NZTRG`, `NZLYT`), Australia (`AUBNE`, `AUSYD`), and the Pacific Islands (`FJSVA`) — models a disciplined alternative standardized on **DCSA (Digital Container Shipping Association)** standards (**Track &amp; Trace v3.0 with IoT/Reefer telemetry**, **Electronic Bill of Lading v3**, **Booking &amp; Operational Vessel Schedules**, and **Just-in-Time 5-Phase Port Call**).
+> **Auckland (`NZAKL`) → Tauranga (`NZTRG`) → Lyttelton (`NZLYT`) → Brisbane (`AUBNE`) → Sydney (`AUSYD`) → Suva (`FJSVA`)**
 
-Every tool owns **exactly one architectural layer**, and every downstream contract, pipeline check, semantic view, and BI model compiles **one-way from Git** with fail-closed CI drift gates (`git diff --exit-code`).
+TCL operates three geared container vessels — **`MV TASMAN HORIZON`**, **`MV AOTEAROA STAR`**, and **`MV CORAL TRADER`** — on razor-thin berth windows. A single four-hour reefer compressor fault at Tauranga or Lyttelton can spoil NZ$250,000 of chilled cargo, while one missed berth slot cascades delays across every downstream port in the loop.
+
+### Why TCL Needed a Contract- &amp; Model-Driven Lakehouse
+
+Enterprise data platforms rarely fail because engineers cannot write Spark or SQL — they fail because **business meaning gets rewritten five times across siloed tools**. Before standardizing on **DCSA (Digital Container Shipping Association)** open standards, TCL's lean data team faced four recurring operational failures across its four fictional source systems:
+
+1. **PortGate TOS** *(fictional Terminal Operating System)* sent gate/load/discharge webhooks containing legacy terminal typos and malformed container IDs (`BAD-CONT-99`, `12345`) that silently broke downstream equipment joins.
+2. **ReeferPulse IoT Mesh** *(fictional Smart Container Telemetry Platform)* streamed live reefer temperatures — including faulty `-99.0°C` probe spikes that skewed fleet thermal averages and hid genuine `-11.2°C` cold-chain excursions.
+3. **VoyageCore ERP** *(fictional Booking &amp; Documentation System)* emitted out-of-order Electronic Bill of Lading (`eBL`) state transitions (`DRFT` → `APPR` → `ISSU` → `SURR` / `DELETE`) alongside unmasked shipper PII (`shipper_contact_email`, `consignee_name`).
+4. **HarbourSync Port API** *(fictional Port Authority Integration)* delivered 5-phase Just-in-Time (`JIT`) berth timestamps, yet Fleet Operations (Databricks SQL) and Finance (Power BI) reported conflicting **"Schedule Reliability %"** numbers every Monday morning.
+
+TCL solved all four problems with a **Low-Toil Governed Lakehouse**: every tool owns **exactly one architectural layer**, and every downstream contract, pipeline expectation, Unity Catalog Metric View, and Power BI model compiles **one-way from Git** with fail-closed CI drift gates (`git diff --exit-code`).
 
 ---
 
@@ -146,12 +156,12 @@ Switching environments requires changing only DABs target variables (`catalog` a
 
 Verified end-to-end against Databricks Free Edition (`dev` target, `catalog=workspace`, Serverless SQL Warehouse supplied at CLI runtime via `--var`):
 
-- **5-Task Serverless Orchestrator (`tcl_dcsa_e2e_orchestrator`, run `1002918074181118`):** Every task finished **`TERMINATED / SUCCESS`** in sequence:
-  1. `bootstrap_uc_objects` (`run_id=668779479510169`) — provisioned pure schemas (`bronze_dcsa`, `silver_dcsa`, `gold_dcsa`, `governance_dcsa`), 4 landing UC Volumes, and governance audit tables.
-  2. `ingest_harboursync_jit` (`run_id=281430197022506`) — landed deterministic NZ/AU/Pacific datasets across all 4 DCSA operational feeds.
-  3. `run_dcsa_medallion_pipeline` (`run_id=408750898674992`) — executed consolidated Serverless LDP (`dcsa_medallion_pipeline`).
-  4. `deploy_serving_governance` (`run_id=749963866402415`) — deployed UC Metric Views DDL, UC comments, and Silver `mask_pii_email` dynamic mask.
-  5. `run_contract_tests` (`run_id=651874174526977`) — executed all 5 ODCS contracts natively via `spark_ibis` and persisted results to `governance_dcsa.contract_test_results`.
+- **5-Task Serverless Orchestrator (`tcl_dcsa_e2e_orchestrator`):** Every task finished **`TERMINATED / SUCCESS`** in sequence:
+  1. `bootstrap_uc_objects` — provisioned pure schemas (`bronze_dcsa`, `silver_dcsa`, `gold_dcsa`, `governance_dcsa`), 4 landing UC Volumes, and governance audit tables.
+  2. `ingest_harboursync_jit` — landed deterministic synthetic NZ/AU/Pacific datasets across all 4 fictional DCSA operational feeds.
+  3. `run_dcsa_medallion_pipeline` — executed consolidated Serverless LDP (`dcsa_medallion_pipeline`).
+  4. `deploy_serving_governance` — deployed UC Metric Views DDL, UC comments, and Silver `mask_pii_email` dynamic mask.
+  5. `run_contract_tests` — executed all 5 ODCS contracts natively via `spark_ibis` and persisted results to `governance_dcsa.contract_test_results`.
 - **Live UC Metric Views (`MEASURE(...)`):**
   - `workspace.gold_dcsa.mv_port_call_kpis`: **15 vessel port calls** (**12 on-time**) across `AUBNE`, `AUSYD`, `FJSVA`, `NZAKL`, `NZLYT`, `NZTRG`.
   - `workspace.gold_dcsa.mv_container_journey_kpis`: **30 container moves**, **`active_ebl_count = 1`** per port, flagging reefer thermal excursions on `NZLYT` (`2/8 = 25%`) and `NZTRG` (`2/4 = 50%`).
@@ -161,30 +171,48 @@ Verified end-to-end against Databricks Free Edition (`dev` target, `catalog=work
   - `shipper_contact_email` on `silver_dcsa_ebl_current` returns masked addresses (`ex***@tasman-shipper.example`).
 - **Native Serverless `datacontract-cli` (`spark_ibis`):** **420 / 420 checks passed (`0` failures)** across all 5 contracts:
   - `tcl-gold-dcsa-port-call-kpis`: `57/57` · `tcl-harboursync-jit-port-calls`: `55/55` · `tcl-portgate-tos-events`: `112/112` · `tcl-reeferpulse-iot-telemetry`: `71/71` · `tcl-voyagecore-ebl-bookings`: `125/125`.
-- **Live Serving Surfaces:** `tcl-port-control` FastAPI App verified **`RUNNING` / `ACTIVE` / `SUCCEEDED`**, alongside live `TCL DCSA Port & Reefer Operations Genie` Space (`space_id: 01f1e8a9d75210eebed8df45562470e2`).
+- **Live Serving Surfaces:** `tcl-port-control` FastAPI App verified **`RUNNING` / `ACTIVE` / `SUCCEEDED`**, alongside the live `TCL DCSA Port & Reefer Operations Genie` Space bound to the Serverless SQL Warehouse.
 
 ---
 
-## 2-Minute Local Quickstart
+## Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)
 
-No cloud account is required to compile the full model/contract/semantic spine, lint all 5 ODCS contracts, test breaking-change detection, and explore the Port Control Workbench locally in demo mode:
+Anyone can clone and run this repository from scratch with **zero pre-existing cloud resources or secrets**.
+
+### Option 1 — Local Offline Build, Compilation &amp; Demo Workbench (2 Minutes, No Cloud Needed)
+
+**Prerequisites:** Git, Python `3.11+`, and [`uv`](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```bash
-# 1. Install Python 3.12 dependencies cleanly via uv
+# 1. Clone the repository
+git clone https://github.com/Jericho2010/tcl-dcsa-lakehouse.git
+cd tcl-dcsa-lakehouse
+
+# 2. Install locked Python environment (real LinkML, datacontract-cli, apache/ossie-converters)
 ./setup.sh
 
-# 2. Recompile LinkML & Apache Ossie, lint all 5 ODCS contracts, run ruff + pytest
+# 3. Compile LinkML & Apache Ossie, lint all 5 ODCS contracts, run ruff + 16 pytest gates
 ./run.sh
 
-# 3. Generate deterministic sample DCSA landing feeds locally (gitignored)
+# 4. Generate deterministic synthetic DCSA landing feeds locally (gitignored)
 uv run python -m generators.dcsa_synthetic_generator --output-dir data/sample_landing
 
-# 4. Launch the TCL Port Control FastAPI Workbench locally (demo mode)
+# 5. Launch the TCL Port Control FastAPI Workbench locally in demo mode
 ./run.sh --serve-app
-# Open http://127.0.0.1:8000
+# Open http://127.0.0.1:8000 in your browser
 ```
 
-For full **Databricks Free Edition live deployment**, **GitHub Actions CD**, and **Azure DevOps Enterprise promotion** steps, see [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md).
+### Option 2 — Deploy Live to Your Own Databricks Free Edition Workspace (10 Minutes)
+
+**Additional prerequisite:** [Databricks CLI `>= 1.3.0`](https://docs.databricks.com/dev-tools/cli/install.html) signed into any [Databricks Free Edition](https://www.databricks.com/learn/free-edition) workspace (`databricks auth login --host https://<your-workspace>.cloud.databricks.com`).
+
+```bash
+# Auto-detects your Serverless SQL Warehouse, handles first-time Genie Space bootstrap,
+# deploys the DABs bundle, runs the 5-task orchestrator, and starts tcl-port-control:
+./scripts/deploy_free_edition.sh --deploy-app
+```
+
+For manual step-by-step commands, SQL verification queries, GitHub Actions CD setup, and Azure DevOps Enterprise (`staging`/`prod`) promotion, see [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md).
 
 ---
 
@@ -218,6 +246,7 @@ Real-world runtime constraints discovered and codified via self-annealing during
 | [`src/pipelines/dcsa_medallion/`](src/pipelines/dcsa_medallion/) | Consolidated Serverless `pyspark.pipelines` Medallion pipeline (Bronze, Silver, Quarantine, AUTO CDC, Gold) |
 | [`src/jobs/`](src/jobs/) &amp; [`apps/port-control/`](apps/port-control/) | Serverless UC bootstrap, ingestion, serving/masking, contract verification jobs, and FastAPI Workbench |
 | [`databricks.yml`](databricks.yml) &amp; [`resources/`](resources/) | `direct`-engine Databricks Declarative Automation Bundle (`dev`, `staging`, `prod`) |
+| [`scripts/deploy_free_edition.sh`](scripts/deploy_free_edition.sh) | One-command Databricks Free Edition deployer (auto-detects Serverless warehouse &amp; first-time Genie bootstrap) |
 
 ---
 
@@ -225,5 +254,6 @@ Real-world runtime constraints discovered and codified via self-annealing during
 
 - **2026-11-25 - Phase 1 Model, Contract &amp; Semantic Spine** — Bootstrapped `uv` Python 3.12 environment, authored 5 LinkML DCSA domain models, compiled 5 valid ODCS v3.1.0 contracts + Pydantic/JSON Schema/UC/LDP artifacts, verified `datacontract changelog`/`breaking`, authored `semantic/ossie/dcsa_ops.ossie.yaml` (`0.3.0.dev0`), compiled Databricks Metric Views SQL DDL and Power BI `dcsa_ops.model.bim` (10 DAX measures), and verified `pytest` + `ruff`.
 - **2026-11-25 - Phase 2 Sources, LDP Pipeline, Jobs, App, DABs &amp; CI/CD** — Built deterministic NZ/AU/Pacific DCSA generator across all 4 sources (with deliberate quarantine and out-of-order CDC cases); implemented consolidated `pyspark.pipelines` medallion pipeline (`free_edition` and `azure_enterprise` ingestion, dynamic `expect_all_or_drop` + quarantine tables, `AUTO CDC` SCD1/SCD2, Gold KPI marts); added serverless UC bootstrap, ingestion, serving/PII-masking governance, and live `DataContract.test()` jobs; built `apps/port-control` FastAPI workbench, Genie Space config, `direct`-engine DABs bundle, GitHub Actions &amp; Azure Pipelines CI/CD workflows, `SECURITY.md`, MIT `LICENSE`, and full test suite.
-- **2026-11-26 - Phase 3 &amp; 4 Live Databricks Free Edition Verification &amp; CI/CD Hardening** — Verified end-to-end 5-task orchestrator run `1002918074181118` (all tasks `SUCCESS`, `420/420` native `spark_ibis` ODCS checks, 6 live SQL proofs, live `tcl-port-control` App and Genie Space), aligned ODCS contracts to curated `silver_dcsa`/`gold_dcsa` tables with Silver-only PII masking, expanded repository hygiene gates, and published private GitHub repository with green GitHub Actions CI.
+- **2026-11-26 - Phase 3 &amp; 4 Live Databricks Free Edition Verification &amp; CI/CD Hardening** — Verified end-to-end 5-task orchestrator run live on Databricks Free Edition (all tasks `SUCCESS`, `420/420` native `spark_ibis` ODCS checks, 6 live SQL proofs, live `tcl-port-control` App and Genie Space), aligned ODCS contracts to curated `silver_dcsa`/`gold_dcsa` tables with Silver-only PII masking, expanded repository hygiene gates, and published repository with green GitHub Actions CI.
 - **2026-11-27 - Documentation Overhaul, Archify Diagrams &amp; Executive Infographics** — Replaced Mermaid with 3 repository-backed, browser-verified **Archify v3.0** showcase diagrams (`architecture`, `dataflow`, `workflow` v2) with PNG previews and interactive HTML sources; generated 3 2× HiDPI editorial infographics (maritime hero banner, executive one-pager, 80/20 MDSD blueprint); authored comprehensive `docs/ARCHITECTURE.md`, `docs/DCSA_DOMAIN_MODEL.md`, `docs/DEPLOYMENT_GUIDE.md`, and `CONTRIBUTING.md`; expanded automated hygiene and zero-Mermaid tests.
+- **2026-11-27 - Public-Release Hardening, TCL Fictional Backstory &amp; 1-Command Free Edition Deployer** — Scrubbed workspace-specific object/run IDs from docs, added explicit fictional-scenario disclaimer and Tasman Container Line backstory across docs, added `./scripts/deploy_free_edition.sh` with automatic warehouse detection and first-time Genie Space bootstrap handling, and verified fresh-clone reproducibility.

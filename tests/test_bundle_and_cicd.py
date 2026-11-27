@@ -87,6 +87,8 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
         re.compile("shaun" + "david" + "anderson", re.IGNORECASE),
         re.compile("df4dc096" + "88caf6d8", re.IGNORECASE),
         re.compile("36714775" + "45521222"),
+        re.compile("01f1e8a9" + "d75210ee", re.IGNORECASE),
+        re.compile("10029180" + "74181118"),
     )
     scan_roots = (
         "src",
@@ -98,6 +100,7 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
         "generated",
         "tests",
         "docs",
+        "scripts",
         ".github",
     )
     extra_files = (

@@ -1,5 +1,8 @@
 # Architecture Deep Dive — Tasman Container Line (TCL) Lakehouse
 
+> [!NOTE]
+> **Fictional Scenario Notice:** **Tasman Container Line (TCL)** and all four operational source systems (**PortGate TOS**, **ReeferPulse IoT Mesh**, **VoyageCore ERP**, **HarbourSync Port API**) are **100% fictional** and backed by synthetic data generated exclusively for this open-source reference architecture.
+
 This document details the architectural design, control ownership, data boundaries, and engineering trade-offs behind the **Tasman Container Line (TCL) DCSA Contract- and Model-Driven Lakehouse**.
 
 ---

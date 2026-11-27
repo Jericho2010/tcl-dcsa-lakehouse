@@ -1,6 +1,13 @@
 # DCSA Domain Model &amp; Semantic KPI Reference
 
-Tasman Container Line (TCL) standardizes its Lakehouse entities on four **Digital Container Shipping Association (DCSA)** operational standards modeled declaratively in **LinkML** and **Apache Ossie**.
+> [!NOTE]
+> **Fictional Carrier &amp; Synthetic Data Notice:** **Tasman Container Line (TCL)**, its four operational systems (**PortGate TOS**, **ReeferPulse IoT Mesh**, **VoyageCore ERP**, **HarbourSync Port API**), vessels, container IDs, eBL documents, and shipper records are **100% fictional and synthetically generated** for architectural demonstration.
+
+### Fictional Carrier Context: Tasman Container Line (TCL)
+
+Headquartered in Auckland (`NZAKL`), **Tasman Container Line (TCL)** is a fictional regional liner carrier specializing in refrigerated ("reefer") primary-industry exports (dairy, kiwifruit, seafood, chilled beef) and general container freight across a weekly six-port Tasman Sea and Pacific loop (`NZAKL`, `NZTRG`, `NZLYT`, `AUBNE`, `AUSYD`, `FJSVA`) served by three fictional vessels (`MV TASMAN HORIZON`, `MV AOTEAROA STAR`, `MV CORAL TRADER`).
+
+TCL standardizes its Lakehouse entities on four real **Digital Container Shipping Association (DCSA)** operational standards modeled declaratively in **LinkML** and **Apache Ossie**.
 
 ---
 
