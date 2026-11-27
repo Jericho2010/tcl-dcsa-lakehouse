@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "The Compiled Lakehouse — Closed-Loop Semantic Spine",
+    "output": ".archify/architecture-tcl-semantic-spine-20261127-182400/tcl-semantic-spine-loop.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Jericho2010/tcl-dcsa-lakehouse.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "08493d8662848765810ed4f4112b30595fe214cd"
+    }
+  },
+  "components": [
+    {
+      "id": "ci_drift_gate",
+      "type": "security",
+      "label": "CI Drift & Breaking Gate",
+      "sublabel": "git diff + breaking",
+      "tag": "GitHub Actions",
+      "pos": [320, 40],
+      "size": [172, 66],
+      "sources": [
+        { "path": ".github/workflows/ci-cd.yml", "line": 1, "end_line": 70, "label": "Zero-drift CI workflow" }
+      ]
+    },
+    {
+      "id": "odcs_live_audit",
+      "type": "security",
+      "label": "Serverless ODCS Gate",
+      "sublabel": "spark_ibis 420/420",
+      "tag": "verify up",
+      "pos": [600, 40],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/jobs/run_contract_tests.py", "line": 1, "end_line": 120, "label": "Live DataContract runner" }
+      ]
+    },
+    {
+      "id": "governance_store",
+      "type": "database",
+      "label": "Governance & Quarantine",
+      "sublabel": "PII mask + audit Delta",
+      "tag": "governance_dcsa",
+      "pos": [880, 40],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/jobs/deploy_serving_governance.py", "line": 1, "end_line": 120, "label": "Silver PII mask DDL" },
+        { "path": "src/jobs/bootstrap_uc_objects.py", "line": 30, "end_line": 70, "label": "Governance Delta tables" }
+      ]
+    },
+    {
+      "id": "port_control_app",
+      "type": "frontend",
+      "label": "Port Control Workbench",
+      "sublabel": "FastAPI triage UI",
+      "tag": "Databricks App",
+      "pos": [1440, 40],
+      "size": [172, 66],
+      "sources": [
+        { "path": "apps/port-control/app.py", "line": 1, "end_line": 120, "label": "FastAPI workbench routes" }
+      ]
+    },
+    {
+      "id": "linkml_spec",
+      "type": "external",
+      "label": "LinkML Domain Model",
+      "sublabel": "DCSA YAML in Git",
+      "tag": "sovereign spec",
+      "pos": [40, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "models/linkml/dcsa/dcsa_tnt_v3.yaml", "line": 1, "end_line": 140, "label": "T&T v3 & reefer bounds" },
+        { "path": "models/linkml/dcsa/dcsa_ebl_v3.yaml", "line": 1, "end_line": 150, "label": "eBL PII annotations" }
+      ]
+    },
+    {
+      "id": "compile_dcsa",
+      "type": "backend",
+      "label": "LinkML Compiler",
+      "sublabel": "SchemaView codegen",
+      "tag": "compile down",
+      "pos": [320, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/tcl_compiler/compile_dcsa.py", "line": 1, "end_line": 120, "label": "Domain model compiler" }
+      ]
+    },
+    {
+      "id": "odcs_contracts",
+      "type": "security",
+      "label": "ODCS v3.1.0 Contracts",
+      "sublabel": "5x physical specs",
+      "tag": "open contract",
+      "pos": [600, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "contracts/odcs/reeferpulse_iot_telemetry.odcs.yaml", "line": 1, "end_line": 90, "label": "Reefer ODCS contract" }
+      ]
+    },
+    {
+      "id": "ldp_medallion",
+      "type": "database",
+      "label": "Lakeflow Medallion",
+      "sublabel": "Bronze, Silver, Gold",
+      "tag": "pyspark.pipelines",
+      "pos": [880, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/pipelines/dcsa_medallion/silver_conformance.py", "line": 41, "end_line": 218, "label": "Expectations & AUTO CDC" },
+        { "path": "src/pipelines/dcsa_medallion/gold_marts.py", "line": 14, "end_line": 147, "label": "Gold KPI marts" }
+      ]
+    },
+    {
+      "id": "ossie_compiler",
+      "type": "backend",
+      "label": "Apache Ossie Spine",
+      "sublabel": "0.3.0.dev0 converters",
+      "tag": "open semantic",
+      "pos": [1160, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "semantic/ossie/dcsa_ops.ossie.yaml", "line": 1, "end_line": 160, "label": "Canonical Ossie YAML" },
+        { "path": "src/tcl_compiler/compile_semantic.py", "line": 1, "end_line": 160, "label": "Dual-target compiler" }
+      ]
+    },
+    {
+      "id": "uc_metric_views",
+      "type": "cloud",
+      "label": "UC Metric Views",
+      "sublabel": "MEASURE() SQL DDL",
+      "tag": "Databricks SQL",
+      "pos": [1440, 220],
+      "size": [172, 66],
+      "sources": [
+        { "path": "generated/databricks/deploy_metric_views.sql", "line": 1, "end_line": 120, "label": "Compiled Metric Views" }
+      ]
+    },
+    {
+      "id": "pydantic_schema",
+      "type": "backend",
+      "label": "Pydantic & JSON Schema",
+      "sublabel": "API + test models",
+      "tag": "generated",
+      "pos": [320, 400],
+      "size": [172, 66],
+      "sources": [
+        { "path": "generated/pydantic/dcsa_models.py", "line": 1, "end_line": 90, "label": "Compiled Pydantic v2" }
+      ]
+    },
+    {
+      "id": "powerbi_tmsl",
+      "type": "frontend",
+      "label": "Power BI + 20% DAX",
+      "sublabel": ".model.bim + sidecar",
+      "tag": "80/20 MDSD",
+      "pos": [1160, 400],
+      "size": [172, 66],
+      "sources": [
+        { "path": "generated/powerbi/dcsa_ops.model.bim", "line": 1, "end_line": 80, "label": "Compiled TMSL model" },
+        { "path": "semantic/powerbi_overrides/dax_specialist_measures.tmdl", "line": 1, "end_line": 39, "label": "Protected 20% DAX" }
+      ]
+    },
+    {
+      "id": "genie_space",
+      "type": "frontend",
+      "label": "Databricks AI/BI Genie",
+      "sublabel": "tcl_ops_genie NLQ",
+      "tag": "AI grounded",
+      "pos": [1440, 400],
+      "size": [172, 66],
+      "sources": [
+        { "path": "src/genie/tcl_ops_genie.geniespace.json", "line": 1, "end_line": 80, "label": "Genie Space config" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Closed-Loop Verification & Upward Proof Plane",
+      "wraps": ["ci_drift_gate", "odcs_live_audit", "governance_store", "port_control_app"],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "The Semantic Spine (Compile Domain Rules Down One-Way)",
+      "wraps": ["linkml_spec", "compile_dcsa", "odcs_contracts", "ldp_medallion", "ossie_compiler", "uc_metric_views"],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Compiled Off-Spine Targets & Consumers",
+      "wraps": ["pydantic_schema", "powerbi_tmsl", "genie_space"],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    { "from": "linkml_spec", "to": "compile_dcsa", "label": "YAML specs", "variant": "emphasis" },
+    { "from": "compile_dcsa", "to": "odcs_contracts", "label": "emits ODCS", "variant": "emphasis" },
+    { "from": "compile_dcsa", "to": "pydantic_schema", "label": "Pydantic", "variant": "dashed" },
+    { "from": "compile_dcsa", "to": "ci_drift_gate", "label": "zero drift", "variant": "security" },
+    { "from": "odcs_contracts", "to": "ldp_medallion", "label": "rules + PII", "variant": "emphasis" },
+    { "from": "odcs_contracts", "to": "odcs_live_audit", "label": "420 checks", "variant": "security" },
+    { "from": "ldp_medallion", "to": "ossie_compiler", "label": "Gold marts", "variant": "emphasis" },
+    { "from": "ldp_medallion", "to": "governance_store", "label": "quarantine", "variant": "security" },
+    { "from": "odcs_live_audit", "to": "governance_store", "label": "audit rows", "variant": "security" },
+    { "from": "odcs_live_audit", "to": "ci_drift_gate", "label": "CI proof", "variant": "security" },
+    { "from": "ossie_compiler", "to": "uc_metric_views", "label": "Metric DDL", "variant": "emphasis" },
+    { "from": "ossie_compiler", "to": "powerbi_tmsl", "label": "10 DAX KPIs", "variant": "dashed" },
+    { "from": "uc_metric_views", "to": "port_control_app", "label": "live KPIs", "variant": "default" },
+    { "from": "uc_metric_views", "to": "genie_space", "label": "NLQ context", "variant": "emphasis" },
+    { "from": "port_control_app", "to": "governance_store", "label": "triage log", "variant": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Compile Down (Build-Time Spine)",
+      "items": [
+        "One line of LinkML or Apache Ossie YAML compiles into Pydantic, ODCS, Spark LDP, UC Metric Views, and Power BI",
+        "Zero hand-duplicated regexes, thermal bounds, PII rules, or KPI denominators across tools"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Verify Up (Closed-Loop Proof)",
+      "items": [
+        "420/420 native spark_ibis ODCS checks, explicit quarantine tables, and operator triage feed back into governance_dcsa",
+        "CI enforces git diff --exit-code and datacontract breaking before any change merges"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Sovereign Standards, Replaceable Runtimes",
+      "items": [
+        "LinkML, ODCS v3.1.0, and Apache Ossie own permanent business meaning in Git",
+        "Databricks Serverless, Power BI, AI/BI Genie, and future engines remain pluggable build targets"
+      ]
+    }
+  ]
+}

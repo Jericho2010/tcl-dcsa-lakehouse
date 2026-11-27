@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Glass-Box Traceability — Anatomy of One Line of Git YAML</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 900px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    background: #071324;
+    color: #f8fafc;
+    padding: 34px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1.5px solid rgba(148, 163, 184, 0.25);
+    padding-bottom: 16px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.16);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 35px; font-weight: 800; letter-spacing: -0.025em; color: #ffffff; line-height: 1.1; }
+  .sub { font-size: 15.5px; color: #94a3b8; margin-top: 6px; }
+  .pill {
+    background: rgba(52, 211, 153, 0.14);
+    border: 1px solid rgba(52, 211, 153, 0.45);
+    color: #6ee7b7;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .tracks {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 20px;
+    margin: 20px 0 18px;
+  }
+
+  .trace-row {
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 18px;
+    padding: 20px 22px;
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .trace-row.pii {
+    border-color: rgba(192, 132, 252, 0.42);
+  }
+  .trace-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .t-badge {
+    font-size: 11.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    white-space: nowrap;
+  }
+  .trace-row.pii .t-badge {
+    background: rgba(192, 132, 252, 0.18);
+    color: #d8b4fe;
+    border-color: rgba(192, 132, 252, 0.45);
+  }
+  .yaml-source {
+    flex: 1;
+    background: #020617;
+    border: 1.5px solid #38bdf8;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.8px;
+    color: #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .trace-row.pii .yaml-source { border-color: #c084fc; }
+  .yaml-file { font-size: 11px; color: #94a3b8; }
+  .yk { color: #7dd3fc; font-weight: 700; }
+  .yv { color: #34d399; font-weight: 700; }
+  .yp { color: #e879f9; font-weight: 700; }
+
+  .chain {
+    display: grid;
+    grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr;
+    align-items: stretch;
+    gap: 6px;
+  }
+  .node {
+    background: rgba(30, 41, 59, 0.78);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-top: 4px solid #38bdf8;
+    border-radius: 12px;
+    padding: 12px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .node.odcs { border-top-color: #fb7185; }
+  .node.spark { border-top-color: #a78bfa; }
+  .node.live { border-top-color: #34d399; background: rgba(6, 78, 59, 0.34); border-color: rgba(52, 211, 153, 0.4); }
+  .node.serve { border-top-color: #fbbf24; }
+  .node.pii-m { border-top-color: #e879f9; }
+  .node h4 { font-size: 13px; font-weight: 800; color: #ffffff; }
+  .node p { font-size: 11.5px; color: #cbd5e1; line-height: 1.4; }
+  .node p code {
+    font-family: ui-monospace, monospace;
+    font-size: 10.8px;
+    color: #7dd3fc;
+    background: rgba(2, 6, 23, 0.55);
+    padding: 1px 5px;
+    border-radius: 4px;
+    display: inline;
+  }
+  .node > code {
+    font-family: ui-monospace, monospace;
+    font-size: 10.6px;
+    color: #7dd3fc;
+    background: rgba(2, 6, 23, 0.72);
+    padding: 4px 7px;
+    border-radius: 6px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .node.live > code { color: #6ee7b7; }
+  .node.odcs > code { color: #fda4af; }
+  .node.pii-m > code { color: #f0abfc; }
+  .node.serve > code { color: #fde68a; }
+
+  .arr {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #38bdf8;
+    font-size: 18px;
+    font-weight: 900;
+  }
+  .trace-row.pii .arr { color: #c084fc; }
+
+  .footer-bar {
+    background: rgba(30, 41, 59, 0.88);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 14px;
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+  .footer-bar .lead { font-size: 15px; font-weight: 800; color: #38bdf8; white-space: nowrap; }
+  .footer-bar .copy { font-size: 13.8px; color: #e2e8f0; }
+  .footer-bar .copy strong { color: #34d399; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="kicker">Glass-Box Traceability · Manifesto Visual 04</div>
+      <h1>Anatomy of One Line of Git YAML</h1>
+      <div class="sub">Every validation rule, PII mask, quarantine reason, and executive KPI traces straight back to one human-readable line in Git</div>
+    </div>
+    <div class="pill">Audit Proof: 100% Lineage from PR Diff → Live Runtime</div>
+  </div>
+
+  <div class="tracks">
+    <!-- THREAD A: THERMAL BOUND -->
+    <div class="trace-row">
+      <div class="trace-head">
+        <span class="t-badge">Thread A · Physical Quality Rule</span>
+        <div class="yaml-source">
+          <span><span class="yk">supply_air_temp_c:</span> { <span class="yk">minimum_value:</span> <span class="yv">-45</span>, <span class="yk">maximum_value:</span> <span class="yv">60</span> }</span>
+          <span class="yaml-file">models/linkml/dcsa/dcsa_tnt_v3.yaml</span>
+        </div>
+      </div>
+
+      <div class="chain">
+        <div class="node">
+          <div>
+            <h4>1. Pydantic v2 Model</h4>
+            <p>Enforces thermal bounds on API payloads &amp; test generators at build time.</p>
+          </div>
+          <code>Field(ge=-45, le=60)</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node odcs">
+          <div>
+            <h4>2. ODCS v3.1.0 Contract</h4>
+            <p>Compiled into quality checks validated in CI and live Serverless.</p>
+          </div>
+          <code>minimum: -45 · maximum: 60</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node spark">
+          <div>
+            <h4>3. Spark LDP Expectation</h4>
+            <p>Compiled into JSON predicates loaded by <code>@dp.expect_all_or_drop</code>.</p>
+          </div>
+          <code>supply_air_temp_c &gt;= -45</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node live">
+          <div>
+            <h4>4. Live Quarantine Proof</h4>
+            <p>Faulty <strong>-99.0°C</strong> probe spike diverted automatically with exact rule name.</p>
+          </div>
+          <code>quarantine_reeferpulse = 1</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node serve">
+          <div>
+            <h4>5. Triage, Genie &amp; Power BI</h4>
+            <p>Operators triage the fault in FastAPI while KPIs stay uncorrupted.</p>
+          </div>
+          <code>cold_chain_excursion_rate</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAD B: PII GOVERNANCE -->
+    <div class="trace-row pii">
+      <div class="trace-head">
+        <span class="t-badge">Thread B · Dynamic PII Governance</span>
+        <div class="yaml-source">
+          <span><span class="yk">shipper_contact_email:</span> { <span class="yk">annotations:</span> { <span class="yk">pii:</span> <span class="yp">"true"</span>, <span class="yk">classification:</span> <span class="yp">confidential</span> } }</span>
+          <span class="yaml-file">models/linkml/dcsa/dcsa_ebl_v3.yaml</span>
+        </div>
+      </div>
+
+      <div class="chain">
+        <div class="node pii-m">
+          <div>
+            <h4>1. Compiler PII Registry</h4>
+            <p><code>compile_dcsa.py</code> extracts every PII-tagged slot across inherited mixins.</p>
+          </div>
+          <code>generated/uc_comments.json</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node odcs">
+          <div>
+            <h4>2. ODCS Classification</h4>
+            <p>Publishes <code>classification: confidential</code> &amp; <code>pii</code> tag on eBL contract.</p>
+          </div>
+          <code>voyagecore_ebl.odcs.yaml</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node spark">
+          <div>
+            <h4>3. Silver-Only Mask Attach</h4>
+            <p>Governance job binds Unity Catalog mask on curated Silver eBL tables only.</p>
+          </div>
+          <code>SET MASK mask_pii_email</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node live">
+          <div>
+            <h4>4. Live Masked SQL Proof</h4>
+            <p>Non-admin queries automatically receive redacted shipper contacts.</p>
+          </div>
+          <code>ex***@tasman-shipper.example</code>
+        </div>
+        <div class="arr">→</div>
+
+        <div class="node serve">
+          <div>
+            <h4>5. Safe AI &amp; BI Serving</h4>
+            <p>Bronze stream stays intact; Genie &amp; Power BI never leak raw PII.</p>
+          </div>
+          <code>Zero PII exposure in Gold</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="lead">GLASS-BOX AUDITABILITY</div>
+    <div class="copy">Ask any regulator, auditor, or engineer <strong>"Where did that mask, quarantine row, or KPI come from?"</strong> In a Compiled Lakehouse, the answer is always a single clickable Git commit and one line of YAML.</div>
+  </div>
+</body>
+</html>

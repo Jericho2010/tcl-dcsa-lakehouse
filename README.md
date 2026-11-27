@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="docs/infographics/tcl_hero_banner.png" alt="Tasman Container Line — DCSA Contract- and Model-Driven Lakehouse" width="100%" />
+  <img src="docs/infographics/tcl_hero_banner.png" alt="The Compiled Lakehouse — Write Meaning Once. Compile Everything." width="100%" />
 </p>
 
-<h1 align="center">Tasman Container Line (TCL) — DCSA Contract- &amp; Model-Driven Lakehouse</h1>
+<h1 align="center">The Compiled Lakehouse</h1>
+<p align="center"><strong>Write meaning once. Compile the entire Lakehouse through a closed-loop Semantic Spine.</strong><br/><em>Tasman Container Line (TCL) — DCSA Reference Implementation on Databricks &amp; Power BI</em></p>
 
 <p align="center">
   <a href="https://github.com/Jericho2010/tcl-dcsa-lakehouse/actions/workflows/ci-cd.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="GitHub Actions CI" /></a>
@@ -15,7 +16,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-059669?style=flat-square" alt="MIT License" /></a>
 </p>
 
-> **An executable, end-to-end maritime reference Lakehouse proving how one logical LinkML domain model and one vendor-neutral Apache Ossie semantic spec eliminate schema and metric drift across Databricks Lakeflow Declarative Pipelines, ODCS v3.1.0 data contracts, Unity Catalog Metric Views, Power BI, AI/BI Genie, and a native FastAPI Workbench — verified live on Databricks Free Edition.**
+> **One continuous Semantic Spine from Logical Domain Model → Operational Contracts → Pipelines → Semantic Layer → BI &amp; AI.** Open, vendor-neutral standards (**LinkML**, **ODCS v3.1.0**, **Apache Ossie**) own your permanent business meaning while cloud engines (**Databricks**, **Power BI**, **Fabric**, **Snowflake**) become replaceable runtimes. Rules compile down; live verification (`420/420` `spark_ibis` checks + quarantine) flows back up; and every rule, PII mask, quarantine reason, and KPI formula traces straight back to one line of Git YAML.
+>
+> **Read the full 7-act architectural manifesto:** [`docs/THE_COMPILED_LAKEHOUSE.md`](docs/THE_COMPILED_LAKEHOUSE.md) · **Share it:** [`docs/LINKEDIN_LAUNCH_KIT.md`](docs/LINKEDIN_LAUNCH_KIT.md)
 
 > [!NOTE]
 > **Fictional Scenario &amp; Synthetic Data Disclaimer:** **Tasman Container Line (TCL)**, all four operational source systems (**PortGate TOS**, **ReeferPulse IoT Mesh**, **VoyageCore ERP**, and **HarbourSync Port API**), all vessels (`MV TASMAN HORIZON`, `MV AOTEAROA STAR`, `MV CORAL TRADER`), container numbers, eBL documents, `@tasman-shipper.example` contacts, and KPI metrics are **100% fictional and synthetically generated** for this open-source architectural reference lab. No real ocean carrier, customer, employer, or proprietary production data is represented.
@@ -30,18 +33,45 @@
 
 ## Table of Contents
 
-1. [The Fictional Backstory: Tasman Container Line (TCL)](#the-fictional-backstory-tasman-container-line-tcl)
-2. [New to DCSA, LinkML, or Apache Ossie? (And Going Beyond Shipping)](#new-to-dcsa-linkml-or-apache-ossie-and-going-beyond-shipping)
-3. [Interactive Archify Architecture Diagrams](#interactive-archify-architecture-diagrams)
-4. [Strict Layer Ownership Matrix](#strict-layer-ownership-matrix)
-5. [The 80/20 Model-Driven Blueprint](#the-8020-model-driven-blueprint)
-6. [Low-Toil Governed Lakehouse Principles](#low-toil-governed-lakehouse-principles)
-7. [Deployment Modes: Free Edition vs. Azure Enterprise](#deployment-modes-free-edition-vs-azure-enterprise)
-8. [Live Databricks Free Edition Verification](#live-databricks-free-edition-verification)
-9. [Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)](#build-it-yourself-2-min-local--10-min-databricks-free-edition)
-10. [Empirical Databricks Serverless &amp; Ossie Field Notes](#empirical-databricks-serverless--ossie-field-notes)
-11. [Documentation &amp; Repository Map](#documentation--repository-map)
-12. [Build Log](#build-log)
+1. [The Compiled Lakehouse: Visual Manifesto](#the-compiled-lakehouse-visual-manifesto)
+2. [The Fictional Backstory: Tasman Container Line (TCL)](#the-fictional-backstory-tasman-container-line-tcl)
+3. [New to DCSA, LinkML, or Apache Ossie? (And Going Beyond Shipping)](#new-to-dcsa-linkml-or-apache-ossie-and-going-beyond-shipping)
+4. [Interactive Archify Architecture Diagrams](#interactive-archify-architecture-diagrams)
+5. [Strict Layer Ownership Matrix](#strict-layer-ownership-matrix)
+6. [The 80/20 Model-Driven Blueprint](#the-8020-model-driven-blueprint)
+7. [Low-Toil Governed Lakehouse Principles](#low-toil-governed-lakehouse-principles)
+8. [Deployment Modes: Free Edition vs. Azure Enterprise](#deployment-modes-free-edition-vs-azure-enterprise)
+9. [Live Databricks Free Edition Verification](#live-databricks-free-edition-verification)
+10. [Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)](#build-it-yourself-2-min-local--10-min-databricks-free-edition)
+11. [Empirical Databricks Serverless &amp; Ossie Field Notes](#empirical-databricks-serverless--ossie-field-notes)
+12. [Documentation &amp; Repository Map](#documentation--repository-map)
+13. [Build Log](#build-log)
+
+---
+
+## The Compiled Lakehouse: Visual Manifesto
+
+Why treat data platforms differently from compiled software? Read the complete 7-act thesis in [`docs/THE_COMPILED_LAKEHOUSE.md`](docs/THE_COMPILED_LAKEHOUSE.md) — or scan the four visual pillars below:
+
+### Hand-Wired vs. Compiled
+<p align="center">
+  <img src="docs/infographics/compiled_handwired_vs_compiled.png" alt="Hand-Wired Data Platforms vs. The Compiled Lakehouse" width="100%" />
+</p>
+
+### The Closed-Loop Semantic Spine (Compile Down · Verify Up)
+<p align="center">
+  <img src="docs/infographics/compiled_semantic_spine_loop.png" alt="The Closed-Loop Semantic Spine" width="100%" />
+</p>
+
+### The Sovereign Stack (Permanent Meaning vs. Replaceable Runtimes)
+<p align="center">
+  <img src="docs/infographics/compiled_sovereign_stack.png" alt="The Sovereign Stack — Permanent Meaning vs. Replaceable Runtimes" width="100%" />
+</p>
+
+### Glass-Box Traceability (Anatomy of One Line of Git YAML)
+<p align="center">
+  <img src="docs/infographics/compiled_glass_box_traceability.png" alt="Glass-Box Traceability — Anatomy of One Line of Git YAML" width="100%" />
+</p>
 
 ---
 
@@ -124,7 +154,16 @@ Because compilers, ODCS contract gates, Lakeflow Declarative Pipelines, quaranti
 
 All diagrams in this repository are authored as **repository-backed Archify v3.0 diagrams** pinned to real source line ranges — zero Mermaid approximations, full clickable source links, light/dark themes, path tracing, and SVG/PNG export when opened locally.
 
-### 1. End-to-End Platform &amp; Closed-Loop Governance Topology
+### 1. The Closed-Loop Semantic Spine (Compile Down · Verify Up)
+
+<p align="center">
+  <img src="docs/diagrams/images/tcl-semantic-spine-loop.png" alt="The Compiled Lakehouse — Closed-Loop Semantic Spine (Archify)" width="100%" />
+</p>
+
+- **Interactive HTML:** Open [`docs/diagrams/tcl-semantic-spine-loop.html`](docs/diagrams/tcl-semantic-spine-loop.html) locally (spec: [`tcl-semantic-spine-loop.candidate.json`](docs/diagrams/tcl-semantic-spine-loop.candidate.json)).
+- **What it proves:** One continuous Semantic Spine compiles rules down from LinkML → ODCS v3.1.0 → Lakeflow Medallion → Apache Ossie → UC Metric Views / Power BI / Genie, while live `420/420` `spark_ibis` checks, quarantine rows, operator triage, and `git diff --exit-code` close the governance loop upward.
+
+### 2. End-to-End Platform &amp; Closed-Loop Governance Topology
 
 <p align="center">
   <img src="docs/diagrams/images/tcl-platform-architecture.png" alt="TCL End-to-End Platform Architecture (Archify)" width="100%" />
@@ -133,7 +172,7 @@ All diagrams in this repository are authored as **repository-backed Archify v3.0
 - **Interactive HTML:** Open [`docs/diagrams/tcl-platform-architecture.html`](docs/diagrams/tcl-platform-architecture.html) locally in any browser (spec: [`tcl-platform-architecture.candidate.json`](docs/diagrams/tcl-platform-architecture.candidate.json)).
 - **What it proves:** Operational data flows left-to-right (`4 DCSA Sources` → `bronze_dcsa` → `silver_dcsa` → `gold_dcsa` → `UC Metric Views`), while build-time compilers push LinkML rules, ODCS v3.1.0 contracts, and Apache Ossie KPIs one-way into the Lakehouse and Power BI, closing the governance loop via `run_contract_tests.py` (`420/420` checks into `governance_dcsa`).
 
-### 2. Medallion Lineage, Quarantine &amp; PII Dynamic Masking Flow
+### 3. Medallion Lineage, Quarantine &amp; PII Dynamic Masking Flow
 
 <p align="center">
   <img src="docs/diagrams/images/tcl-medallion-dataflow.png" alt="TCL DCSA Medallion Lineage, Quarantine & PII Masking (Archify Dataflow)" width="100%" />
@@ -142,7 +181,7 @@ All diagrams in this repository are authored as **repository-backed Archify v3.0
 - **Interactive HTML:** [`docs/diagrams/tcl-medallion-dataflow.html`](docs/diagrams/tcl-medallion-dataflow.html) (spec: [`tcl-medallion-dataflow.candidate.json`](docs/diagrams/tcl-medallion-dataflow.candidate.json)).
 - **Deep dive:** See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/DCSA_DOMAIN_MODEL.md`](docs/DCSA_DOMAIN_MODEL.md).
 
-### 3. Zero-Drift CI/CD &amp; DABs Orchestration Workflow
+### 4. Zero-Drift CI/CD &amp; DABs Orchestration Workflow
 
 <p align="center">
   <img src="docs/diagrams/images/tcl-cicd-orchestration.png" alt="TCL Zero-Drift CI/CD & DABs Orchestration Workflow (Archify)" width="100%" />
@@ -285,12 +324,14 @@ Real-world runtime constraints discovered and codified via self-annealing during
 
 | Document / Path | Purpose |
 | :--- | :--- |
+| [`docs/THE_COMPILED_LAKEHOUSE.md`](docs/THE_COMPILED_LAKEHOUSE.md) | 7-act architectural manifesto: *The Compiled Lakehouse*, Closed-Loop Semantic Spine, Sovereign Stack &amp; Glass-Box Traceability |
 | [`docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md`](docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md) | Plain-English explainers for DCSA (vs. FHIR/ISO 20022/GS1/CIM), LinkML, Apache Ossie, and shifting this pipeline to other industries |
+| [`docs/LINKEDIN_LAUNCH_KIT.md`](docs/LINKEDIN_LAUNCH_KIT.md) | Ready-to-publish LinkedIn launch post, 7-slide visual carousel storyboard, and 3-post follow-up series |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Deep architectural walkthrough of every layer, data flow, closed-loop governance, and trade-offs |
 | [`docs/DCSA_DOMAIN_MODEL.md`](docs/DCSA_DOMAIN_MODEL.md) | Reference for DCSA T&amp;T v3.0, eBL v3, JIT Port Call, OVS schemas, compiled rules, and KPI glossary |
 | [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) | Step-by-step Local, Databricks Free Edition, GitHub Actions, and Azure DevOps Enterprise guide |
-| [`docs/diagrams/`](docs/diagrams/) | 3 interactive repository-backed **Archify v3.0** HTML diagrams, JSON specs, and PNG previews |
-| [`docs/infographics/`](docs/infographics/) | 5 editorial infographics: Hero Banner, Executive One-Pager, 80/20 Blueprint, LinkML I/O, and Apache Ossie I/O (HTML + 2× PNGs) |
+| [`docs/diagrams/`](docs/diagrams/) | 4 interactive repository-backed **Archify v3.0** HTML diagrams, JSON specs, and PNG previews |
+| [`docs/infographics/`](docs/infographics/) | 9 editorial 2× HiDPI infographics (Hero, Hand-Wired vs. Compiled, Semantic Spine Loop, Sovereign Stack, Glass-Box YAML X-Ray, LinkML I/O, Ossie I/O, One-Pager, 80/20 Blueprint) |
 | [`SECURITY.md`](SECURITY.md) | Security boundary, zero-secret hygiene controls, dynamic PII masking, and quarantine guarantees |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Zero-drift workflow for evolving LinkML models, ODCS contracts, and Apache Ossie KPIs |
 | [`models/linkml/dcsa/`](models/linkml/dcsa/) | Modular LinkML DCSA source schemas (`dcsa_common`, `dcsa_tnt_v3`, `dcsa_ebl_v3`, `dcsa_jit_v1`, `dcsa_enterprise`) |
@@ -312,3 +353,4 @@ Real-world runtime constraints discovered and codified via self-annealing during
 - **2026-11-27 - Documentation Overhaul, Archify Diagrams &amp; Executive Infographics** — Replaced Mermaid with 3 repository-backed, browser-verified **Archify v3.0** showcase diagrams (`architecture`, `dataflow`, `workflow` v2) with PNG previews and interactive HTML sources; generated 3 2× HiDPI editorial infographics (maritime hero banner, executive one-pager, 80/20 MDSD blueprint); authored comprehensive `docs/ARCHITECTURE.md`, `docs/DCSA_DOMAIN_MODEL.md`, `docs/DEPLOYMENT_GUIDE.md`, and `CONTRIBUTING.md`; expanded automated hygiene and zero-Mermaid tests.
 - **2026-11-27 - Public-Release Hardening, TCL Fictional Backstory &amp; 1-Command Free Edition Deployer** — Scrubbed workspace-specific object/run IDs from docs, added explicit fictional-scenario disclaimer and Tasman Container Line backstory across docs, added `./scripts/deploy_free_edition.sh` with automatic warehouse detection and first-time Genie Space bootstrap handling, and verified fresh-clone reproducibility.
 - **2026-11-27 - DCSA, LinkML &amp; Apache Ossie Explainers, I/O Infographics &amp; Cross-Industry Portability** — Added `docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md` comparing DCSA to HL7 FHIR, ISO 20022/BIAN, GS1/EPCIS 2.0, IEC CIM, TM Forum, and ACORD; created 2× HiDPI Inputs &amp; Outputs infographics for LinkML (`tcl_linkml_io.png`) and Apache Ossie (`tcl_ossie_io.png`); embedded explainers and a cross-industry swap matrix into `README.md`.
+- **2026-11-27 - The Compiled Lakehouse Identity, Manifesto, Conceptual Visuals &amp; Launch Kit** — Reframed repository around **The Compiled Lakehouse** and its **Closed-Loop Semantic Spine**; authored 7-act manifesto (`docs/THE_COMPILED_LAKEHOUSE.md`) and LinkedIn Launch &amp; Carousel Kit (`docs/LINKEDIN_LAUNCH_KIT.md`); generated 4 signature 2× HiDPI conceptual infographics (Hand-Wired vs. Compiled, Closed-Loop Semantic Spine, Sovereign Stack, Glass-Box YAML Traceability) + refreshed Hero Banner; added 4th repository-backed Archify v3.0 diagram (`tcl-semantic-spine-loop`).

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>The Sovereign Stack — Permanent Meaning vs. Replaceable Runtimes</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 880px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 34px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 16px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #059669;
+    background: #d1fae5;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 35px; font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; }
+  .sub { font-size: 15.5px; color: #475569; margin-top: 6px; }
+  .pill {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pill span { color: #c4b5fd; }
+
+  .stack {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 20px 0 18px;
+    gap: 14px;
+  }
+
+  /* ABOVE HORIZON */
+  .zone {
+    border-radius: 18px;
+    padding: 20px 24px;
+  }
+  .zone.sovereign {
+    background: linear-gradient(135deg, #07192e 0%, #172554 52%, #2e1065 100%);
+    border: 2px solid #38bdf8;
+    color: #f8fafc;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  }
+  .zone.runtimes {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+  }
+  .z-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .z-title { font-size: 19px; font-weight: 800; }
+  .zone.sovereign .z-title { color: #ffffff; }
+  .zone.runtimes .z-title { color: #0f172a; }
+  .z-badge {
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .zone.sovereign .z-badge {
+    background: rgba(52, 211, 153, 0.18);
+    color: #6ee7b7;
+    border: 1px solid rgba(52, 211, 153, 0.45);
+  }
+  .zone.runtimes .z-badge {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+  }
+
+  .sov-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .sov-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(125, 211, 252, 0.3);
+    border-radius: 13px;
+    padding: 14px 16px;
+  }
+  .sov-card.cartridge { border-color: #34d399; background: rgba(16, 185, 129, 0.12); }
+  .sov-card.odcs { border-color: #fb7185; }
+  .sov-card.ossie { border-color: #c084fc; }
+  .sov-card h3 { font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 5px; }
+  .sov-card p { font-size: 12.2px; color: #cbd5e1; line-height: 1.42; margin-bottom: 9px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.65);
+    color: #7dd3fc;
+    border: 1px solid rgba(125, 211, 252, 0.35);
+  }
+  .cartridge .chip { color: #6ee7b7; border-color: rgba(52, 211, 153, 0.45); }
+  .odcs .chip { color: #fda4af; border-color: rgba(251, 113, 133, 0.45); }
+  .ossie .chip { color: #e9d5ff; border-color: rgba(192, 132, 252, 0.45); }
+
+  /* COMPILER HORIZON BAR */
+  .horizon {
+    background: linear-gradient(90deg, #0284c7 0%, #7c3aed 50%, #059669 100%);
+    border-radius: 14px;
+    padding: 16px 26px;
+    color: #ffffff;
+    display: grid;
+    grid-template-columns: 290px 1fr 270px;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 24px rgba(124, 58, 237, 0.22);
+  }
+  .h-label {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .h-label span { display: block; font-size: 11.5px; font-weight: 600; opacity: 0.9; letter-spacing: 0.02em; text-transform: none; margin-top: 2px; }
+  .h-tools {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .h-pill {
+    background: rgba(15, 23, 42, 0.36);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 7px 14px;
+    border-radius: 9px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .h-right {
+    text-align: right;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  /* BELOW HORIZON: REPLACEABLE RUNTIMES */
+  .rt-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 13px;
+  }
+  .rt-card {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-top: 4px solid #ea580c;
+    border-radius: 12px;
+    padding: 14px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .rt-card.pbi { border-top-color: #eab308; }
+  .rt-card.ai { border-top-color: #7c3aed; }
+  .rt-card.app { border-top-color: #0284c7; }
+  .rt-card.ext { border-top-color: #64748b; border-style: dashed; background: #f1f5f9; }
+  .rt-card h3 { font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 5px; }
+  .rt-card p { font-size: 11.8px; color: #475569; line-height: 1.42; margin-bottom: 9px; }
+  .rt-tag {
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #0f172a;
+    background: #e2e8f0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    align-self: flex-start;
+  }
+  .rt-card.active .rt-tag { background: #dcfce7; color: #166534; }
+
+  .footer-bar {
+    background: #0f172a;
+    color: #f8fafc;
+    border-radius: 14px;
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+  .footer-bar .lead { font-size: 15px; font-weight: 800; color: #c4b5fd; white-space: nowrap; }
+  .footer-bar .copy { font-size: 13.8px; color: #e2e8f0; }
+  .footer-bar .copy strong { color: #34d399; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="kicker">Strategic Sovereignty · Manifesto Visual 03</div>
+      <h1>The Sovereign Stack: Permanent Meaning vs. Replaceable Runtimes</h1>
+      <div class="sub">Open, vendor-neutral standards own your domain truth above the Compiler Horizon — cloud engines execute at native speed below it</div>
+    </div>
+    <div class="pill">Architecture: <span>Zero Vendor Lock-In · 100% Native Speed</span></div>
+  </div>
+
+  <div class="stack">
+    <!-- ABOVE THE HORIZON -->
+    <div class="zone sovereign">
+      <div class="z-head">
+        <div class="z-title">ABOVE THE COMPILER HORIZON — Sovereign, Open &amp; Vendor-Neutral (Lives in Git Forever)</div>
+        <div class="z-badge">Permanent Enterprise IP</div>
+      </div>
+      <div class="sov-grid">
+        <div class="sov-card cartridge">
+          <h3>Swappable Domain Cartridge (10%)</h3>
+          <p>Drop in your industry's open canonical vocabulary without rewriting the platform engine.</p>
+          <div class="chips">
+            <span class="chip">DCSA</span>
+            <span class="chip">HL7 FHIR</span>
+            <span class="chip">ISO 20022</span>
+            <span class="chip">GS1</span>
+            <span class="chip">IEC CIM</span>
+          </div>
+        </div>
+        <div class="sov-card">
+          <h3>LinkML Domain Schema</h3>
+          <p>Executable logical entities, mixins, regexes, physical ranges, enums &amp; PII classification tags.</p>
+          <div class="chips">
+            <span class="chip">linkml.io</span>
+            <span class="chip">YAML in Git</span>
+          </div>
+        </div>
+        <div class="sov-card odcs">
+          <h3>ODCS v3.1.0 Data Contracts</h3>
+          <p>Bitol Open Data Contract Standard governing schemas, SLAs, breaking changes &amp; quality gates.</p>
+          <div class="chips">
+            <span class="chip">ODCS v3.1.0</span>
+            <span class="chip">datacontract-cli</span>
+          </div>
+        </div>
+        <div class="sov-card ossie">
+          <h3>Apache Ossie Semantic Spec</h3>
+          <p>Vendor-neutral KPI formulas, star-schema joins, NLQ synonyms &amp; AI business instructions.</p>
+          <div class="chips">
+            <span class="chip">0.3.0.dev0</span>
+            <span class="chip">Open Semantic</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THE COMPILER HORIZON -->
+    <div class="horizon">
+      <div class="h-label">
+        THE COMPILER HORIZON
+        <span>Pure offline build-time translation · Zero runtime proxy tax</span>
+      </div>
+      <div class="h-tools">
+        <span class="h-pill">compile_dcsa.py (SchemaView)</span>
+        <span class="h-pill">apache/ossie-converters</span>
+        <span class="h-pill">git diff --exit-code</span>
+      </div>
+      <div class="h-right">
+        ▼ Compiles 80% one-way<br/>
+        ▲ Protects specialist 20%
+      </div>
+    </div>
+
+    <!-- BELOW THE HORIZON -->
+    <div class="zone runtimes">
+      <div class="z-head">
+        <div class="z-title">BELOW THE COMPILER HORIZON — Pluggable Cloud Runtimes &amp; Build Targets (Swap Anytime)</div>
+        <div class="z-badge">100% Native Execution · Zero Middleman Latency</div>
+      </div>
+      <div class="rt-grid">
+        <div class="rt-card active">
+          <div>
+            <h3>Databricks Lakehouse</h3>
+            <p>Serverless Lakeflow Pipelines (LDP), Auto Loader, AUTO CDC, Unity Catalog PII masks &amp; Metric Views.</p>
+          </div>
+          <span class="rt-tag">Verified Live</span>
+        </div>
+        <div class="rt-card pbi active">
+          <div>
+            <h3>Power BI / Fabric</h3>
+            <p>Compiled TMSL <code>.model.bim</code> (10 DAX KPIs, 0 <code>BLANK()</code>) + protected 20% specialist TMDL sidecar.</p>
+          </div>
+          <span class="rt-tag">Compiled Target</span>
+        </div>
+        <div class="rt-card ai active">
+          <div>
+            <h3>AI/BI Genie &amp; Agents</h3>
+            <p>Grounded directly in Ossie-compiled Metric Views &amp; synonyms so AI never hallucinates KPI joins.</p>
+          </div>
+          <span class="rt-tag">Verified Live</span>
+        </div>
+        <div class="rt-card app active">
+          <div>
+            <h3>Operational Apps</h3>
+            <p>FastAPI Workbench (<code>tcl-port-control</code>) serving live KPIs, quarantine inspection &amp; operator triage write-back.</p>
+          </div>
+          <span class="rt-tag">Verified Live</span>
+        </div>
+        <div class="rt-card ext">
+          <div>
+            <h3>Future Cloud Targets</h3>
+            <p>Add Snowflake Semantic Views, dbt Semantic Layer, or Iceberg engines via converters — zero spec rewrite.</p>
+          </div>
+          <span class="rt-tag">Pluggable Converter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="lead">WHY THIS MATTERS</div>
+    <div class="copy">Cloud engines evolve every 3 years; your business semantics last 20. By lifting meaning above the <strong>Compiler Horizon</strong> in open standards, you get <strong>100% native cloud performance today</strong> without surrendering your enterprise ontology to any single vendor.</div>
+  </div>
+</body>
+</html>

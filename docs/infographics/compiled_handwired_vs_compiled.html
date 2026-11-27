@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Hand-Wired vs. The Compiled Lakehouse</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 880px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 34px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 16px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0284c7;
+    background: #e0f2fe;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 35px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: #0f172a;
+    line-height: 1.1;
+  }
+  .sub {
+    font-size: 15.5px;
+    color: #475569;
+    margin-top: 6px;
+  }
+  .badge-pill {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .badge-pill span { color: #34d399; }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 70px 1.06fr;
+    gap: 14px;
+    flex: 1;
+    margin: 20px 0 18px;
+    align-items: stretch;
+  }
+  .panel {
+    border-radius: 18px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  .panel.bad {
+    background: #fff1f2;
+    border: 2px solid #fecdd3;
+    border-top: 7px solid #e11d48;
+  }
+  .panel.good {
+    background: linear-gradient(155deg, #07192e 0%, #0f172a 100%);
+    border: 2px solid #0284c7;
+    border-top: 7px solid #38bdf8;
+    color: #f8fafc;
+    box-shadow: 0 14px 32px rgba(2, 132, 199, 0.16);
+  }
+  .p-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .p-title {
+    font-size: 21px;
+    font-weight: 800;
+  }
+  .panel.bad .p-title { color: #9f1239; }
+  .panel.good .p-title { color: #ffffff; }
+  .p-tag {
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 5px 11px;
+    border-radius: 99px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .panel.bad .p-tag { background: #ffe4e6; color: #be123c; border: 1px solid #fda4af; }
+  .panel.good .p-tag { background: rgba(52, 211, 153, 0.16); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.45); }
+
+  .svg-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vs-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .vs-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #0f172a;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+    border: 3px solid #38bdf8;
+  }
+
+  .outcomes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .out-item {
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 12.2px;
+    line-height: 1.4;
+  }
+  .panel.bad .out-item {
+    background: #ffffff;
+    border: 1px solid #fecdd3;
+    color: #881337;
+  }
+  .panel.bad .out-item strong { color: #be123c; display: block; margin-bottom: 2px; }
+  .panel.good .out-item {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    color: #cbd5e1;
+  }
+  .panel.good .out-item strong { color: #38bdf8; display: block; margin-bottom: 2px; }
+
+  .footer-bar {
+    background: #0f172a;
+    color: #f8fafc;
+    border-radius: 14px;
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+  }
+  .footer-bar .lead {
+    font-size: 15px;
+    font-weight: 800;
+    color: #38bdf8;
+    white-space: nowrap;
+  }
+  .footer-bar .copy {
+    font-size: 13.8px;
+    color: #e2e8f0;
+    line-height: 1.45;
+  }
+  .footer-bar .copy strong { color: #34d399; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="kicker">The Paradigm Shift · Manifesto Visual 01</div>
+      <h1>Hand-Wired Data Platforms vs. The Compiled Lakehouse</h1>
+      <div class="sub">Why enterprise platforms fail when five teams re-type the same business rule — and how a single Semantic Spine eliminates drift</div>
+    </div>
+    <div class="badge-pill">Motto: <span>Write meaning once. Compile everything.</span></div>
+  </div>
+
+  <div class="compare">
+    <!-- LEFT: HAND-WIRED -->
+    <div class="panel bad">
+      <div class="p-head">
+        <div class="p-title">The Hand-Wired Lakehouse</div>
+        <div class="p-tag">5 Copies of Truth · Silent Drift</div>
+      </div>
+
+      <div class="svg-stage">
+        <svg viewBox="0 0 650 375" width="650" height="375" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stale Wiki / Slide Deck -->
+          <rect x="195" y="8" width="260" height="50" rx="10" fill="#ffffff" stroke="#fb7185" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="325" y="29" text-anchor="middle" font-size="13" font-weight="800" fill="#9f1239">Stale Wiki / Architecture Slides</text>
+          <text x="325" y="47" text-anchor="middle" font-size="11" fill="#be123c">"Temp must be -45..+60°C" (Ignored in 2 weeks)</text>
+
+          <!-- Tangled Drift Hairball Paths -->
+          <path d="M 260 58 C 210 115, 110 85, 95 140" fill="none" stroke="#e11d48" stroke-width="2" stroke-dasharray="4 4"/>
+          <path d="M 325 58 C 365 98, 225 105, 325 140" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 4"/>
+          <path d="M 390 58 C 460 110, 565 92, 555 140" fill="none" stroke="#e11d48" stroke-width="2" stroke-dasharray="4 4"/>
+
+          <!-- Cross-tangle between silos -->
+          <path d="M 165 182 C 235 230, 415 125, 485 182" fill="none" stroke="#fb7185" stroke-width="1.8"/>
+          <path d="M 95 210 C 125 268, 240 245, 220 296" fill="none" stroke="#e11d48" stroke-width="2"/>
+          <path d="M 325 210 C 310 265, 175 262, 220 296" fill="none" stroke="#f59e0b" stroke-width="2"/>
+          <path d="M 325 210 C 375 260, 485 245, 455 296" fill="none" stroke="#e11d48" stroke-width="2"/>
+          <path d="M 555 210 C 520 268, 410 250, 455 296" fill="none" stroke="#f59e0b" stroke-width="2"/>
+
+          <!-- 3 Middle Silos -->
+          <rect x="18" y="142" width="154" height="68" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="1.8"/>
+          <text x="95" y="166" text-anchor="middle" font-size="12.5" font-weight="800" fill="#881337">1. API / Python Team</text>
+          <text x="95" y="185" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#be123c">regex v1 · min -40°C</text>
+          <text x="95" y="201" text-anchor="middle" font-size="10" fill="#9f1239">Hand-coded validators</text>
+
+          <rect x="248" y="142" width="154" height="68" rx="10" fill="#ffffff" stroke="#d97706" stroke-width="1.8"/>
+          <text x="325" y="166" text-anchor="middle" font-size="12.5" font-weight="800" fill="#92400e">2. Spark ETL Team</text>
+          <text x="325" y="185" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#b45309">WHERE temp &gt; -99</text>
+          <text x="325" y="201" text-anchor="middle" font-size="10" fill="#92400e">No PII mask on Silver</text>
+
+          <rect x="478" y="142" width="154" height="68" rx="10" fill="#ffffff" stroke="#e11d48" stroke-width="1.8"/>
+          <text x="555" y="166" text-anchor="middle" font-size="12.5" font-weight="800" fill="#881337">3. Contract / QA</text>
+          <text x="555" y="185" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#be123c">Outdated YAML spec</text>
+          <text x="555" y="201" text-anchor="middle" font-size="10" fill="#9f1239">Drifts on next sprint</text>
+
+          <!-- 2 Bottom Conflicting Consumption Silos -->
+          <rect x="85" y="296" width="215" height="68" rx="10" fill="#ffe4e6" stroke="#e11d48" stroke-width="2"/>
+          <text x="192" y="320" text-anchor="middle" font-size="13" font-weight="800" fill="#881337">4. SQL / AI Dashboard</text>
+          <text x="192" y="339" text-anchor="middle" font-size="11.5" font-weight="700" fill="#be123c">Schedule Reliability = 82.4%</text>
+          <text x="192" y="355" text-anchor="middle" font-size="10" fill="#9f1239">(Excludes delayed feeder vessels)</text>
+
+          <rect x="350" y="296" width="215" height="68" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+          <text x="457" y="320" text-anchor="middle" font-size="13" font-weight="800" fill="#92400e">5. Power BI Finance</text>
+          <text x="457" y="339" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">Schedule Reliability = 76.1%</text>
+          <text x="457" y="355" text-anchor="middle" font-size="10" fill="#92400e">(Hand-typed DAX filter mismatch)</text>
+
+          <!-- Conflict Pill -->
+          <rect x="266" y="242" width="118" height="26" rx="13" fill="#be123c"/>
+          <text x="325" y="259" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">KPI CONFLICT!</text>
+        </svg>
+      </div>
+
+      <div class="outcomes">
+        <div class="out-item"><strong>Copy-Paste Governance</strong>Regexes, bounds, and PII rules are manually duplicated across 5 tools.</div>
+        <div class="out-item"><strong>Monday Morning Argue-Fest</strong>SQL, AI Genie, and Power BI report conflicting executive numbers.</div>
+      </div>
+    </div>
+
+    <!-- CENTER VS -->
+    <div class="vs-col">
+      <div class="vs-circle">VS</div>
+    </div>
+
+    <!-- RIGHT: COMPILED LAKEHOUSE -->
+    <div class="panel good">
+      <div class="p-head">
+        <div class="p-title">The Compiled Lakehouse</div>
+        <div class="p-tag">1 Semantic Spine · 0% Drift</div>
+      </div>
+
+      <div class="svg-stage">
+        <svg viewBox="0 0 680 375" width="680" height="375" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="spineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#38bdf8"/>
+              <stop offset="50%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#34d399"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Central Glowing Spine Line -->
+          <line x1="150" y1="45" x2="150" y2="330" stroke="url(#spineGrad)" stroke-width="6" stroke-linecap="round"/>
+
+          <!-- Left Spine Source Nodes -->
+          <rect x="22" y="20" width="256" height="66" rx="12" fill="#0b2545" stroke="#38bdf8" stroke-width="2"/>
+          <text x="150" y="45" text-anchor="middle" font-size="13.5" font-weight="800" fill="#ffffff">LinkML Domain Model (Git)</text>
+          <text x="150" y="65" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#7dd3fc">models/linkml/dcsa/*.yaml</text>
+
+          <rect x="22" y="138" width="256" height="62" rx="12" fill="#1e1b4b" stroke="#a78bfa" stroke-width="2"/>
+          <text x="150" y="163" text-anchor="middle" font-size="13.5" font-weight="800" fill="#ffffff">Deterministic Build Compilers</text>
+          <text x="150" y="182" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#ddd6fe">compile_dcsa + ossie-converters</text>
+
+          <rect x="22" y="252" width="256" height="66" rx="12" fill="#2e1065" stroke="#c084fc" stroke-width="2"/>
+          <text x="150" y="277" text-anchor="middle" font-size="13.5" font-weight="800" fill="#ffffff">Apache Ossie Spec (Git)</text>
+          <text x="150" y="297" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#e9d5ff">semantic/ossie/dcsa_ops.ossie.yaml</text>
+
+          <!-- Clean Parallel Compilation Beams -->
+          <path d="M 278 169 C 325 169, 325 42, 376 42" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+          <path d="M 278 169 C 330 169, 330 108, 376 108" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+          <path d="M 278 169 L 376 174" fill="none" stroke="#a78bfa" stroke-width="2.2"/>
+          <path d="M 278 285 C 330 285, 330 242, 376 242" fill="none" stroke="#c084fc" stroke-width="2.2"/>
+          <path d="M 278 285 C 330 285, 330 310, 376 310" fill="none" stroke="#34d399" stroke-width="2.2"/>
+
+          <!-- 5 Compiled Targets -->
+          <rect x="380" y="16" width="282" height="52" rx="10" fill="rgba(56, 189, 248, 0.12)" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="396" y="38" font-size="12.5" font-weight="800" fill="#e0f2fe">1. Pydantic v2 + JSON Schema</text>
+          <text x="396" y="55" font-size="10.5" fill="#7dd3fc">Exact API &amp; generator validators</text>
+
+          <rect x="380" y="82" width="282" height="52" rx="10" fill="rgba(225, 29, 72, 0.14)" stroke="#fb7185" stroke-width="1.5"/>
+          <text x="396" y="104" font-size="12.5" font-weight="800" fill="#ffe4e6">2. 5× ODCS v3.1.0 Contracts</text>
+          <text x="396" y="121" font-size="10.5" fill="#fda4af">420/420 live serverless checks</text>
+
+          <rect x="380" y="148" width="282" height="52" rx="10" fill="rgba(167, 139, 250, 0.14)" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="396" y="170" font-size="12.5" font-weight="800" fill="#ede9fe">3. Spark LDP + Quarantine + PII</text>
+          <text x="396" y="187" font-size="10.5" fill="#c4b5fd">@dp.expect_all_or_drop + Silver mask</text>
+
+          <rect x="380" y="216" width="282" height="52" rx="10" fill="rgba(249, 115, 22, 0.14)" stroke="#fb923c" stroke-width="1.5"/>
+          <text x="396" y="238" font-size="12.5" font-weight="800" fill="#ffedd5">4. Databricks UC Metric Views</text>
+          <text x="396" y="255" font-size="10.5" fill="#fdba74">80.0% OTP in SQL, Genie &amp; FastAPI</text>
+
+          <rect x="380" y="284" width="282" height="52" rx="10" fill="rgba(52, 211, 153, 0.14)" stroke="#34d399" stroke-width="1.5"/>
+          <text x="396" y="306" font-size="12.5" font-weight="800" fill="#d1fae5">5. Power BI .model.bim + 20% DAX</text>
+          <text x="396" y="323" font-size="10.5" fill="#6ee7b7">80.0% OTP · 10 compiled DAX KPIs</text>
+
+          <!-- CI Zero-Drift Seal -->
+          <rect x="22" y="336" width="256" height="28" rx="8" fill="rgba(52, 211, 153, 0.18)" stroke="#34d399" stroke-width="1.2"/>
+          <text x="150" y="354" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" font-weight="700" fill="#6ee7b7">CI GATE: git diff --exit-code</text>
+        </svg>
+      </div>
+
+      <div class="outcomes">
+        <div class="out-item"><strong>Compiled Once, Verified Everywhere</strong>Edit one YAML line in Git → all 5 governed layers regenerate deterministically.</div>
+        <div class="out-item"><strong>100% Metric Alignment</strong>Databricks SQL, AI/BI Genie, FastAPI, and Power BI return the exact same KPI.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="lead">THE CORE INSIGHT</div>
+    <div class="copy">Software engineering stopped hand-assembling machine code 50 years ago. <strong>The Compiled Lakehouse</strong> brings that same discipline to data: treat domain meaning and KPI semantics as Git-versioned source code, and compile every cloud runtime target deterministically.</div>
+  </div>
+</body>
+</html>

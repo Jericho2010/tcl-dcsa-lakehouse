@@ -134,6 +134,9 @@ def test_repository_contains_no_dev_prefixes_secrets_or_personal_paths() -> None
 def test_documentation_uses_archify_diagrams_and_zero_mermaid() -> None:
     """Ensure all Archify showcase diagrams & infographics exist and zero Mermaid blocks remain."""
     expected_assets = (
+        "docs/diagrams/tcl-semantic-spine-loop.html",
+        "docs/diagrams/tcl-semantic-spine-loop.candidate.json",
+        "docs/diagrams/images/tcl-semantic-spine-loop.png",
         "docs/diagrams/tcl-platform-architecture.html",
         "docs/diagrams/tcl-platform-architecture.candidate.json",
         "docs/diagrams/images/tcl-platform-architecture.png",
@@ -148,7 +151,13 @@ def test_documentation_uses_archify_diagrams_and_zero_mermaid() -> None:
         "docs/infographics/tcl_80_20_blueprint.png",
         "docs/infographics/tcl_linkml_io.png",
         "docs/infographics/tcl_ossie_io.png",
+        "docs/infographics/compiled_handwired_vs_compiled.png",
+        "docs/infographics/compiled_semantic_spine_loop.png",
+        "docs/infographics/compiled_sovereign_stack.png",
+        "docs/infographics/compiled_glass_box_traceability.png",
+        "docs/THE_COMPILED_LAKEHOUSE.md",
         "docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md",
+        "docs/LINKEDIN_LAUNCH_KIT.md",
         "docs/ARCHITECTURE.md",
         "docs/DCSA_DOMAIN_MODEL.md",
         "docs/DEPLOYMENT_GUIDE.md",
