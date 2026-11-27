@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Apache Ossie Inputs &amp; Outputs — The Semantic Rosetta Stone</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 880px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 36px 46px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6d28d9;
+    background: #ede9fe;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 15px; color: #475569; margin-top: 4px; }
+  .pill {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pill span { color: #c4b5fd; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 470px 64px 290px 64px 1fr;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 22px;
+  }
+  .col-title {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #475569;
+    margin-bottom: 10px;
+  }
+  .input-panel {
+    background: #ffffff;
+    border: 1.5px solid #ddd6fe;
+    border-top: 6px solid #7c3aed;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .yaml-box {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.2px;
+    line-height: 1.58;
+    margin-bottom: 14px;
+  }
+  .yk { color: #c4b5fd; }
+  .yv { color: #34d399; }
+  .yc { color: #94a3b8; }
+  .ys { color: #7dd3fc; }
+
+  .in-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+  .chip {
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 9px;
+    padding: 9px 11px;
+  }
+  .chip strong { display: block; font-size: 12.5px; color: #5b21b6; margin-bottom: 2px; }
+  .chip span { font-size: 11.5px; color: #334155; }
+
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .engine-panel {
+    background: linear-gradient(160deg, #2e1065 0%, #0f172a 100%);
+    color: #f8fafc;
+    border-radius: 16px;
+    padding: 22px 20px;
+    border: 2px solid #7c3aed;
+    box-shadow: 0 10px 24px rgba(124, 58, 237, 0.18);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .eng-badge {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(167, 139, 250, 0.2);
+    border: 1px solid rgba(196, 181, 253, 0.45);
+    color: #ddd6fe;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .engine-panel h2 { font-size: 21px; font-weight: 800; color: #ffffff; }
+  .engine-panel p { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+  .eng-list {
+    list-style: none;
+    font-size: 12px;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .eng-list li {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(196, 181, 253, 0.22);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .eng-list code { color: #34d399; font-family: ui-monospace, monospace; font-size: 11.5px; }
+
+  .outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    justify-content: space-between;
+  }
+  .out-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #ea580c;
+    border-radius: 13px;
+    padding: 15px 18px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  }
+  .out-card.pbi { border-left-color: #eab308; }
+  .out-card.sidecar { border-left-color: #7c3aed; background: #faf5ff; border-color: #e9d5ff; }
+  .out-card.port { border-left-color: #0284c7; }
+  .out-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .out-card h3 { font-size: 15px; font-weight: 800; color: #0f172a; }
+  .out-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 4px 9px;
+    border-radius: 6px;
+  }
+  .out-card p { font-size: 12.4px; color: #475569; line-height: 1.44; }
+  .consumers {
+    margin-top: 7px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .ctag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+  }
+  .ctag.b { background: #fefce8; color: #854d0e; border-color: #fde047; }
+  .ctag.v { background: #ede9fe; color: #5b21b6; border-color: #c4b5fd; }
+
+  .why-bar {
+    background: #f5f3ff;
+    border: 1.5px solid #ddd6fe;
+    border-radius: 14px;
+    padding: 16px 22px;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+  .why-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #5b21b6;
+  }
+  .why-text {
+    font-size: 13.5px;
+    color: #3b0764;
+    line-height: 1.48;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="kicker">Open Semantic Interchange · Apache Ossie Inputs &amp; Outputs</div>
+      <h1>Define KPIs Once in Apache Ossie → Serve Databricks, AI &amp; Power BI</h1>
+      <div class="sub">How <code>compile_semantic.py</code> uses official <code>apache/ossie-converters</code> to emit native semantic models without locking metrics into one vendor</div>
+    </div>
+    <div class="pill">Spec: <span>dcsa_ops.ossie.yaml (0.3.0.dev0)</span></div>
+  </div>
+
+  <div class="flow">
+    <!-- INPUT -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">1. Vendor-Neutral Ossie Blueprint (Git)</div>
+      <div class="input-panel" style="flex:1;">
+        <div class="yaml-box">
+          <span class="yk">version:</span> <span class="yv">"0.3.0.dev0"</span><br/>
+          <span class="yk">name:</span> <span class="yv">dcsa_ops</span><br/>
+          <span class="yk">datasets:</span><br/>
+          &nbsp;&nbsp;- <span class="yk">name:</span> <span class="yv">mv_port_call_kpis</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">source:</span> <span class="ys">gold_dcsa.gold_port_call_performance</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">metrics:</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="yk">name:</span> <span class="yv">schedule_reliability_pct</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">sql:</span> <span class="ys">SUM(on_time_flag) / NULLIF(COUNT(*), 0)</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">ai_context:</span> { <span class="yk">synonyms:</span> [<span class="yv">otp</span>, <span class="yv">on_time</span>] }<br/>
+          <span class="yk">relationships:</span><br/>
+          &nbsp;&nbsp;- <span class="ys">mv_container_journey_kpis → mv_port_call_kpis</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yc"># join key: port_call_id (many-to-one)</span>
+        </div>
+        <div class="in-chips">
+          <div class="chip"><strong>Datasets &amp; PKs</strong><span>Gold tables + typed dimension expressions</span></div>
+          <div class="chip"><strong>Star Joins</strong><span>Explicit relationships shared across BI &amp; AI</span></div>
+          <div class="chip"><strong>10 Core KPIs</strong><span>Portable SQL: SUM, AVG, COUNT, DIVIDE</span></div>
+          <div class="chip"><strong>AI Context</strong><span>Descriptions, instructions &amp; NLQ synonyms</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="arrow-col">
+      <svg width="56" height="40" viewBox="0 0 56 40">
+        <line x1="4" y1="20" x2="42" y2="20" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+        <polygon points="40,11 54,20 40,29" fill="#7c3aed"/>
+      </svg>
+    </div>
+
+    <!-- CONVERTERS -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">2. Offline Converters</div>
+      <div class="engine-panel" style="flex:1;">
+        <span class="eng-badge">No Runtime Engine Required</span>
+        <h2><code>apache/ossie-converters</code></h2>
+        <p>Pure offline YAML-to-platform translation executed during CI. Ossie never sits in the query hot path — native cloud engines execute every query at full speed.</p>
+        <ul class="eng-list">
+          <li><code>ossie-databricks deploy</code><br/>Emits UC Metric View YAML + SQL DDL</li>
+          <li><code>ossie-microsoft export</code><br/>Translates SQL metrics to Power BI DAX</li>
+          <li>Extensible to <code>snowflake</code> &amp; <code>dbt</code> converters</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div class="arrow-col">
+      <svg width="56" height="40" viewBox="0 0 56 40">
+        <line x1="4" y1="20" x2="42" y2="20" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+        <polygon points="40,11 54,20 40,29" fill="#059669"/>
+      </svg>
+    </div>
+
+    <!-- OUTPUTS -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">3. Governed Multi-Platform Serving Outputs</div>
+      <div class="outputs" style="flex:1;">
+        <div class="out-card">
+          <div class="out-head">
+            <h3>1. Databricks Unity Catalog Metric Views (SQL DDL)</h3>
+            <span class="out-tag">deploy_metric_views.sql</span>
+          </div>
+          <p><code>CREATE OR REPLACE VIEW ${catalog}.gold_dcsa.mv_* WITH METRICS LANGUAGE YAML</code> — native governed dimensions, <code>MEASURE(...)</code> aggregations, and AI synonyms.</p>
+          <div class="consumers">
+            <span class="ctag">Databricks SQL</span>
+            <span class="ctag">AI/BI Genie (tcl_ops_genie)</span>
+            <span class="ctag">TCL Port Control FastAPI App</span>
+          </div>
+        </div>
+
+        <div class="out-card pbi">
+          <div class="out-head">
+            <h3>2. Power BI / Fabric Semantic Model (TMSL)</h3>
+            <span class="out-tag">dcsa_ops.model.bim</span>
+          </div>
+          <p>2 tables, 1 star-schema join, AI context annotations, and all 10 translated DAX measures (<code>DIVIDE</code>, <code>AVERAGE</code>, <code>SUM</code>, <code>COUNTA</code>, <code>DISTINCTCOUNTNOBLANK</code>) with zero <code>BLANK()</code> fallbacks.</p>
+          <div class="consumers">
+            <span class="ctag b">Power BI Desktop / Service</span>
+            <span class="ctag b">Microsoft Fabric Direct Lake</span>
+          </div>
+        </div>
+
+        <div class="out-card sidecar">
+          <div class="out-head">
+            <h3>3. Protected 20% Specialist DAX Sidecar (Never Overwritten)</h3>
+            <span class="out-tag">dax_specialist_measures.tmdl</span>
+          </div>
+          <p>Complex Power BI evaluation-context DAX (<code>CALCULATE</code>, <code>DATESINPERIOD</code>, <code>SUMX</code>) lives safely outside codegen so regenerating <code>.model.bim</code> never clobbers BI specialists' work.</p>
+          <div class="consumers">
+            <span class="ctag v">Fowler 80/20 MDSD Pattern</span>
+            <span class="ctag v">Safe One-Way Regeneration</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="why-bar">
+    <div class="why-title">Why Apache Ossie Is So Cool</div>
+    <div class="why-text">
+      Ossie is a <strong>Rosetta Stone of analytical meaning</strong>, not another proprietary query engine to pay for or tune. Fleet Operations asking <strong>Databricks AI/BI Genie</strong>, controllers using the <strong>FastAPI Workbench</strong>, and Finance slicing <strong>Power BI</strong> all compute the exact same <code>Schedule Reliability %</code> and <code>Cold-Chain Excursion Rate %</code> — because every platform compiles from the same Git-versioned YAML file.
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>LinkML Inputs &amp; Outputs — One Domain Blueprint, Five Compiled Layers</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1600px;
+    height: 880px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    padding: 36px 46px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 24px;
+  }
+  .kicker {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #0369a1;
+    background: #e0f2fe;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+  .sub { font-size: 15px; color: #475569; margin-top: 4px; }
+  .pill {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .pill span { color: #38bdf8; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 470px 64px 290px 64px 1fr;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 22px;
+  }
+  .col-title {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #475569;
+    margin-bottom: 10px;
+  }
+  .input-panel {
+    background: #ffffff;
+    border: 1.5px solid #bae6fd;
+    border-top: 6px solid #0284c7;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .yaml-box {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.2px;
+    line-height: 1.58;
+    margin-bottom: 14px;
+  }
+  .yk { color: #7dd3fc; }
+  .yv { color: #34d399; }
+  .yc { color: #94a3b8; }
+  .yn { color: #fbbf24; }
+
+  .in-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+  .chip {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 9px;
+    padding: 9px 11px;
+  }
+  .chip strong { display: block; font-size: 12.5px; color: #0369a1; margin-bottom: 2px; }
+  .chip span { font-size: 11.5px; color: #334155; }
+
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .engine-panel {
+    background: linear-gradient(160deg, #0b2545 0%, #0f172a 100%);
+    color: #f8fafc;
+    border-radius: 16px;
+    padding: 22px 20px;
+    border: 2px solid #0284c7;
+    box-shadow: 0 10px 24px rgba(2, 132, 199, 0.16);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+  .eng-badge {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #7dd3fc;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .engine-panel h2 { font-size: 21px; font-weight: 800; color: #ffffff; }
+  .engine-panel p { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+  .eng-list {
+    list-style: none;
+    font-size: 12px;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .eng-list li {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .eng-list code { color: #34d399; font-family: ui-monospace, monospace; font-size: 11.5px; }
+
+  .outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    justify-content: space-between;
+  }
+  .out-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #059669;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  }
+  .out-card.c2 { border-left-color: #0284c7; }
+  .out-card.c3 { border-left-color: #e11d48; }
+  .out-card.c4 { border-left-color: #7c3aed; }
+  .out-card.c5 { border-left-color: #d97706; }
+  .out-card h3 { font-size: 14.5px; font-weight: 800; color: #0f172a; margin-bottom: 3px; }
+  .out-card p { font-size: 12.2px; color: #475569; line-height: 1.38; }
+  .out-tag {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 5px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .why-bar {
+    background: #ecfdf5;
+    border: 1.5px solid #a7f3d0;
+    border-radius: 14px;
+    padding: 16px 22px;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+  .why-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #065f46;
+  }
+  .why-text {
+    font-size: 13.5px;
+    color: #064e3b;
+    line-height: 1.48;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="kicker">Executable Domain Modeling · LinkML Inputs &amp; Outputs</div>
+      <h1>Write Domain Rules Once in LinkML → Compile Five Governed Layers</h1>
+      <div class="sub">How <code>compile_dcsa.py</code> turns plain YAML domain schemas into Python models, ODCS contracts, Spark expectations, and Unity Catalog metadata</div>
+    </div>
+    <div class="pill">Source: <span>models/linkml/dcsa/*.yaml</span></div>
+  </div>
+
+  <div class="flow">
+    <!-- INPUTS -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">1. Human-Readable LinkML Inputs (Git)</div>
+      <div class="input-panel" style="flex:1;">
+        <div class="yaml-box">
+          <span class="yc"># models/linkml/dcsa/dcsa_tnt_v3.yaml</span><br/>
+          <span class="yk">classes:</span><br/>
+          &nbsp;&nbsp;<span class="yk">ReeferTelemetryReading:</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">mixins:</span> [<span class="yv">AuditableEvent</span>]<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">slots:</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="yv">equipment_reference</span>  <span class="yc"># ^[A-Z]{4}[0-9]{7}$</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="yv">supply_air_temp_c</span>    <span class="yc"># min: -45, max: 60</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="yv">power_status</span>         <span class="yc"># enum: ON | OFF | GENSET</span><br/>
+          <span class="yc"># models/linkml/dcsa/dcsa_ebl_v3.yaml</span><br/>
+          &nbsp;&nbsp;<span class="yk">shipper_contact_email:</span><br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="yk">annotations:</span> { <span class="yk">pii:</span> <span class="yn">"true"</span>, <span class="yk">level:</span> <span class="yv">confidential</span> }
+        </div>
+        <div class="in-chips">
+          <div class="chip"><strong>is_a &amp; Mixins</strong><span>Shared fields inherited cleanly without copy-paste</span></div>
+          <div class="chip"><strong>Regex &amp; Bounds</strong><span>ISO 6346, UN/LOCODE, -45..+60°C sensor limits</span></div>
+          <div class="chip"><strong>Controlled Enums</strong><span>PLN/ACT/EST, JIT 5 phases, eBL statuses</span></div>
+          <div class="chip"><strong>Governance Tags</strong><span>PII flags &amp; business descriptions live next to slots</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARROW 1 -->
+    <div class="arrow-col">
+      <svg width="56" height="40" viewBox="0 0 56 40">
+        <line x1="4" y1="20" x2="42" y2="20" stroke="#0284c7" stroke-width="3.5" stroke-linecap="round"/>
+        <polygon points="40,11 54,20 40,29" fill="#0284c7"/>
+      </svg>
+    </div>
+
+    <!-- COMPILER -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">2. Build-Time Compiler</div>
+      <div class="engine-panel" style="flex:1;">
+        <span class="eng-badge">Zero Spark Cluster Deps</span>
+        <h2>LinkML <code>SchemaView</code> Compiler</h2>
+        <p>Runs locally or in CI via <code>uv run python -m tcl_compiler.compile_dcsa</code>. Walks every class, inherited slot, enum, regex, bound, and annotation deterministically.</p>
+        <ul class="eng-list">
+          <li>Resolves imports across <code>dcsa_common</code>, <code>tnt_v3</code>, <code>ebl_v3</code>, <code>jit_v1</code></li>
+          <li>Normalizes paths &amp; escapes Spark SQL <code>RLIKE</code> backslashes (<code>\\s</code>)</li>
+          <li>Enforces zero drift in CI via <code>git diff --exit-code</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ARROW 2 -->
+    <div class="arrow-col">
+      <svg width="56" height="40" viewBox="0 0 56 40">
+        <line x1="4" y1="20" x2="42" y2="20" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+        <polygon points="40,11 54,20 40,29" fill="#059669"/>
+      </svg>
+    </div>
+
+    <!-- OUTPUTS -->
+    <div style="display:flex; flex-direction:column;">
+      <div class="col-title">3. Five Synchronized Downstream Outputs (Never Hand-Edited)</div>
+      <div class="outputs" style="flex:1;">
+        <div class="out-card">
+          <div>
+            <h3>1. Typed Python / Pydantic v2 Models</h3>
+            <p>Validates API payloads, synthetic data generators, and unit tests using exact LinkML regexes &amp; bounds.</p>
+          </div>
+          <span class="out-tag">dcsa_models.py</span>
+        </div>
+        <div class="out-card c2">
+          <div>
+            <h3>2. Canonical JSON Schema</h3>
+            <p>Shareable contract for API gateways, event producers, and external partner onboarding.</p>
+          </div>
+          <span class="out-tag">dcsa_schema.json</span>
+        </div>
+        <div class="out-card c3">
+          <div>
+            <h3>3. 5× ODCS v3.1.0 Data Contracts</h3>
+            <p>Physical Delta schemas, SLAs, PII tags, and 420 quality checks run in CI (<code>lint</code>/<code>breaking</code>) and live Serverless.</p>
+          </div>
+          <span class="out-tag">contracts/odcs/*.yaml</span>
+        </div>
+        <div class="out-card c4">
+          <div>
+            <h3>4. Spark LDP Expectations &amp; Quarantine Predicates</h3>
+            <p>Compiled Spark SQL boolean rules loaded directly into <code>@dp.expect_all_or_drop</code> and Silver quarantine tables.</p>
+          </div>
+          <span class="out-tag">ldp_expectations.json</span>
+        </div>
+        <div class="out-card c5">
+          <div>
+            <h3>5. Unity Catalog Comments &amp; PII Masking Map</h3>
+            <p>Propagates column descriptions and drives <code>mask_pii_email</code> dynamic masking on curated Silver eBL tables.</p>
+          </div>
+          <span class="out-tag">uc_comments.json</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="why-bar">
+    <div class="why-title">Why LinkML Is So Cool</div>
+    <div class="why-text">
+      Change a single physical limit (for example, tightening reefer temperature bounds or adding a new DCSA port-call phase) in <strong>one YAML line</strong>, run <code>compile_dcsa.py</code>, and your Python validator, JSON Schema, 5 ODCS data contracts, Databricks streaming quarantine predicates, and Unity Catalog documentation all update in lockstep — <strong>zero manual copy-paste, zero silent drift.</strong>
+    </div>
+  </div>
+</body>
+</html>

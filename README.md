@@ -31,16 +31,17 @@
 ## Table of Contents
 
 1. [The Fictional Backstory: Tasman Container Line (TCL)](#the-fictional-backstory-tasman-container-line-tcl)
-2. [Interactive Archify Architecture Diagrams](#interactive-archify-architecture-diagrams)
-3. [Strict Layer Ownership Matrix](#strict-layer-ownership-matrix)
-4. [The 80/20 Model-Driven Blueprint](#the-8020-model-driven-blueprint)
-5. [Low-Toil Governed Lakehouse Principles](#low-toil-governed-lakehouse-principles)
-6. [Deployment Modes: Free Edition vs. Azure Enterprise](#deployment-modes-free-edition-vs-azure-enterprise)
-7. [Live Databricks Free Edition Verification](#live-databricks-free-edition-verification)
-8. [Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)](#build-it-yourself-2-min-local--10-min-databricks-free-edition)
-9. [Empirical Databricks Serverless &amp; Ossie Field Notes](#empirical-databricks-serverless--ossie-field-notes)
-10. [Documentation &amp; Repository Map](#documentation--repository-map)
-11. [Build Log](#build-log)
+2. [New to DCSA, LinkML, or Apache Ossie? (And Going Beyond Shipping)](#new-to-dcsa-linkml-or-apache-ossie-and-going-beyond-shipping)
+3. [Interactive Archify Architecture Diagrams](#interactive-archify-architecture-diagrams)
+4. [Strict Layer Ownership Matrix](#strict-layer-ownership-matrix)
+5. [The 80/20 Model-Driven Blueprint](#the-8020-model-driven-blueprint)
+6. [Low-Toil Governed Lakehouse Principles](#low-toil-governed-lakehouse-principles)
+7. [Deployment Modes: Free Edition vs. Azure Enterprise](#deployment-modes-free-edition-vs-azure-enterprise)
+8. [Live Databricks Free Edition Verification](#live-databricks-free-edition-verification)
+9. [Build It Yourself (2-Min Local / 10-Min Databricks Free Edition)](#build-it-yourself-2-min-local--10-min-databricks-free-edition)
+10. [Empirical Databricks Serverless &amp; Ossie Field Notes](#empirical-databricks-serverless--ossie-field-notes)
+11. [Documentation &amp; Repository Map](#documentation--repository-map)
+12. [Build Log](#build-log)
 
 ---
 
@@ -64,6 +65,58 @@ Enterprise data platforms rarely fail because engineers cannot write Spark or SQ
 4. **HarbourSync Port API** *(fictional Port Authority Integration)* delivered 5-phase Just-in-Time (`JIT`) berth timestamps, yet Fleet Operations (Databricks SQL) and Finance (Power BI) reported conflicting **"Schedule Reliability %"** numbers every Monday morning.
 
 TCL solved all four problems with a **Low-Toil Governed Lakehouse**: every tool owns **exactly one architectural layer**, and every downstream contract, pipeline expectation, Unity Catalog Metric View, and Power BI model compiles **one-way from Git** with fail-closed CI drift gates (`git diff --exit-code`).
+
+---
+
+## New to DCSA, LinkML, or Apache Ossie? (And Going Beyond Shipping)
+
+Even if you have never worked in container shipping, the three open standards powering this Lakehouse are **domain-agnostic blueprints** you can transplant straight into healthcare, banking, retail, telecom, or energy.
+
+### What Is DCSA? (And How It Compares Across Industries)
+
+**DCSA** (*Digital Container Shipping Association*, [dcsa.org](https://dcsa.org/)) is the non-profit standards body created by global ocean carriers so terminals, ports, vessels, and shippers share one open digital vocabulary — **Track &amp; Trace v3.0 (with Reefer IoT)**, **Electronic Bill of Lading (eBL v3)**, **Just-in-Time (JIT) Port Calls**, and **Operational Vessel Schedules (OVS)**. It fills the exact same interoperability role that open industry standards fill elsewhere:
+
+| Industry | Equivalent Standard to DCSA | What It Standardizes |
+| :--- | :--- | :--- |
+| **Maritime Shipping** *(this lab)* | **DCSA** (T&amp;T v3, eBL, JIT, OVS) | Container events, reefer IoT, Bills of Lading, vessel berth phases |
+| **Healthcare** | **HL7 FHIR** | Patients, encounters, lab observations, ICU vitals &amp; clinical orders |
+| **Banking &amp; Payments** | **ISO 20022** / **BIAN** | Payment initiation (`pacs.008`), settlement lifecycles, `IBAN`/`BIC` |
+| **Retail &amp; Cold-Chain** | **GS1 / EPCIS 2.0** | `GTIN`/`GLN` supply-chain scans, warehouse &amp; chiller telemetry |
+| **Energy &amp; Utilities** | **IEC CIM** | Smart-meter readings, substation telemetry, grid outages &amp; dispatch |
+| **Telecom &amp; Insurance** | **TM Forum Open APIs** / **ACORD** | Network alarms, service orders, claims lifecycles &amp; PII parties |
+
+### Why LinkML Is Such a Cool Idea (Executable Domain Modeling)
+
+Normally, logical data models rot inside slide decks while engineers copy-paste regexes, numeric bounds, and PII tags into five separate tools. **LinkML** ([linkml.io](https://linkml.io/)) turns plain, PR-reviewable YAML into an **executable compiler input** — change one rule in `models/linkml/dcsa/*.yaml`, run `compile_dcsa.py`, and **five governed layers** update in lockstep:
+
+<p align="center">
+  <img src="docs/infographics/tcl_linkml_io.png" alt="LinkML Inputs and Outputs Infographic" width="100%" />
+</p>
+
+*(Interactive source: [`docs/infographics/tcl_linkml_io.html`](docs/infographics/tcl_linkml_io.html))*
+
+### Why Apache Ossie Is Such a Cool Idea (Vendor-Neutral Semantic Rosetta Stone)
+
+Even with clean Gold Delta tables, metrics quietly drift between Databricks SQL, AI assistants, and Power BI. **Apache Ossie** (*Open Semantic Interchange*, [ossie.apache.org](https://ossie.apache.org/)) is **not** another query engine sitting in your hot path — it is an **offline semantic blueprint** compiled one-way by official `apache/ossie-converters` into native Databricks Unity Catalog Metric Views and Power BI `.model.bim`, while leaving specialist DAX safely untouched:
+
+<p align="center">
+  <img src="docs/infographics/tcl_ossie_io.png" alt="Apache Ossie Inputs and Outputs Infographic" width="100%" />
+</p>
+
+*(Interactive source: [`docs/infographics/tcl_ossie_io.html`](docs/infographics/tcl_ossie_io.html))*
+
+### Shifting This Entire Pipeline to Another Industry (~90% Unchanged)
+
+Because compilers, ODCS contract gates, Lakeflow Declarative Pipelines, quarantine tables, `AUTO CDC`, dynamic PII masking, DABs, and CI/CD are **metadata-driven**, shifting this entire Lakehouse out of shipping requires swapping **only ~10% of the repo** (the LinkML schemas + Ossie YAML):
+
+| Target Industry | Swap LinkML Domain (`models/linkml/`) | Swap Telemetry Quarantine | Swap CDC + PII Masking | Swap Apache Ossie KPIs (`semantic/ossie/`) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Healthcare (HL7 FHIR)** | `Patient`, `Encounter`, `Observation` | Spo2 `0–100%`, Heart Rate `20–240 bpm` | Patient/Order SCD2 + `patient_email` / `nhi_number` | Bed Turnaround Mins, ICU Alert Rate, Sepsis SLA % |
+| **Banking (ISO 20022)** | `PaymentInstruction`, `SettlementEvent` | `IBAN`/`BIC` regex, `amount > 0` | Payment `PDNG→ACSC` SCD2 + `debtor_iban` | Straight-Through Processing %, High-Value Latency |
+| **Cold-Chain Retail (GS1)** | `EPCISEvent`, `ChillerReading` | `GTIN-14` regex, `-30..+8°C` chiller bounds | Recall / Lot SCD2 + `supplier_email` | Shelf-Stock Reliability %, Chiller Excursion % |
+| **Energy Grid (IEC CIM)** | `SubstationEvent`, `SmartMeterReading` | `voltage_v` `180–260V`, kWh bounds | Outage Ticket SCD2 + `account_holder_email` | SAIDI / SAIFI Outage Mins, Peak Load Factor % |
+
+> **Full Deep-Dive Guide:** Read [`docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md`](docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md) for a complete walkthrough of DCSA, LinkML, Apache Ossie, and a 5-step fork guide for transplanting this Lakehouse into your own domain.
 
 ---
 
@@ -232,11 +285,12 @@ Real-world runtime constraints discovered and codified via self-annealing during
 
 | Document / Path | Purpose |
 | :--- | :--- |
+| [`docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md`](docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md) | Plain-English explainers for DCSA (vs. FHIR/ISO 20022/GS1/CIM), LinkML, Apache Ossie, and shifting this pipeline to other industries |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Deep architectural walkthrough of every layer, data flow, closed-loop governance, and trade-offs |
 | [`docs/DCSA_DOMAIN_MODEL.md`](docs/DCSA_DOMAIN_MODEL.md) | Reference for DCSA T&amp;T v3.0, eBL v3, JIT Port Call, OVS schemas, compiled rules, and KPI glossary |
 | [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) | Step-by-step Local, Databricks Free Edition, GitHub Actions, and Azure DevOps Enterprise guide |
 | [`docs/diagrams/`](docs/diagrams/) | 3 interactive repository-backed **Archify v3.0** HTML diagrams, JSON specs, and PNG previews |
-| [`docs/infographics/`](docs/infographics/) | Executive one-pager, 80/20 blueprint, and maritime hero banner (HTML sources + 2× HiDPI PNGs) |
+| [`docs/infographics/`](docs/infographics/) | 5 editorial infographics: Hero Banner, Executive One-Pager, 80/20 Blueprint, LinkML I/O, and Apache Ossie I/O (HTML + 2× PNGs) |
 | [`SECURITY.md`](SECURITY.md) | Security boundary, zero-secret hygiene controls, dynamic PII masking, and quarantine guarantees |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Zero-drift workflow for evolving LinkML models, ODCS contracts, and Apache Ossie KPIs |
 | [`models/linkml/dcsa/`](models/linkml/dcsa/) | Modular LinkML DCSA source schemas (`dcsa_common`, `dcsa_tnt_v3`, `dcsa_ebl_v3`, `dcsa_jit_v1`, `dcsa_enterprise`) |
@@ -257,3 +311,4 @@ Real-world runtime constraints discovered and codified via self-annealing during
 - **2026-11-26 - Phase 3 &amp; 4 Live Databricks Free Edition Verification &amp; CI/CD Hardening** — Verified end-to-end 5-task orchestrator run live on Databricks Free Edition (all tasks `SUCCESS`, `420/420` native `spark_ibis` ODCS checks, 6 live SQL proofs, live `tcl-port-control` App and Genie Space), aligned ODCS contracts to curated `silver_dcsa`/`gold_dcsa` tables with Silver-only PII masking, expanded repository hygiene gates, and published repository with green GitHub Actions CI.
 - **2026-11-27 - Documentation Overhaul, Archify Diagrams &amp; Executive Infographics** — Replaced Mermaid with 3 repository-backed, browser-verified **Archify v3.0** showcase diagrams (`architecture`, `dataflow`, `workflow` v2) with PNG previews and interactive HTML sources; generated 3 2× HiDPI editorial infographics (maritime hero banner, executive one-pager, 80/20 MDSD blueprint); authored comprehensive `docs/ARCHITECTURE.md`, `docs/DCSA_DOMAIN_MODEL.md`, `docs/DEPLOYMENT_GUIDE.md`, and `CONTRIBUTING.md`; expanded automated hygiene and zero-Mermaid tests.
 - **2026-11-27 - Public-Release Hardening, TCL Fictional Backstory &amp; 1-Command Free Edition Deployer** — Scrubbed workspace-specific object/run IDs from docs, added explicit fictional-scenario disclaimer and Tasman Container Line backstory across docs, added `./scripts/deploy_free_edition.sh` with automatic warehouse detection and first-time Genie Space bootstrap handling, and verified fresh-clone reproducibility.
+- **2026-11-27 - DCSA, LinkML &amp; Apache Ossie Explainers, I/O Infographics &amp; Cross-Industry Portability** — Added `docs/CONCEPTS_AND_INDUSTRY_PORTABILITY.md` comparing DCSA to HL7 FHIR, ISO 20022/BIAN, GS1/EPCIS 2.0, IEC CIM, TM Forum, and ACORD; created 2× HiDPI Inputs &amp; Outputs infographics for LinkML (`tcl_linkml_io.png`) and Apache Ossie (`tcl_ossie_io.png`); embedded explainers and a cross-industry swap matrix into `README.md`.
